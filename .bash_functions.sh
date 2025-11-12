@@ -13,8 +13,8 @@ function gmmain() {
     git merge main 
 } 
 
-function git-config-setup() {
-     echo "🔧 Setting up your global Git configuration..."
+function _git_config_setup() {
+    echo -e "🔧 ${CYANR}Setting up your global Git configuration...${NC}"
     echo
 
     # Ask for user name and email if not provided as args
