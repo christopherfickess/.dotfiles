@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Bash_functions function 
-which_cluster() { 
+function which_cluster() { 
     kubectl config current-context 
 } 
 

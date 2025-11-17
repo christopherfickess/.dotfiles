@@ -55,6 +55,7 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+playground/
 
 # debug information files
 *.dwo
