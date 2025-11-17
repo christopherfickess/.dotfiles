@@ -5,6 +5,16 @@ function which_cluster() {
     kubectl config current-context 
 } 
 
+function update_bashrc() {
+    echo -e "${GREEN}Updating .bashrc with latest from .dotfiles...${NC}"
+    if [ -f "$HOME/.bashrc" ]; then
+        source "$HOME/.bashrc"
+        echo -e "${GREEN}.bashrc updated successfully.${NC}"
+    else
+        echo -e "${RED}Error: ~/.bashrc not found.${NC}"
+    fi
+}
+
 function gfmain() { 
     git fetch origin main:main
 } 

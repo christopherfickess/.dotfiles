@@ -19,6 +19,13 @@ add the following lines to the dotfiles
 if [ -f "$HOME/.dotfiles/.bashrc" ]; then  source "$HOME/.dotfiles/.bashrc"; fi
 ```
 
+
+To use wls use the following in gitbash terminal 
+
+```
+wsl ---install 
+
+
 Install List
 
 - Python 3.14
@@ -43,4 +50,4 @@ Repos to install
 - [Mattermost-operator](https://github.com/mattermost/mattermost-operator)
 - [Mattermost-IaC](https://github.com/mattermost/delivery-iac)
 
-Then open a new terminal
+Then open a new admin terminal and run the `windows_first_time_setup` function. This will install all relavent tools and WSL config with Fedora and all SRE Libs needed. Additionally, this will sync the Bash configuration between windows and WSL Linux subsystems.

@@ -22,5 +22,7 @@ export NCR=$(tput sgr0) #No color used in a while loop after 'read';
 alias ls="ls -a -1 --color"; 
 alias ll="ls -al -1 --color"; 
 
+alias cd='pushd ';
+
 # alias kubectl="kubecolor";
 # unset -f kubecolor 

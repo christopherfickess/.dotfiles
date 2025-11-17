@@ -35,8 +35,7 @@ function _list_windows_wsl_commands(){
     echo -e "wsl --update rollback       ${GREEN}# Roll back last WSL kernel update${NC}"
 }
 
-function set-wsl-setup-process(){
-
+function set_wsl_setup_process(){
     WIN_DOTFILES_DIR="$HOME/.dotfiles"
 
     # Target Fedora distro
@@ -51,12 +50,15 @@ function set-wsl-setup-process(){
         wsl --set-default $FEDORA_DISTRO
 
         DEFAULT_DISTRO=$(wsl -l -v | grep "Default" | awk '{print $1}' | tr -d '\r')
+
+        
     fi
-    echo -e "${GREEN}Setting up WSL environment...${NC}"    
+    echo -e "${GREEN}Setting up WSL environment...${NC}"        
+    _setup_wsl_environment
+}
 
-
+function _setup_wsl_environment() {
     wsl sh -c "
-        mkdir -p ~/.dotfiles ~/git
         USERNAME='ChrisFickess'
         cat /mnt/c/Users/$USERNAME/.bashrc >> ~/.bashrc
         ln -sf /mnt/c/Users/${USERNAME}/.dotfiles ~/
@@ -78,10 +80,29 @@ function set-wsl-setup-process(){
             unzip \
             build-essential \
             containers-common \
-            kubecolor
+            dos2unix
+            
+        go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
+        export PATH=$PATH:$HOME/go/bin
 
+        find ~/.dotfiles -type f -exec dos2unix {} +
+
+        source ~/.bashrc
         echo -e '${GREEN}WSL setup process completed.${NC}'
         "
+}
+
+function _remove_line_endings() {
+    wsl sh -c "
+        dos2unix ~/.dotfiles/.bashrc \
+            ~/.dotfiles/.bash_aliases \
+            ~/.dotfiles/.bash_functions \
+            ~/.dotfiles/aws/kubernetes_functions.sh \
+            ~/.dotfiles/aws/aws_functions.sh \
+            ~/.dotfiles/windows/.bashrc \
+            ~/.dotfiles/windows/.bashrc \
+            ~/.dotfiles/windows/.bash_functions
+    "
 }
 
 function destroy-wsl-distro(){
