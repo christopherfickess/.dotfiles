@@ -80,7 +80,8 @@ function _setup_wsl_environment() {
             unzip \
             build-essential \
             containers-common \
-            dos2unix
+            dos2unix \
+            yq
             
         go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
         export PATH=$PATH:$HOME/go/bin
@@ -93,6 +94,7 @@ function _setup_wsl_environment() {
 }
 
 function _remove_line_endings() {
+    # Useful if there are windows line ending issues
     wsl sh -c "
         dos2unix ~/.dotfiles/.bashrc \
             ~/.dotfiles/.bash_aliases \
@@ -105,7 +107,7 @@ function _remove_line_endings() {
     "
 }
 
-function destroy-wsl-distro(){
+function destroy_wsl_distro(){
     
     if [ ! -z "$1" ]; then
         echo -e "${GREEN}Enter the name of the distribution to unregister${NC}"

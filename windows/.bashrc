@@ -17,7 +17,7 @@ function windows_first_time_setup() {
 function _install_software_windows() {
     echo -e "${GREEN}Setting up Windows Software...${NC}"
 
-    echo -e "${YELLOW}Are you in an Admin Terminal...?${NC}"
+    echo -ne "${YELLOW}Are you in an Admin Terminal...?${NC}"
     read -p ": (y/n): " admin_confirm
     if [[ ! "$admin_confirm" =~ ^[Yy]$ ]]; then
         echo -e "${RED}Please restart the terminal as Administrator and rerun this script.${NC}"
@@ -34,7 +34,11 @@ function _install_software_windows() {
         docker-desktop \
         python \
         nano \
-        dos2unix
+        terraform \
+        7zip \
+        kubernetes-helm \
+        yq 
+        # terracreds \
 
     go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
     export PATH=$PATH:$HOME/go/bin
