@@ -1,9 +1,20 @@
 #!/bin/bash
 
 ## Bash_functions function 
-which_cluster() { 
+function which_cluster() { 
     kubectl config current-context 
 } 
+
+function update_bashrc() {
+    echo -e "     Updating ${GREEN}.bashrc${NC} with latest from .dotfiles..."
+    echo
+    if [ -f "$HOME/.bashrc" ]; then
+        source "$HOME/.bashrc"
+        echo -e "     ${MAGENTAR}.bashrc updated successfully.${NC}"
+    else
+        echo -e "${RED}Error: ~/.bashrc not found.${NC}"
+    fi
+}
 
 function gfmain() { 
     git fetch origin main:main
