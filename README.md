@@ -1,7 +1,8 @@
+[TOC]
 # .dotfiles
 Bash Configuration Repo for Personal Use
 
-# Starting
+##  Setup
 
 To create this repo verify or make a file called `$HOME/.bashrc`
 
@@ -10,23 +11,37 @@ Clone the repo into your `$HOME/`
 ```bash
 git clone https://github.com/christopherfickess/.dotfiles.git
 
-code $HOME/.bashrc
+# Will configure your bashrc to work
+source $HOME/.dotfiles/setup.sh && setup_bashrc   
 ```
 
-add the following lines to the dotfiles
+### Org Setup
+
+To Configure Mattermost Org Bash Functions run the following commands
 
 ```bash
-if [ -f "$HOME/.dotfiles/.bashrc" ]; then  source "$HOME/.dotfiles/.bashrc"; fi
+mkdir -p $HOME/.dotfiles/tmp
+
+echo "MATTERMOST=TRUE" >  $HOME/.dotfiles/tmp/env.sh
+# OR
+echo "MATTERMOSTFED=TRUE" > $HOME/.dotfiles/tmp/env.sh
+```
+
+### WSL Configuration Setup Procedures
+
+To use wls use the following in gitbash terminal. This has been configured to install specific tools using the Distro of choice or by using the specific DISTRO=FedoraLinux-43. 
+
+To use this the wsl function has been over written to do preconfigurations by simply running the wsl command. To pick a different Distro type 
+
+- GitBash is a prereq for this
+
+```bash
+wsl <distro-name>
 ```
 
 
-To use wls use the following in gitbash terminal 
 
-```
-wsl ---install 
-
-
-Install List
+### Tool useful Install List
 
 - Python 3.14
 - Kubernetes 
@@ -41,7 +56,7 @@ Install List
 - Mattermost
 - (Need to Do) Mattermost CLI
 
-Repos to install
+### Repos to install
 
 - [.dotfiles](https://github.com/christopherfickess/.dotfiles)
 - [Mattermost](https://github.com/mattermost/mattermost)
