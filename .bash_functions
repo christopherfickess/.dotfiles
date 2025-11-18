@@ -9,7 +9,7 @@ function update_bashrc() {
     echo -e "     Updating ${GREEN}.bashrc${NC} with latest from .dotfiles..."
     echo
     if [ -f "$HOME/.bashrc" ]; then
-        source "$HOME/.bashrc"
+        source "${HOME}/.bashrc"
         echo -e "     ${MAGENTAR}.bashrc updated successfully.${NC}"
     else
         echo -e "${RED}Error: ~/.bashrc not found.${NC}"

@@ -103,9 +103,7 @@ function branching_method_3() {
     }
 
     # Export PS1 with colors
-    export PS1="\[\e[1;34m\]\w\[\e[0m\] \[\e[32m\]\$(git_branch_name)\[\e[0m\]\[\e[37m\]\$(git_branch_ahead_behind)\[\e[0m\] \[\e[0;31m\]> \[\e[0m\]"
+    export PS1="\[\e[1;34m\]\w\[\e[0m\] \[\e[32m\] \$(git_branch_name) \[\e[0m\]\[\e[37m\]\$(git_branch_ahead_behind)\[\e[0m\] \[\e[0;31m\]> \[\e[0m\]"
 }
-
-
 
 branching_method_3
