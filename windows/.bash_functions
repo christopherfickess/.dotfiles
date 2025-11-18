@@ -88,17 +88,16 @@ function _install_wsl_tools() {
         ln -sf /mnt/c/Users/${USER}/.dotfiles ~/
         ln -sf /mnt/c/Users/${USER}/git ~/
 
-        if [ -x /usr/local/sbin/tsh ]; then
-            echo -e "${GREEN}Teleport already installed.${NC}"
-        else
-            echo -e "${GREEN}Installing Teleport...${NC}"
-            pushd /tmp
-                curl -O https://cdn.teleport.dev/teleport-v18.4.0-linux-amd64-bin.tar.gz
-                tar -xzf teleport-v18.4.0-linux-amd64-bin.tar.gz
-                cd teleport
-                sudo ./install
-            popd
-        fi
+        
+        echo -e "${GREEN}Installing Teleport...${NC}"
+        
+        mkdir -p $HOME/bin
+        pushd $HOME/bin;
+            curl -O https://cdn.teleport.dev/teleport-v18.4.0-linux-amd64-bin.tar.gz
+            tar -xzf teleport-v18.4.0-linux-amd64-bin.tar.gz
+            cd teleport
+            sudo ./install
+        popd
 
         sudo dnf update -y
         sudo dnf install -y --skip-unavailable \
@@ -139,7 +138,6 @@ function _remove_line_endings() {
             ~/.dotfiles/.bash_functions \
             ~/.dotfiles/aws/kubernetes_functions.sh \
             ~/.dotfiles/aws/aws_functions.sh \
-            ~/.dotfiles/windows/.bashrc \
             ~/.dotfiles/windows/.bashrc \
             ~/.dotfiles/windows/.bash_functions
     "

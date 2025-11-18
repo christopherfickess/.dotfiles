@@ -59,21 +59,31 @@ function branching_method_2() {
 }
 
 function branching_method_3() {
-    # Function to get branch name (plain text)
+    # Get current branch (only if inside git repo)
     git_branch_name() {
-        git symbolic-ref --short HEAD 2>/dev/null
+        if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+            git symbolic-ref --short HEAD 2>/dev/null
+        fi
     }
 
-    # Function to get ahead/behind relative to default branch (plain text)
-    git_branch_ahead_behind() {
-        local branch=$(git_branch_name)
-        local default_branch=""
-        if git show-ref --verify --quiet refs/heads/main; then
-            default_branch="main"
-        elif git show-ref --verify --quiet refs/heads/master; then
-            default_branch="master"
+    # Determine default branch
+    git_default_branch() {
+        if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+            if git show-ref --verify --quiet refs/heads/main; then
+                echo "main"
+            elif git show-ref --verify --quiet refs/heads/master; then
+                echo "master"
+            fi
         fi
+    }
 
+    # Ahead/behind relative to default branch
+    git_branch_ahead_behind() {
+        if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+            return
+        fi
+        local branch=$(git_branch_name)
+        local default_branch=$(git_default_branch)
         if [[ -n "$branch" && -n "$default_branch" ]]; then
             local ahead=$(git rev-list --count "$default_branch"..HEAD 2>/dev/null)
             local behind=$(git rev-list --count HEAD.."$default_branch" 2>/dev/null)
@@ -84,7 +94,7 @@ function branching_method_3() {
         fi
     }
 
-    # Function to build branch prompt (plain text)
+    # Build branch prompt
     git_branch_prompt() {
         local branch=$(git_branch_name)
         if [[ -n "$branch" ]]; then
@@ -92,9 +102,8 @@ function branching_method_3() {
         fi
     }
 
-    # PS1 with colors **outside the command substitution**
-    export PS1="\[\e[1;34m\]\w\[\e[0m\] \[\e[32m\] \$(git_branch_name)\[\e[0m\]\[\e[37m\] \$(git_branch_ahead_behind)\[\e[0m\] \[\e[0;31m\]> \[\e[0m\]"
+    # Export PS1 with colors
+    export PS1="\[\e[1;34m\]\w\[\e[0m\] \[\e[32m\] \$(git_branch_name) \[\e[0m\]\[\e[37m\]\$(git_branch_ahead_behind)\[\e[0m\] \[\e[0;31m\]> \[\e[0m\]"
 }
-
 
 branching_method_3
