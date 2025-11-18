@@ -35,6 +35,24 @@ function _list_windows_wsl_commands(){
     echo -e "wsl --update rollback       ${GREEN}# Roll back last WSL kernel update${NC}"
 }
 
+function wsl() {
+    echo -e "${GREEN}Running pre-WSL checks...${NC}"
+    echo
+
+    # Example check: verify that a WSL distro exists
+    if ! command -v wsl.exe > /dev/null; then
+        echo -e "   ${RED}WSL not found on this system.${NC}"
+        return 1
+    fi
+
+    set_wsl_setup_process
+    
+    echo
+    echo -e "Launching WSL..."
+    wsl.exe "$@"
+}
+
+
 function set_wsl_setup_process(){
     WIN_DOTFILES_DIR="$HOME/.dotfiles"
 
@@ -42,27 +60,48 @@ function set_wsl_setup_process(){
     FEDORA_DISTRO="FedoraLinux-43"    
     
     if wsl.exe -l -v | iconv -f UTF-16LE -t UTF-8 | sed 1,1d | awk '{print $2}' | grep -Fx "$FEDORA_DISTRO"; then
-        echo "$FEDORA_DISTRO already installed."
+        echo -e "${CYAN}$FEDORA_DISTRO already installed.${NC}"
     else
-        echo "$FEDORA_DISTRO not found. Installing..."
+        echo -e "${MAGENTA}$FEDORA_DISTRO not found. Installing...${NC}"
         wsl.exe --install -d "$FEDORA_DISTRO"
         
-        wsl --set-default $FEDORA_DISTRO
+        wsl.exe --set-default $FEDORA_DISTRO
 
-        DEFAULT_DISTRO=$(wsl -l -v | grep "Default" | awk '{print $1}' | tr -d '\r')
+        DEFAULT_DISTRO=$(wsl.exe -l -v | grep "Default" | awk '{print $1}' | tr -d '\r')
 
-        
-    fi
-    echo -e "${GREEN}Setting up WSL environment...${NC}"        
-    _setup_wsl_environment
+        echo -e "${GREEN}Setting up WSL environment...${NC}"  
+        _setup_wsl_environment
+    fi      
+    
 }
 
 function _setup_wsl_environment() {
-    wsl sh -c "
-        USERNAME='ChrisFickess'
-        cat /mnt/c/Users/$USERNAME/.bashrc >> ~/.bashrc
-        ln -sf /mnt/c/Users/${USERNAME}/.dotfiles ~/
-        ln -sf /mnt/c/Users/${USERNAME}/git ~/
+    
+    _install_wsl_tools
+
+    if [ "$MATTERMOST" = "TRUE" ]; then _setup_mattermost_mmutils;  fi
+}
+
+function _install_wsl_tools() {
+    echo -e "${GREEN}Installing WSL tools...${NC}"
+    
+    wsl.exe sh -c '
+        cat /mnt/c/Users/${USER}/.bashrc >> ~/.bashrc
+        ln -sf /mnt/c/Users/${USER}/.dotfiles ~/
+        ln -sf /mnt/c/Users/${USER}/git ~/
+
+        if [ -x /usr/local/sbin/tsh ]; then
+            echo -e "${GREEN}Teleport already installed.${NC}"
+        else
+            echo -e "${GREEN}Installing Teleport...${NC}"
+            pushd /tmp
+                curl -O https://cdn.teleport.dev/teleport-v18.4.0-linux-amd64-bin.tar.gz
+                tar -xzf teleport-v18.4.0-linux-amd64-bin.tar.gz
+                cd teleport
+                sudo ./install
+            popd
+        fi
+
         sudo dnf update -y
         sudo dnf install -y --skip-unavailable \
             git \
@@ -78,24 +117,25 @@ function _setup_wsl_environment() {
             pip \
             nano \
             unzip \
-            build-essential \
             containers-common \
             dos2unix \
+            zsh \
             yq
             
         go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
-        export PATH=$PATH:$HOME/go/bin
 
         find ~/.dotfiles -type f -exec dos2unix {} +
 
         source ~/.bashrc
         echo -e '${GREEN}WSL setup process completed.${NC}'
-        "
+    '
+
+    echo -e "${GREEN}WSL tools installation completed.${NC}"
 }
 
 function _remove_line_endings() {
     # Useful if there are windows line ending issues
-    wsl sh -c "
+    wsl.exe sh -c "
         dos2unix ~/.dotfiles/.bashrc \
             ~/.dotfiles/.bash_aliases \
             ~/.dotfiles/.bash_functions \
@@ -107,8 +147,7 @@ function _remove_line_endings() {
     "
 }
 
-function destroy_wsl_distro(){
-    
+function destroy_wsl_distro() {
     if [ ! -z "$1" ]; then
         echo -e "${GREEN}Enter the name of the distribution to unregister${NC}"
         read -p "(delete): " DISTRO_NAME        
@@ -116,9 +155,10 @@ function destroy_wsl_distro(){
         DISTRO_NAME="FedoraLinux-43" 
     fi
 
-    echo "Unregistering (deleting) WSL distribution: $DISTRO_NAME"
-    wsl -t "$DISTRO_NAME"
-    wsl --unregister "$DISTRO_NAME"
-
-    echo "Distribution $DISTRO_NAME has been unregistered."
+    echo -e "${MAGENTA}Unregistering (deleting) WSL distribution: $DISTRO_NAME${NC}"
+    echo
+    wsl.exe -t "$DISTRO_NAME"
+    wsl.exe --unregister "$DISTRO_NAME"
+    echo
+    echo -e "${GREEN}Distribution $DISTRO_NAME has been unregistered.${NC}"
 }

@@ -6,10 +6,11 @@ function which_cluster() {
 } 
 
 function update_bashrc() {
-    echo -e "${GREEN}Updating .bashrc with latest from .dotfiles...${NC}"
+    echo -e "     Updating ${GREEN}.bashrc${NC} with latest from .dotfiles..."
+    echo
     if [ -f "$HOME/.bashrc" ]; then
         source "$HOME/.bashrc"
-        echo -e "${GREEN}.bashrc updated successfully.${NC}"
+        echo -e "     ${MAGENTAR}.bashrc updated successfully.${NC}"
     else
         echo -e "${RED}Error: ~/.bashrc not found.${NC}"
     fi

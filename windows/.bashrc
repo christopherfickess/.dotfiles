@@ -24,22 +24,27 @@ function _install_software_windows() {
         return 1
     fi
 
-    choco install -y \
-        git \
-        kubernetes-cli \
-        helm \
-        awscli \
-        jq \
-        golang \
-        docker-desktop \
-        python \
-        nano \
-        terraform \
-        7zip \
-        kubernetes-helm \
-        yq 
+    
+    # curl.exe -O https://cdn.teleport.dev/teleport-v18.4.0-windows-amd64-bin.zip
+
+
+    # echo -e "${GREEN}Installing software via Chocolatey...${NC}"
+    # choco install -y \
+    #     git \
+    #     kubernetes-cli \
+    #     helm \
+    #     awscli \
+    #     jq \
+    #     golang \
+    #     docker-desktop \
+    #     python \
+    #     nano \
+    #     terraform \
+    #     7zip \
+    #     kubernetes-helm \
+    #     zsh \
+    #     yq 
         # terracreds \
 
     go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
-    export PATH=$PATH:$HOME/go/bin
 }

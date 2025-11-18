@@ -11,7 +11,7 @@ export NC='\033[0m'
 
 # No color 
 # Use these variables when adding color to the read question in a do-while loop export 
-REDR=$(tput setaf 1) #red used in a while loop after 'read';
+export REDR=$(tput setaf 1) #red used in a while loop after 'read';
 export GREENR=$(tput setaf 2) #green used in a while loop after 'read';
 export YELLOWR=$(tput setaf 3) #yellow used in a while loop after 'read';
 export BLUER=$(tput setaf 4) #blue used in a while loop after 'read';
@@ -24,5 +24,5 @@ alias ll="ls -al -1 --color";
 
 alias cd='pushd ';
 
-# alias kubectl="kubecolor";
-# unset -f kubecolor 
+alias kubectl="kubecolor";
+unset -f kubecolor 
