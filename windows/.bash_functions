@@ -52,7 +52,6 @@ function wsl() {
     wsl.exe "$@"
 }
 
-
 function set_wsl_setup_process(){
     WIN_DOTFILES_DIR="$HOME/.dotfiles"
 
@@ -71,8 +70,7 @@ function set_wsl_setup_process(){
 
         echo -e "${GREEN}Setting up WSL environment...${NC}"  
         _setup_wsl_environment
-    fi      
-    
+    fi
 }
 
 function _setup_wsl_environment() {
