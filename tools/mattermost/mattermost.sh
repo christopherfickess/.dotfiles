@@ -1,6 +1,7 @@
 #!/bin/bash
 
-if [ "$MATTERMOST" != "TRUE" ]; then
+# This is for Mattermost Org specific bash functions and settings
+if [ -z "$MATTERMOST" ] || [ "$MATTERMOST" != "TRUE" ]; then
     return
 fi
 
@@ -13,6 +14,55 @@ export MMCTL_URL="https://releases.mattermost.com/mmctl/v11.1.0/linux_amd64.tar"
 export MATTERMOST_API_URL="https://chat.mattermost.com/api/v4"
 export MATTERMOST_SITE_URL="https://chat.mattermost.com"
 
+
+# Clone Mattermost repo if it doesn't exist
+if [ ! -d "$HOME/git/mattermost/mattermost" ]; then
+    pushd $HOME/git/mattermost
+        git clone https://github.com/mattermost/mattermost.git
+    popd
+fi
+
+# Clone Mattermost Cloud repo if it doesn't exist
+if [ ! -d "$HOME/git/mattermost/mattermost-cloud" ]; then
+    pushd $HOME/git/mattermost
+        git clone https://github.com/mattermost/mattermost-cloud.git
+    popd
+fi
+
+# Clone Mattermost Cloud Monitoring repo if it doesn't exist
+if [ ! -d "$HOME/git/mattermost/mattermost-cloud-monitoring" ]; then
+    pushd $HOME/git/mattermost
+        git clone https://github.com/mattermost/mattermost-cloud-monitoring.git
+    popd
+fi
+
+# Clone Mattermost Operator repo if it doesn't exist
+if [ ! -d "$HOME/git/mattermost/mattermost-operator" ]; then
+    pushd $HOME/git/mattermost
+        git clone https://github.com/mattermost/mattermost-operator.git
+    popd
+fi
+
+# Create mattermost directory if it doesn't exist
+if [ ! -d "$HOME/git/mattermost" ]; then
+    mkdir -p $HOME/git/mattermost
+fi
+
+# Clone Mattermost mm-utils repo if it doesn't exist
+if [ ! -d "$HOME/git/mattermost/mm-utils" ]; then
+    pushd $HOME/git/mattermost
+        git clone https://github.com/mattermost/mm-utils.git
+        find $HOME/git/mattermost/mm-utils/scripts -type f -exec dos2unix {} +
+    popd
+fi
+
+# Source Mattermost mm-utils scripts
+if [ -d "$HOME/git/mattermost/mm-utils" ]; then
+    for i in $HOME/git/mattermost/mm-utils/scripts/*.zsh; do
+        source $i;
+    done
+fi
+
 function mattermost_functions_help() {
     echo -e "${GREEN}Mattermost Functions:${NC}"
 
@@ -22,27 +72,6 @@ function mattermost_functions_help() {
     # echo -e "  setup-mattermost-operator      ${GREEN}# Set up Mattermost Operator in your Kubernetes cluster${NC}"
     # echo -e "  deploy-mattermost-instance     ${GREEN}# Deploy a Mattermost instance using the Mattermost Operator${NC}"
     # echo -e "  delete-mattermost-instance     ${GREEN}# Delete the Mattermost instance from your Kubernetes cluster${NC}"
-}
-
-function _setup_mattermost_mmutils() {
-    # Source Mattermost mm-utils scripts
-    if [ -f "$HOME/.dotfiles/tools/mattermost/mattermost.sh" ]; then 
-        
-        if [ ! -d "$HOME/git/mattermost/mm-utils" ]; then
-            mkdir -p $HOME/git/mattermost
-
-            pushd $HOME/git/mattermost
-                git clone https://github.com/mattermost/mm-utils.git
-                find $HOME/git/mattermost/mm-utils/scripts -type f -exec dos2unix {} +
-            popd
-        fi
-    fi
-
-    if [ -d "$HOME/git/mattermost/mm-utils" ]; then
-        for i in $HOME/git/mattermost/mm-utils/scripts/*.zsh; do
-            source $i;
-        done
-    fi
 }
 
 function update_mattermost_ctl() {
@@ -57,11 +86,3 @@ function update_mattermost_ctl() {
     rm ~/bin/linux_amd64.tar
     echo -e "${GREEN}Mattermost ctl Tool updated successfully.${NC}"
 }
-
-
-# Source Mattermost mm-utils scripts
-if [ -d "$HOME/git/mattermost/mm-utils" ]; then
-    for i in $HOME/git/mattermost/mm-utils/scripts/*.zsh; do
-        source $i;
-    done
-fi

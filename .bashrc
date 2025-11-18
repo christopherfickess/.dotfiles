@@ -1,16 +1,18 @@
 #!/bin/bash
 
-# Source .dotfiles files
-MATTERMOST=TRUE
-
-
 if [ -f "$HOME/.dotfiles/.bash_functions" ]; then  source "$HOME/.dotfiles/.bash_functions"; fi
 if [ -f "$HOME/.dotfiles/.bash_aliases" ]; then  source "$HOME/.dotfiles/.bash_aliases"; fi
 if [ -f "$HOME/.dotfiles/aws/kubernetes_functions.sh" ]; then  source "$HOME/.dotfiles/aws/kubernetes_functions.sh"; fi
 if [ -f "$HOME/.dotfiles/aws/aws_functions.sh" ]; then  source "$HOME/.dotfiles/aws/aws_functions.sh"; fi
 if [ -f "$HOME/.dotfiles/tools/.bashrc" ]; then  source "$HOME/.dotfiles/tools/.bashrc"; fi
+if [ -f "$HOME/.dotfiles/tmp/env.sh" ]; then  source "$HOME/.dotfiles/tmp/env.sh"; fi
 
-
+# Check if Windows OS and source windows specific bashrc
+if grep -qi "microsoft" /proc/version 2>/dev/null || [[ "$(uname -o 2>/dev/null)" == "Msys" ]] || [[ "$(uname -o 2>/dev/null)" == "Cygwin" ]]; then
+    if [ -f "$HOME/.dotfiles/windows/.bashrc" ]; then  source "$HOME/.dotfiles/windows/.bashrc"; fi
+else
+    echo "This is NOT Windows"
+fi
 
 # .bashrc 
 function git-branch-name {
@@ -25,15 +27,7 @@ function git-branch-prompt {
 
 export PS1='\[\033[32m\]$(git-branch-prompt)\[\e[1;34m\]\w\[\033[32m\]\[\e[m\] \[\e[0;31m\]> \[\033[0m\]'
 
-if grep -qi "microsoft" /proc/version 2>/dev/null || [[ "$(uname -o 2>/dev/null)" == "Msys" ]] || [[ "$(uname -o 2>/dev/null)" == "Cygwin" ]]; then
-    if [ -f "$HOME/.dotfiles/windows/.bashrc" ]; then  source "$HOME/.dotfiles/windows/.bashrc"; fi
-else
-    echo "This is NOT Windows"
-fi
-
  
 export PATH=$PATH:$HOME/go/bin
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/bin
-
-
