@@ -10,10 +10,9 @@ export MMCTL_RELEASE_VERSION="v11.1.0"
 export MMCTL_PREVIOUS_VERSION="v11.1.0"
 
 # URLs
-export MMCTL_URL="https://releases.mattermost.com/mmctl/v11.1.0/linux_amd64.tar"
+export MMCTL_URL="https://releases.mattermost.com/mmctl/${MMCTL_RELEASE_VERSION}/linux_amd64.tar"
 export MATTERMOST_API_URL="https://chat.mattermost.com/api/v4"
 export MATTERMOST_SITE_URL="https://chat.mattermost.com"
-
 
 # Clone Mattermost repo if it doesn't exist
 if [ ! -d "$HOME/git/mattermost/mattermost" ]; then
@@ -75,14 +74,48 @@ function mattermost_functions_help() {
 }
 
 function update_mattermost_ctl() {
+    if [ -z "$ISWINDOWS" ] || [ "$ISWINDOWS" != "TRUE" ]; then
+        echo -e "${RED}This function is only supported on Windows systems.${NC}"
+        return 1
+    elif [ -z "$MMCTL_PREVIOUS_VERSION" ]; then
+        echo -e "${RED}MMCTL_PREVIOUS_VERSION is not set. Cannot proceed with the update.${NC}"
+        return 1
+    elif [ -z "$MMCTL_URL" ]; then
+        echo -e "${RED}MMCTL_URL is not set. Cannot proceed with the update.${NC}"
+        return 1
+    elif [ -z "$MMCTL_RELEASE_VERSION" ]; then
+        echo -e "${RED}MMCTL_RELEASE_VERSION is not set. Cannot proceed with the update.${NC}"
+        return 1
+    fi
+
     echo -e "${GREEN}Updating Mattermost ctl Tool...${NC}"
+    pushd $HOME/bin;
+        curl -vfsSL -O $MMCTL_URL > "${HOME}/bin/linux_amd64.tar" \
+            && echo -e "${GREEN}Downloaded mmctl version ${MMCTL_RELEASE_VERSION}${NC}" || {
+            echo -e "${RED}Failed to download mmctl from ${MMCTL_URL}${NC}"
+            return 1
+        };
+    popd
+    mkdir -p ${HOME}/tmp;
 
-    ls ~/bin/mmctl && sudo rm ~/bin/mmctl
-    curl -vfsSL -O $MMCTL_URL > ~/bin/linux_amd64.tar
+    echo -e "${MAGENTA}Backing up${NC} previous mmctl version to tmp folder..."
+    mv ${HOME}/bin/mmctl ${HOME}/tmp/mmctl_${MMCTL_PREVIOUS_VERSION} || \
+        echo -e "${YELLOW}    No previous mmctl version found to back up.${NC}";
 
-    sudo mv ~/bin/mmctl /tmp/mmctl_${MMCTL_PREVIOUS_VERSION}
+    echo -e "${MAGENTA}Extracting and installing${NC} the new mmctl version..."
+    tar -xvf ${HOME}/bin/linux_amd64.tar -C ${HOME}/bin/
 
-    tar -xvf ~/bin/linux_amd64.tar -C ~/bin/
-    rm ~/bin/linux_amd64.tar
-    echo -e "${GREEN}Mattermost ctl Tool updated successfully.${NC}"
+    rm ${HOME}/bin/linux_amd64.tar
+    echo -e "    Mattermost ctl Tool ${GREEN}updated successfully.${NC}"
 }
+
+function _check_mattermost_ctl() {
+    if ! command -v mmctl &> /dev/null; then
+        echo -e "${RED}mmctl could not be found. Please install it first.${NC}"
+        return 1
+    else
+        echo -e "${CYAN}     mmctl is installed.${NC}"
+    fi
+} 
+
+_check_mattermost_ctl || update_mattermost_ctl
