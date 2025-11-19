@@ -5,7 +5,7 @@ if [ -z "$MATTERMOST" ] || [ "$MATTERMOST" != "TRUE" ]; then
     return
 fi
 
-# Versions
+# # Versions
 export MMCTL_RELEASE_VERSION="v11.1.0"
 export MMCTL_PREVIOUS_VERSION="v11.1.0"
 
@@ -55,7 +55,9 @@ if [ ! -d "$HOME/git/mattermost/mm-utils" ]; then
     popd
 fi
 
-# Source Mattermost mm-utils scripts
+################################################
+#   TP.AUTH Bug here - breaks git autocomplete #
+################################################
 if [ -d "$HOME/git/mattermost/mm-utils" ]; then
     for i in $HOME/git/mattermost/mm-utils/scripts/*.zsh; do
         source $i;

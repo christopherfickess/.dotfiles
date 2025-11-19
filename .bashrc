@@ -105,10 +105,27 @@ function branching_method_3() {
     # Set PS1 depending on shell
     if [ -n "$ZSH_VERSION" ]; then
         # Zsh prompt escapes: %F{color} ... %f for foreground, %B/%b for bold
-        PROMPT='%F{blue}%~%f %F{green}$(git_branch_name)%f%F{white}$(git_branch_ahead_behind)%f %F{red}>%f '
+
+        fg_bold_black()   { echo "%F{black}%B"; }
+        fg_bold_red()     { echo "%F{red}%B"; }
+        fg_bold_green()   { echo "%F{green}%B"; }
+        fg_bold_yellow()  { echo "%F{yellow}%B"; }
+        fg_bold_blue()    { echo "%F{blue}%B"; }
+        fg_bold_magenta() { echo "%F{magenta}%B"; }
+        fg_bold_cyan()    { echo "%F{cyan}%B"; }
+        fg_bold_white()   { echo "%F{white}%B"; }
+        fg_bold_reset()   { echo "%b%f"; }  # Reset bold and color
+
+        setopt PROMPT_SUBST  # allows function calls in prompt
+
+        # Define prompt using the functions
+        PROMPT='$(fg_bold_yellow)%~$(fg_bold_reset) $(fg_bold_green)$(git_branch_name)$(fg_bold_reset) $(fg_bold_white)$(git_branch_ahead_behind)$(fg_bold_reset) $(fg_bold_red)>$(fg_bold_reset) '
+
+        # Source bashrc if needed for git functions
+        [[ -f ~/.bashrc ]] && source ~/.bashrc
     else
         # Bash prompt escapes
-        PS1="\[\e[1;34m\]\w\[\e[0m\] \[\e[32m\]\$(git_branch_name)\[\e[0m\]\[\e[37m\]\$(git_branch_ahead_behind)\[\e[0m\] \[\e[0;31m\]> \[\e[0m\]"
+        PS1="\[\e[1;34m\]\w\[\e[0m\] \[\e[32m\]\$(git_branch_name)\[\e[0m\]\[\e[37m\] \$(git_branch_ahead_behind)\[\e[0m\] \[\e[0;31m\]> \[\e[0m\]"
     fi
 }
 
