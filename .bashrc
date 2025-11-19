@@ -1,4 +1,4 @@
-#!/bin/bash
+# #!/bin/bash
 
 if [ -f "$HOME/.dotfiles/.bash_functions" ]; then  source "$HOME/.dotfiles/.bash_functions"; fi
 if [ -f "$HOME/.dotfiles/.bash_aliases" ]; then  source "$HOME/.dotfiles/.bash_aliases"; fi
@@ -102,8 +102,15 @@ function branching_method_3() {
         fi
     }
 
-    # Export PS1 with colors
-    export PS1="\[\e[1;34m\]\w\[\e[0m\] \[\e[32m\] \$(git_branch_name) \[\e[0m\]\[\e[37m\]\$(git_branch_ahead_behind)\[\e[0m\] \[\e[0;31m\]> \[\e[0m\]"
+    # Set PS1 depending on shell
+    if [ -n "$ZSH_VERSION" ]; then
+        # Zsh prompt escapes: %F{color} ... %f for foreground, %B/%b for bold
+        PROMPT='%F{blue}%~%f %F{green}$(git_branch_name)%f%F{white}$(git_branch_ahead_behind)%f %F{red}>%f '
+    else
+        # Bash prompt escapes
+        PS1="\[\e[1;34m\]\w\[\e[0m\] \[\e[32m\]\$(git_branch_name)\[\e[0m\]\[\e[37m\]\$(git_branch_ahead_behind)\[\e[0m\] \[\e[0;31m\]> \[\e[0m\]"
+    fi
 }
+
 
 branching_method_3
