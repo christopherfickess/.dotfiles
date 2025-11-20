@@ -5,6 +5,8 @@ if [ -z "$MATTERMOST" ] || [ "$MATTERMOST" != "TRUE" ]; then
     return
 fi
 
+if [ -f "$HOME/.dotfiles/tools/mattermost/users.sh" ] && [ "$MATTERMOST" = "TRUE" ]; then  source "$HOME/.dotfiles/tools/mattermost/users.sh"; fi
+
 # # Versions
 export MMCTL_RELEASE_VERSION="v11.1.0"
 export MMCTL_PREVIOUS_VERSION="v11.1.0"
@@ -58,10 +60,12 @@ fi
 ################################################
 #   TP.AUTH Bug here - breaks git autocomplete #
 ################################################
-if [ -d "$HOME/git/mattermost/mm-utils" ]; then
-    for i in $HOME/git/mattermost/mm-utils/scripts/*.zsh; do
-        source $i;
-    done
+if [ -n "$ZSH_VERSION" ]; then
+    if [ -d "$HOME/git/mattermost/mm-utils" ]; then
+        for i in $HOME/git/mattermost/mm-utils/scripts/*.zsh; do
+            source $i;
+        done
+    fi
 fi
 
 function mattermost_functions_help() {

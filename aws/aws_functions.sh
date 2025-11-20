@@ -1,5 +1,9 @@
 #!/bin/bash
 
+function aws_auth_update() {
+    code ~/.aws/credentials
+}
+
 function list_node_group(){
     if [[ -z "${TENANT_NAME}" || -z "${ACCOUNT_NAME}" || -z "${INSTANCE}" ]]; then 
         echo -e "${RED}Not connected to a cluster. Please connect to cluster! ${NC}"
