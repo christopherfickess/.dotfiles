@@ -4,6 +4,8 @@ export PATH=$PATH:$HOME/go/bin
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/bin
 
+if [ -d "/home/$USER/" ] && [ ! -z "$USER" ]; then export PATH=$PATH:/home/$USER/bin; echo "${GREEN}HOME Bin Set${NC}"; fi
+
 # Bashrc for Various tools
 if [ -f "$HOME/.dotfiles/tools/.bashrc" ]; then  source "$HOME/.dotfiles/tools/.bashrc"; fi
 
