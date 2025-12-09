@@ -74,23 +74,24 @@ function _install_wsl_tools() {
 
         sudo dnf update -y
         sudo dnf install -y --skip-unavailable \
+            awscli \
+            containers-common \
+            curl \
+            docker \
+            dos2unix \
             git \
+            golang-go \
+            helm \
+            jq \
+            k9s \
+            kubectl \
+            nano \
+            pip \
+            unzip \
             vim \
             wget \
-            curl \
-            kubectl \
-            helm \
-            awscli \
-            jq \
-            golang-go \
-            docker \
-            pip \
-            nano \
-            unzip \
-            containers-common \
-            dos2unix \
-            zsh \
-            yq
+            yq \
+            zsh
             
         go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
 
