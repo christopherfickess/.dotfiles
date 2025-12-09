@@ -12,16 +12,18 @@ function help_function(){
     echo -e ""
 
     echo -e ""
-    _help_mattermost
-    echo -e ""
-
-    echo -e ""
     _help_aws_commands
     echo -e ""
 
     echo -e ""
-    _help_windows
+    if [ "$MATTERMOST" = "TRUE" ]; then  _help_mattermost; fi
     echo -e ""
+    
+    echo -e ""
+    if [ "$ISWINDOWS" = "TRUE" ]; then  _help_windows; fi
+    echo -e ""
+
+
 }
 
 function _help_default_linux() {
@@ -38,13 +40,6 @@ function _help_default_linux() {
 
 }
 
-function _help_mattermost() {
-    echo -e "Mattermost Functions:"
-    echo -e "------------------------------------------------------------------------------------------------------"
-    echo -e "     ${YELLOW}mattermost_functions_help${NC}       - List Mattermost functions and their descriptions"
-    echo -e "     ${YELLOW}update_mattermost_ctl${NC}           - Update the Mattermost ctl Tool to the latest version"
-}   
-
 function _help_aws_commands() {
     echo -e "AWS Commands:"
     echo -e "------------------------------------------------------------------------------------------------------"
@@ -56,6 +51,13 @@ function _help_aws_commands() {
     echo -e "     ${YELLOW}list_kubernetes_objects${NC}         - List all Kubernetes objects in a specified namespace"
     echo -e "     ${YELLOW}ssm_parse_command_to_node_id${NC}    - Start an SSM session to a specific EC2 instance and run a command"
 }
+
+function _help_mattermost() {
+    echo -e "Mattermost Functions:"
+    echo -e "------------------------------------------------------------------------------------------------------"
+    echo -e "     ${YELLOW}mattermost_functions_help${NC}       - List Mattermost functions and their descriptions"
+    echo -e "     ${YELLOW}update_mattermost_ctl${NC}           - Update the Mattermost ctl Tool to the latest version"
+}   
 
 function _help_windows() {
     echo -e "Windows WSL Functions:"
