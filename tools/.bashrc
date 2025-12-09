@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Base ENV Setup for Bash Shells
+if [ -f "$HOME/.dotfiles/tools/env.sh" ]; then  source "$HOME/.dotfiles/tools/env.sh"; fi
+
 # This is to source Hidden Dotfiles
 if [ -f "$HOME/.dotfiles/tools/tmp/env.sh" ]; then  source "$HOME/.dotfiles/tools/tmp/env.sh"; fi
 if [ -f "$HOME/.dotfiles/tmp/users.sh" ]; then  source "$HOME/.dotfiles/tmp/users.sh"; fi
@@ -28,3 +31,4 @@ if [ -f "$HOME/.dotfiles/tools/mattermost/mattermostfed.sh" ] && [ "$MATTERMOSTF
 
 # Source AWS functions
 if [ -f "$HOME/.dotfiles/tools/aws/aws_functions.sh" ]; then  source "$HOME/.dotfiles/tools/aws/aws_functions.sh"; fi
+if [ -f "$HOME/.dotfiles/tools/aws/aws_connect.sh" ]; then  source "$HOME/.dotfiles/tools/aws/aws_connect.sh"; fi

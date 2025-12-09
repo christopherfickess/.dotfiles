@@ -3,14 +3,6 @@
 # This is for Mattermost Org specific bash functions and settings
 # This is set in the tmp/env.sh file as MATTERMOST=TRUE
 
-export MMCTL_URL="https://releases.mattermost.com/mmctl/${MMCTL_RELEASE_VERSION}/linux_amd64.tar"
-export MATTERMOST_API_URL="https://chat.mattermost.com/api/v4"
-export MATTERMOST_SITE_URL="https://chat.mattermost.com"
-
-# # Versions
-export MMCTL_RELEASE_VERSION="v11.1.0"
-export MMCTL_PREVIOUS_VERSION="v11.1.0"
-
 
 function clone_mattermost_repo() {
     # if [ -z "$MATTERMOST_REPO_URL" ]; then
@@ -132,7 +124,7 @@ function _source_mattermost_functionality() {
     if [ -z "$MATTERMOST" ] || [ "$MATTERMOST" != "TRUE" ]; then
         return
     else
-        echo -e "${GREEN}Mattermost tools enabled.${NC}"
+        echo -e "${GREEN}   Mattermost tools enabled.${NC}"
 
         clone_mattermost_repo
     fi

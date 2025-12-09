@@ -56,18 +56,18 @@ function start_minikube_wsl() {
 function _install_wsl_tools() {
     echo -e "${GREEN}Installing WSL tools...${NC}"
     
-    wsl.exe sh -c '
-        cat /mnt/c/Users/${USER}/.bashrc >> ~/.bashrc
-        ln -sf /mnt/c/Users/${USER}/.dotfiles ~/
-        ln -sf /mnt/c/Users/${USER}/git ~/
+    wsl.exe sh -c "
+        cat /mnt/c/Users/${USERNAME}/.bashrc >> ~/.bashrc
+        ln -sf /mnt/c/Users/${USERNAME}/.dotfiles ~/
+        ln -sf /mnt/c/Users/${USERNAME}/git ~/
 
         
-        echo -e "${GREEN}Installing Teleport...${NC}"
+        echo -e \"${GREEN}Installing Teleport...${NC}\"
         
-        mkdir -p $HOME/bin
-        pushd $HOME/bin;
-            curl -O https://cdn.teleport.dev/teleport-v18.4.0-linux-amd64-bin.tar.gz
-            tar -xzf teleport-v18.4.0-linux-amd64-bin.tar.gz
+        mkdir -p /home/$USERNAME/bin
+        pushd /home/$USERNAME/bin;
+            curl -O https://cdn.teleport.dev/teleport-${TELEPORT_VERSION}-linux-amd64-bin.tar.gz
+            tar -xzf teleport-${TELEPORT_VERSION}-linux-amd64-bin.tar.gz
             cd teleport
             sudo ./install
         popd
@@ -95,21 +95,20 @@ function _install_wsl_tools() {
             
         go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
 
-        echo -e "${GREEN}Configuring Docker User...${NC}"
+        echo -e \"${GREEN}Configuring Docker User...${NC}\"
         sudo usermod -aG docker $USER
         newgrp docker
         docker ps
-        echo -e "${GREEN}Docker user configured.${NC}"
-
-        echo -e "${GREEN}Installing Minikube...${NC}"
+        echo -e \"${GREEN}Docker user configured.${NC}\"
+        echo -e \"${GREEN}Installing Minikube...${NC}\"
         curl -LO https://github.com/kubernetes/minikube/releases/latest/download/minikube-linux-amd64
         sudo install minikube-linux-amd64 /usr/local/bin/minikube && rm minikube-linux-amd64
 
         find ~/.dotfiles -type f -exec dos2unix {} +
 
         source ~/.bashrc
-        echo -e '${GREEN}WSL setup process completed.${NC}'
-    '
+        echo -e \"${GREEN}WSL setup process completed.${NC}\"
+    "
 
     echo -e "${GREEN}WSL tools installation completed.${NC}"
 }
