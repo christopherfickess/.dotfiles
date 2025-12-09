@@ -124,7 +124,7 @@ function _source_mattermost_functionality() {
     if [ -z "$MATTERMOST" ] || [ "$MATTERMOST" != "TRUE" ]; then
         return
     else
-        echo -e "${GREEN}Mattermost tools enabled.${NC}"
+        echo -e "${GREEN}   Mattermost tools enabled.${NC}"
 
         clone_mattermost_repo
     fi
