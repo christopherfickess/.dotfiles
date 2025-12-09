@@ -1,11 +1,26 @@
 # #!/bin/bash
 
-if [ -f "$HOME/.dotfiles/.bash_functions" ]; then  source "$HOME/.dotfiles/.bash_functions"; fi
-if [ -f "$HOME/.dotfiles/.bash_aliases" ]; then  source "$HOME/.dotfiles/.bash_aliases"; fi
-if [ -f "$HOME/.dotfiles/aws/kubernetes_functions.sh" ]; then  source "$HOME/.dotfiles/aws/kubernetes_functions.sh"; fi
-if [ -f "$HOME/.dotfiles/aws/aws_functions.sh" ]; then  source "$HOME/.dotfiles/aws/aws_functions.sh"; fi
-if [ -f "$HOME/.dotfiles/tools/.bashrc" ]; then  source "$HOME/.dotfiles/tools/.bashrc"; fi
+export PATH=$PATH:$HOME/go/bin
+export PATH=$PATH:$HOME/.local/bin
+export PATH=$PATH:$HOME/bin
+
+# This is to source Hidden Dotfiles
 if [ -f "$HOME/.dotfiles/tmp/env.sh" ]; then  source "$HOME/.dotfiles/tmp/env.sh"; fi
+
+# This is the helper functions and aliases
+if [ -f "$HOME/.dotfiles/help.sh" ]; then  source "$HOME/.dotfiles/help.sh"; fi
+
+# Default bash functions
+if [ -f "$HOME/.dotfiles/bash_config/.bashrc" ]; then  source "$HOME/.dotfiles/bash_config/.bashrc"; fi
+
+# Bashrc for AWS and Kubernetes
+if [ -f "$HOME/.dotfiles/aws/.bashrc" ]; then  source "$HOME/.dotfiles/aws/.bashrc"; fi
+
+# Bashrc for Various tools
+if [ -f "$HOME/.dotfiles/tools/.bashrc" ]; then  source "$HOME/.dotfiles/tools/.bashrc"; fi
+
+# Source users.sh for user-specific environment variables
+if [ -f "$HOME/.dotfiles/tmp/users.sh" ]; then  source "$HOME/.dotfiles/tmp/users.sh"; fi
 
 # Check if Windows OS and source windows specific bashrc
 if grep -qi "microsoft" /proc/version 2>/dev/null || [[ "$(uname -o 2>/dev/null)" == "Msys" ]] || [[ "$(uname -o 2>/dev/null)" == "Cygwin" ]]; then
@@ -28,11 +43,6 @@ function branching_method_1 () {
     } 
     export PS1='\[\033[32m\]$(git-branch-prompt)\[\e[1;34m\]\w\[\033[32m\]\[\e[m\] \[\e[0;31m\]> \[\033[0m\]'
 }
-
-
-export PATH=$PATH:$HOME/go/bin
-export PATH=$PATH:$HOME/.local/bin
-export PATH=$PATH:$HOME/bin
 
 function branching_method_2() {
     # Function to get branch name
