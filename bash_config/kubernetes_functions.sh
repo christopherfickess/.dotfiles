@@ -24,3 +24,7 @@ function list_kubernetes_objects(){
         done
     fi 
 }
+
+function which_cluster() { 
+    kubectl config current-context 
+} 

@@ -1,69 +1,72 @@
 #!/bin/bash
 
 # This is for Mattermost Org specific bash functions and settings
-if [ -z "$MATTERMOST" ] || [ "$MATTERMOST" != "TRUE" ]; then
-    return
-fi
+# This is set in the tmp/env.sh file as MATTERMOST=TRUE
+
+export MMCTL_URL="https://releases.mattermost.com/mmctl/${MMCTL_RELEASE_VERSION}/linux_amd64.tar"
+export MATTERMOST_API_URL="https://chat.mattermost.com/api/v4"
+export MATTERMOST_SITE_URL="https://chat.mattermost.com"
 
 # # Versions
 export MMCTL_RELEASE_VERSION="v11.1.0"
 export MMCTL_PREVIOUS_VERSION="v11.1.0"
 
+
+function clone_mattermost_repo() {
+    # if [ -z "$MATTERMOST_REPO_URL" ]; then
+    #     echo -e "${RED}MATTERMOST_REPO_URL is not set. Cannot clone repository.${NC}"
+    #     return 1
+    # fi
+
+    # Create mattermost directory if it doesn't exist
+    if [ ! -d "$HOME/git/mattermost" ]; then
+        echo -e "${GREEN}Creating mattermost directory...${NC}"
+        mkdir -p $HOME/git/mattermost
+    fi
+
+    # Clone Mattermost repo if it doesn't exist
+    if [ ! -d "$HOME/git/mattermost/mattermost" ]; then
+        echo -e "${GREEN}Setting up Mattermost repo...${NC}"
+        pushd $HOME/git/mattermost
+            git clone https://github.com/mattermost/mattermost.git
+        popd
+    fi
+
+    # Clone Mattermost Cloud repo if it doesn't exist
+    if [ ! -d "$HOME/git/mattermost/mattermost-cloud" ]; then
+        echo -e "${GREEN}Setting up Mattermost Cloud repo...${NC}"
+        pushd $HOME/git/mattermost
+            git clone https://github.com/mattermost/mattermost-cloud.git
+        popd
+    fi
+
+    # Clone Mattermost Cloud Monitoring repo if it doesn't exist
+    if [ ! -d "$HOME/git/mattermost/mattermost-cloud-monitoring" ]; then
+        echo -e "${GREEN}Setting up Mattermost Cloud Monitoring repo...${NC}"
+        pushd $HOME/git/mattermost
+            git clone https://github.com/mattermost/mattermost-cloud-monitoring.git
+        popd
+    fi
+
+    # Clone Mattermost Operator repo if it doesn't exist
+    if [ ! -d "$HOME/git/mattermost/mattermost-operator" ]; then
+        echo -e "${GREEN}Setting up Mattermost Operator repo...${NC}"
+        pushd $HOME/git/mattermost
+            git clone https://github.com/mattermost/mattermost-operator.git
+        popd
+    fi
+
+    # Clone Mattermost mm-utils repo if it doesn't exist
+    if [ ! -d "$HOME/git/mattermost/mm-utils" ]; then
+        echo -e "${GREEN}Setting up Mattermost mm-utils repo...${NC}"
+        pushd $HOME/git/mattermost
+            git clone https://github.com/mattermost/mm-utils.git
+            find $HOME/git/mattermost/mm-utils/scripts -type f -exec dos2unix {} +
+        popd
+    fi
+}
+
 # URLs
-export MMCTL_URL="https://releases.mattermost.com/mmctl/${MMCTL_RELEASE_VERSION}/linux_amd64.tar"
-export MATTERMOST_API_URL="https://chat.mattermost.com/api/v4"
-export MATTERMOST_SITE_URL="https://chat.mattermost.com"
-
-# Clone Mattermost repo if it doesn't exist
-if [ ! -d "$HOME/git/mattermost/mattermost" ]; then
-    pushd $HOME/git/mattermost
-        git clone https://github.com/mattermost/mattermost.git
-    popd
-fi
-
-# Clone Mattermost Cloud repo if it doesn't exist
-if [ ! -d "$HOME/git/mattermost/mattermost-cloud" ]; then
-    pushd $HOME/git/mattermost
-        git clone https://github.com/mattermost/mattermost-cloud.git
-    popd
-fi
-
-# Clone Mattermost Cloud Monitoring repo if it doesn't exist
-if [ ! -d "$HOME/git/mattermost/mattermost-cloud-monitoring" ]; then
-    pushd $HOME/git/mattermost
-        git clone https://github.com/mattermost/mattermost-cloud-monitoring.git
-    popd
-fi
-
-# Clone Mattermost Operator repo if it doesn't exist
-if [ ! -d "$HOME/git/mattermost/mattermost-operator" ]; then
-    pushd $HOME/git/mattermost
-        git clone https://github.com/mattermost/mattermost-operator.git
-    popd
-fi
-
-# Create mattermost directory if it doesn't exist
-if [ ! -d "$HOME/git/mattermost" ]; then
-    mkdir -p $HOME/git/mattermost
-fi
-
-# Clone Mattermost mm-utils repo if it doesn't exist
-if [ ! -d "$HOME/git/mattermost/mm-utils" ]; then
-    pushd $HOME/git/mattermost
-        git clone https://github.com/mattermost/mm-utils.git
-        find $HOME/git/mattermost/mm-utils/scripts -type f -exec dos2unix {} +
-    popd
-fi
-
-################################################
-#   TP.AUTH Bug here - breaks git autocomplete #
-################################################
-if [ -d "$HOME/git/mattermost/mm-utils" ]; then
-    for i in $HOME/git/mattermost/mm-utils/scripts/*.zsh; do
-        source $i;
-    done
-fi
-
 function mattermost_functions_help() {
     echo -e "${GREEN}Mattermost Functions:${NC}"
 
@@ -74,6 +77,16 @@ function mattermost_functions_help() {
     # echo -e "  deploy-mattermost-instance     ${GREEN}# Deploy a Mattermost instance using the Mattermost Operator${NC}"
     # echo -e "  delete-mattermost-instance     ${GREEN}# Delete the Mattermost instance from your Kubernetes cluster${NC}"
 }
+
+function mmctl() {
+    if ! command -v mmctl &> /dev/null; then
+        echo -e "${RED}mmctl could not be found. Please install it first.${NC}"
+        update_mattermost_ctl
+        return 1
+    else
+        echo -e "${CYAN}     mmctl is installed.${NC}"
+    fi
+} 
 
 function update_mattermost_ctl() {
     if [ -z "$ISWINDOWS" ] || [ "$ISWINDOWS" != "TRUE" ]; then
@@ -111,13 +124,31 @@ function update_mattermost_ctl() {
     echo -e "    Mattermost ctl Tool ${GREEN}updated successfully.${NC}"
 }
 
-function _check_mattermost_ctl() {
-    if ! command -v mmctl &> /dev/null; then
-        echo -e "${RED}mmctl could not be found. Please install it first.${NC}"
-        return 1
-    else
-        echo -e "${CYAN}     mmctl is installed.${NC}"
-    fi
-} 
 
-_check_mattermost_ctl || update_mattermost_ctl
+# ------------------
+# Secret Functions
+# ------------------
+function _source_mattermost_functionality() {
+    if [ -z "$MATTERMOST" ] || [ "$MATTERMOST" != "TRUE" ]; then
+        return
+    else
+        echo -e "${GREEN}Mattermost tools enabled.${NC}"
+
+        clone_mattermost_repo
+    fi
+
+    ################################################
+    #   TP.AUTH Bug here - breaks git autocomplete #
+    ################################################
+    if [ -n "$ZSH_VERSION" ]; then
+        if [ -d "$HOME/git/mattermost/mm-utils" ]; then
+            for i in $HOME/git/mattermost/mm-utils/scripts/*.zsh; do
+                source $i;
+            done
+        fi
+    fi
+
+    if [ -f "$HOME/.dotfiles/tools/mattermost/users.sh" ] && [ "$MATTERMOST" = "TRUE" ]; then  source "$HOME/.dotfiles/tools/mattermost/users.sh"; fi
+}
+
+_source_mattermost_functionality

@@ -55,6 +55,7 @@ wsl <distro-name>
 - Perplexity
 - Mattermost
 - (Need to Do) Mattermost CLI
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download)
 
 ### Repos to install
 

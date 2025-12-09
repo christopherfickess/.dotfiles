@@ -1,5 +1,53 @@
 #!/bin/bash
 
+function aws_auth_update() {
+    code ~/.aws/credentials
+}
+
+function aws_profile_switch(){
+    if [ -z "${1}" ];then 
+        while true; do
+            _aws_profile_list
+            
+            echo -e "${YELLOW}Enter AWS Profile to switch to: ${NC}"
+            read -p "   :>  " selected_profile
+
+            if grep -q "\[${selected_profile}\]" ~/.aws/credentials; then
+                export AWS_PROFILE=${selected_profile}
+                echo -e "${GREEN}Switched to profile: ${AWS_PROFILE}${NC}"
+                break
+            else
+                echo -e "${RED}Profile '${selected_profile}' not found. Please try again.${NC}"
+            fi
+        done
+    else
+        export AWS_PROFILE=${1}
+        echo -e "${GREEN}Switched to profile: ${AWS_PROFILE}${NC}"
+    fi
+}
+
+function ec2_id_function(){
+    if [ -z "${1}" ];then 
+
+        echo -e "${RED}Pass in \$1 for instance name${NCR}"
+    else
+        _ec2_id=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=${1}" \
+            --query "Reservations[*].Instances[*].InstanceId" \
+            --output text)
+
+        # ec2_ssm_connection
+    fi
+}
+
+function ec2_ssm_connection(){
+    if [ -z "${_ec2_id}" ];then 
+        echo -e "${RED}Pass ec2_id_function for instance id${NCR}"
+    else
+        aws ssm start-session --target ${_ec2_id}
+    fi
+}
+
 function list_node_group(){
     if [[ -z "${TENANT_NAME}" || -z "${ACCOUNT_NAME}" || -z "${INSTANCE}" ]]; then 
         echo -e "${RED}Not connected to a cluster. Please connect to cluster! ${NC}"
@@ -34,25 +82,10 @@ function ssm_parse_command_to_node_id(){
 }
 
 
-function ec2_id_function(){
-    if [ -z "${1}" ];then 
-
-        echo -e "${RED}Pass in \$1 for instance name${NCR}"
-    else
-        _ec2_id=$(aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=${1}" \
-            --query "Reservations[*].Instances[*].InstanceId" \
-            --output text)
-
-        # ec2_ssm_connection
-    fi
+# ------------------
+# Secret Functions
+# ------------------
+function _aws_profile_list(){
+    echo -e "${YELLOW}Available AWS Profiles:${NC}"
+    cat ~/.aws/credentials | grep "\[" | tr -d "[]"
 }
-
-function ec2_ssm_connection(){
-    if [ -z "${_ec2_id}" ];then 
-        echo -e "${RED}Pass ec2_id_function for instance id${NCR}"
-    else
-        aws ssm start-session --target ${_ec2_id}
-    fi
-}
-

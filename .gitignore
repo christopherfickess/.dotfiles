@@ -3,6 +3,8 @@
 */tmp
 tmp/*
 
+tools/mattermost/users.sh
+
 # Prerequisites
 *.d
 

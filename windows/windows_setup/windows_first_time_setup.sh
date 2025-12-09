@@ -10,17 +10,13 @@ function windows_first_time_setup() {
     echo -e "${GREEN}Windows first-time setup completed.${NC}"
 }
 
-function _install_software_windows() {
-    echo -e "${GREEN}Setting up Windows Software...${NC}"
 
-    echo -ne "${YELLOW}Are you in an Admin Terminal...?${NC}"
-    read -p ": (y/n): " admin_confirm
-    if [[ ! "$admin_confirm" =~ ^[Yy]$ ]]; then
-        echo -e "${RED}Please restart the terminal as Administrator and rerun this script.${NC}"
-        return 1
-    fi
-
+# ------------------
+# Secret Functions
+# ------------------
+function _choco_install_tools() {
     
+    echo -e "${GREEN}Installing Chocolatey...${NC}"
     # curl.exe -O https://cdn.teleport.dev/teleport-v18.4.0-windows-amd64-bin.zip
 
 
@@ -42,5 +38,19 @@ function _install_software_windows() {
     #     yq 
         # terracreds \
 
+}
+
+function _install_software_windows() {
+    echo -e "${GREEN}Setting up Windows Software...${NC}"
+
+    echo -ne "${YELLOW}Are you in an Admin Terminal...?${NC}"
+    read -p ": (y/n): " admin_confirm
+    if [[ ! "$admin_confirm" =~ ^[Yy]$ ]]; then
+        echo -e "${RED}Please restart the terminal as Administrator and rerun this script.${NC}"
+        return 1
+    fi
+
+    _choco_install
+    
     go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
 }
