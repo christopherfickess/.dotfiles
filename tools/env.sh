@@ -1,5 +1,5 @@
 
-
+export AWS_REGION="us-east-1"
 export TELEPORT_VERSION="v17.7.11"
 
 if [ "$MATTERMOST" = "TRUE" ]; then

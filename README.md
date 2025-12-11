@@ -22,9 +22,26 @@ To Configure Mattermost Org Bash Functions run the following commands
 ```bash
 mkdir -p $HOME/.dotfiles/tmp
 
-echo "MATTERMOST=TRUE" >  $HOME/.dotfiles/tmp/env.sh
-# OR
-echo "MATTERMOSTFED=TRUE" > $HOME/.dotfiles/tmp/env.sh
+echo "export MATTERMOST=TRUE" >  $HOME/.dotfiles/tools/tmp/env.sh
+# |
+echo "export MATTERMOSTFED=TRUE" > $HOME/.dotfiles/tools/tmp/env.sh
+
+# &&
+echo "export USERNAME=\"ChrisFickess\"" > $HOME/.dotfiles/tools/tmp/env.sh
+echo "export TELEPORT_LOGIN=\"<teleport.###.com>:443\"" > $HOME/.dotfiles/tools/tmp/env.sh
+```
+
+### AWS Setup 
+
+Create file in `$HOME/.dotfiles/tools/tmp/users.sh` and then add all useful login function like the following 
+
+```bash
+function dev() {
+  export env_tag="dev"
+  export AWS_PROFILE="##"
+  export AWS_DEFAULT_REGION=us-east-1
+  export AWS_REGION=us-east-1
+}
 ```
 
 ### WSL Configuration Setup Procedures
