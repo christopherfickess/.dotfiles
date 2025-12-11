@@ -1,24 +1,21 @@
 # #!/bin/bash
 
+__DOTFILES_DIR="$HOME/.dotfiles"
+__TOOLS_DIR="$HOME/.dotfiles/tools"
+
 export PATH=$PATH:$HOME/go/bin
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/bin
 
 if [ -d "/home/$USER/" ] && [ ! -z "$USER" ]; then export PATH=$PATH:/home/$USER/bin; fi
+if [ -d "$HOME/bin/teleport" ]; then export PATH=$HOME/bin/teleport:$PATH; fi
 
 # Bashrc for Various tools
-if [ -f "$HOME/.dotfiles/tools/.bashrc" ]; then  source "$HOME/.dotfiles/tools/.bashrc"; fi
+if [ -f "$__TOOLS_DIR/.bashrc" ]; then  source "$__TOOLS_DIR/.bashrc"; fi
 
-# Check if Windows OS and source windows specific bashrc
-if grep -qi "microsoft" /proc/version 2>/dev/null || [[ "$(uname -o 2>/dev/null)" == "Msys" ]] || [[ "$(uname -o 2>/dev/null)" == "Cygwin" ]]; then
-    if [ -f "$HOME/.dotfiles/windows/.bashrc" ]; then  source "$HOME/.dotfiles/windows/.bashrc"; fi
-    ISWINDOWS=TRUE;
-else
-    echo "This is NOT Windows"
-fi
 
 # This is the helper functions and aliases
-if [ -f "$HOME/.dotfiles/help.sh" ]; then  source "$HOME/.dotfiles/help.sh"; fi
+if [ -f "$__DOTFILES_DIR/help.sh" ]; then  source "$__DOTFILES_DIR/help.sh"; fi
 
 # .bashrc 
 function branching_method_1 () {
