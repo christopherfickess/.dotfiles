@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# only run if wsl is not configured to avoid redundant setup
+
+# WSL Setup Script
 function destroy_wsl_distro() {
     if [ ! -z "$1" ]; then
         echo -e "${GREEN}Enter the name of the distribution to unregister${NC}"
@@ -25,30 +28,10 @@ function setup_wsl() {
         echo -e "   ${RED}WSL not found on this system.${NC}"
         return 1
     fi
-
-    _set_wsl_setup_process
     
     echo
-    echo -e "Launching WSL..."
-    wsl.exe "$@"
+    _set_wsl_setup_process
 }
-
-function start_minikube_wsl() {
-    echo -e "${GREEN}Starting Minikube in WSL...${NC}"
-
-    if ! command -v minikube > /dev/null; then
-        echo -e "${RED}Minikube not found. Please install it first.${NC}"
-        exit 1
-    fi
-    if ! command -v docker > /dev/null; then
-        echo -e "${RED}Docker not found. Please install it first.${NC}"
-        exit 1
-    fi    
-    minikube start --driver=docker
-    minikube status
-    echo -e "${GREEN}Minikube started successfully.${NC}"
-}
-
 
 # ------------------
 # Secret Functions
@@ -57,9 +40,33 @@ function _install_wsl_tools() {
     echo -e "${GREEN}Installing WSL tools...${NC}"
     
     wsl.exe sh -c "
-        cat /mnt/c/Users/${USERNAME}/.bashrc >> ~/.bashrc
-        ln -sf /mnt/c/Users/${USERNAME}/.dotfiles ~/
-        ln -sf /mnt/c/Users/${USERNAME}/git ~/
+        if [ -f /mnt/c/Users/${USERNAME}/.bashrc ]; then
+            cat /mnt/c/Users/${USERNAME}/.bashrc >> ~/.bashrc
+        fi
+        if [ -d /mnt/c/Users/${USERNAME}/.dotfiles ]; then
+            ln -sf /mnt/c/Users/${USERNAME}/.dotfiles ~/
+        fi
+        if [ -d /mnt/c/Users/${USERNAME}/git ]; then
+            ln -sf /mnt/c/Users/${USERNAME}/git ~/
+        fi
+        if [ -d /mnt/c/Users/${USERNAME}/.aws ]; then
+            ln -sf /mnt/c/Users/${USERNAME}/.aws ~/
+        fi
+        if [ -d /mnt/c/Users/${USERNAME}/.kube ]; then
+            ln -sf /mnt/c/Users/${USERNAME}/.kube ~/
+        fi
+        if [ -d /mnt/c/Users/${USERNAME}/.minikube ]; then
+            ln -sf /mnt/c/Users/${USERNAME}/.minikube ~/
+        fi
+        if [ -d /mnt/c/Users/${USERNAME}/.docker ]; then
+            ln -sf /mnt/c/Users/${USERNAME}/.docker ~/
+        fi
+        if [ -d /mnt/c/Users/${USERNAME}/.ssh ]; then
+            ln -sf /mnt/c/Users/${USERNAME}/.ssh ~/
+        fi
+        if [ -d /mnt/c/Users/${USERNAME}/.tsh ]; then
+            ln -sf /mnt/c/Users/${USERNAME}/.tsh ~/
+        fi
 
         
         echo -e \"${GREEN}Installing Teleport...${NC}\"
@@ -79,19 +86,32 @@ function _install_wsl_tools() {
             curl \
             docker \
             dos2unix \
+            dstat \
+            envsubst \
+            fzf \
+            gcc \
             git \
             golang-go \
             helm \
+            htop \
+            iftop \
+            iotop \
             jq \
             k9s \
             kubectl \
             nano \
+            nmap \
+            openssl \
             pip \
+            sysstat \
+            tree \
             unzip \
             vim \
             wget \
+            yamllint \
             yq \
             zsh
+
             
         go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
 
@@ -154,3 +174,8 @@ function _set_wsl_setup_process(){
     fi
 }
 
+# if wsl fedora VM exists, skip setup (can be any wsl distro)
+# if ! wsl.exe -l -v | iconv -f UTF-16LE -t UTF-8 | sed '1d' | grep -q "Running\|Stopped"; then
+#     echo -e "       ${MAGENTA}WSL distribution not found. Setting up WSL...${NC}"
+#     setup_wsl
+# fi

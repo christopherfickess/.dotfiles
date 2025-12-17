@@ -6,7 +6,6 @@ function windows_first_time_setup() {
     
     _install_software_windows
     
-    set_wsl_setup_process
     echo -e "${GREEN}Windows first-time setup completed.${NC}"
 }
 
@@ -22,20 +21,21 @@ function _choco_install_tools() {
 
     # echo -e "${GREEN}Installing software via Chocolatey...${NC}"
     # choco install -y \
-    #     git \
-    #     kubernetes-cli \
-    #     helm \
-    #     awscli \
-    #     jq \
-    #     golang \
-    #     docker-desktop \
-    #     python \
-    #     nano \
-    #     terraform \
     #     7zip \
+    #     awscli \
+    #     docker-desktop \
+    #     git \
+    #     golang \
+    #     helm \
+    #     jq \
+    #     k9s \
+    #     kubernetes-cli \
     #     kubernetes-helm \
-    #     zsh \
+    #     nano \
+    #     python \
+    #     terraform \
     #     yq 
+    #     zsh \
         # terracreds \
 
 }
@@ -54,3 +54,10 @@ function _install_software_windows() {
     
     go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
 }
+
+
+if aws --version &> /dev/null; then
+    echo -e "   ${GREEN}Windows Configured.${NC}"
+else
+    windows_first_time_setup
+fi

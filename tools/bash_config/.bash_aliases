@@ -22,7 +22,19 @@ export NCR=$(tput sgr0) #No color used in a while loop after 'read';
 alias ls="ls -a -1 --color"; 
 alias ll="ls -al -1 --color"; 
 
-alias cd='pushd ';
+alias cd="pushd ";
+
+alias ...="cd ../..";
+alias ....="cd ../../..";
+alias .....="cd ../../../..";
+
+alias gs="git status";
+
+alias connect="code ~/.aws/credentials; code ~/.aws/config";
+
+alias dotfiles="code $HOME/.dotfiles";
 
 alias kubectl="kubecolor";
+
+
 unset -f kubecolor 

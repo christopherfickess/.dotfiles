@@ -48,6 +48,15 @@ function ec2_ssm_connection(){
     fi
 }
 
+function kubeconnect_aws(){
+    local __cluster_name__="${1//[^A-Za-z0-9_-]/}"
+    if [[ -z "${1}" ]]; then 
+        echo -e "${RED}Add the cluster name to proceed! ${NC}"
+    else
+        aws eks --region "${AWS_REGION}" update-kubeconfig --name "${__cluster_name__}"
+    fi
+}
+
 function list_node_group(){
     if [[ -z "${TENANT_NAME}" || -z "${ACCOUNT_NAME}" || -z "${INSTANCE}" ]]; then 
         echo -e "${RED}Not connected to a cluster. Please connect to cluster! ${NC}"
