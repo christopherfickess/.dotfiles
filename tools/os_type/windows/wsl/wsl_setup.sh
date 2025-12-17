@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# only run if wsl is not configured to avoid redundant setup
+
+# WSL Setup Script
 function destroy_wsl_distro() {
     if [ ! -z "$1" ]; then
         echo -e "${GREEN}Enter the name of the distribution to unregister${NC}"
@@ -172,7 +175,7 @@ function _set_wsl_setup_process(){
 }
 
 # if wsl fedora VM exists, skip setup (can be any wsl distro)
-if ! wsl.exe -l -v | iconv -f UTF-16LE -t UTF-8 | sed '1d' | grep -q "Running\|Stopped"; then
-    echo -e "       ${MAGENTA}WSL distribution not found. Setting up WSL...${NC}"
-    setup_wsl
-fi
+# if ! wsl.exe -l -v | iconv -f UTF-16LE -t UTF-8 | sed '1d' | grep -q "Running\|Stopped"; then
+#     echo -e "       ${MAGENTA}WSL distribution not found. Setting up WSL...${NC}"
+#     setup_wsl
+# fi
