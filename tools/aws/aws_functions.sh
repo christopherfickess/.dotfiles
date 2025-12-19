@@ -48,7 +48,7 @@ function ec2_ssm_connection(){
     fi
 }
 
-function kubeconnect_aws(){
+function cluster_connect(){
     local __cluster_name__="${1//[^A-Za-z0-9_-]/}"
     if [[ -z "${1}" ]]; then 
         echo -e "${RED}Add the cluster name to proceed! ${NC}"

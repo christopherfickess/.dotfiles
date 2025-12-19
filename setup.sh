@@ -5,6 +5,7 @@ function setup_bashrc() {
     
     if [ -f "$HOME/.dotfiles/.bashrc" ]; then
         echo "if [ -f \"\$HOME/.dotfiles/.bashrc\" ]; then  source \"\$HOME/.dotfiles/.bashrc\"; fi" >> $HOME/.bashrc
+        source $HOME/.bashrc
         echo -e "${GREEN}.bashrc setup completed.${NC}"
     else
         echo -e "${RED}.dotfiles/.bashrc file not found!${NC}"

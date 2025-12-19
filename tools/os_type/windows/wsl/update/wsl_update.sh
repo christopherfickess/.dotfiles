@@ -1,21 +1,30 @@
 #!/bin/bash
 
-function update_wsl_environment() {
+function upgrade_wsl() {
     echo -e "${GREEN}Updating WSL configurations and scripts...${NC}"
-    wsl.exe --update
 
-    # Add your update commands here
-    _update_wsl_environment
+    net session >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
+        echo "Running as root (admin)"
+        wsl.exe --update
+    else
+        echo "Not running as root"
+    fi
 
-    echo -e "${GREEN}WSL update completed.${NC}"
+    
+
+    # Add your upgrade commands here
+    _upgrade_wsl_environment
+
+    echo -e "${GREEN}WSL upgrade completed.${NC}"
 }
 
 
 # ------------------
 # Secret Functions
 # ------------------
-function _update_wsl_environment() {
-    # Placeholder for future WSL environment update logic
+function _upgrade_wsl_environment() {
+    # Placeholder for future WSL environment upgrade logic
     echo -e "${GREEN}Checking for WSL environment updates...${NC}"
     
     wsl.exe sh -c "

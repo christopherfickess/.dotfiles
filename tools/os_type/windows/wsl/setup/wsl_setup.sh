@@ -1,24 +1,6 @@
 #!/bin/bash
 
-# only run if wsl is not configured to avoid redundant setup
-
 # WSL Setup Script
-function destroy_wsl_distro() {
-    if [ ! -z "$1" ]; then
-        echo -e "${GREEN}Enter the name of the distribution to unregister${NC}"
-        read -p "(delete): " DISTRO_NAME        
-    else
-        DISTRO_NAME="FedoraLinux-43" 
-    fi
-
-    echo -e "${MAGENTA}Unregistering (deleting) WSL distribution: $DISTRO_NAME${NC}"
-    echo
-    wsl.exe -t "$DISTRO_NAME"
-    wsl.exe --unregister "$DISTRO_NAME"
-    echo
-    echo -e "${GREEN}Distribution $DISTRO_NAME has been unregistered.${NC}"
-}
-
 function setup_wsl() {
     echo -e "${GREEN}Running pre-WSL checks...${NC}"
     echo
@@ -30,14 +12,36 @@ function setup_wsl() {
     fi
     
     echo
-    _set_wsl_setup_process
+    _setup_wsl_init
 }
 
 # ------------------
 # Secret Functions
 # ------------------
-function _install_wsl_tools() {
-    echo -e "${GREEN}Installing WSL tools...${NC}"
+
+function _setup_wsl_init(){
+    WIN_DOTFILES_DIR="$HOME/.dotfiles"
+
+    # Target Fedora distro
+    FEDORA_DISTRO="FedoraLinux-43"    
+    
+    if wsl.exe -l -v | iconv -f UTF-16LE -t UTF-8 | sed 1,1d | awk '{print $2}' | grep -Fx "$FEDORA_DISTRO"; then
+        echo -e "${CYAN}$FEDORA_DISTRO already installed.${NC}"
+    else
+        echo -e "${MAGENTA}$FEDORA_DISTRO not found. Installing...${NC}"
+        wsl.exe --install -d "$FEDORA_DISTRO"
+        
+        wsl.exe --set-default $FEDORA_DISTRO
+
+        DEFAULT_DISTRO=$(wsl.exe -l -v | grep "Default" | awk '{print $1}' | tr -d '\r')
+
+        echo -e "${GREEN}Setting up WSL environment...${NC}"  
+        _setup_wsl_tools
+    fi
+}
+
+function _setup_wsl_tools() {
+    echo -e "${GREEN}Setting up WSL tools...${NC}"
     
     wsl.exe sh -c "
         if [ -f /mnt/c/Users/${USERNAME}/.bashrc ]; then
@@ -68,8 +72,7 @@ function _install_wsl_tools() {
             ln -sf /mnt/c/Users/${USERNAME}/.tsh ~/
         fi
 
-        
-        echo -e \"${GREEN}Installing Teleport...${NC}\"
+        echo -e \"${GREEN}Setting up Teleport...${NC}\"
         
         mkdir -p /home/$USERNAME/bin
         pushd /home/$USERNAME/bin;
@@ -133,49 +136,11 @@ function _install_wsl_tools() {
     echo -e "${GREEN}WSL tools installation completed.${NC}"
 }
 
-function _remove_line_endings() {
-    # Useful if there are windows line ending issues
-    wsl.exe sh -c "
-        dos2unix ~/.dotfiles/.bashrc \
-            ~/.dotfiles/.bash_aliases \
-            ~/.dotfiles/.bash_functions \
-            ~/.dotfiles/aws/kubernetes_functions.sh \
-            ~/.dotfiles/aws/aws_functions.sh \
-            ~/.dotfiles/windows/.bashrc \
-            ~/.dotfiles/windows/.bash_functions
-    "
-}
-
-function _setup_wsl_environment() {
-    
-    _install_wsl_tools
-
-    if [ "$MATTERMOST" = "TRUE" ]; then _setup_mattermost_mmutils;  fi
-}
-
-function _set_wsl_setup_process(){
-    WIN_DOTFILES_DIR="$HOME/.dotfiles"
-
-    # Target Fedora distro
-    FEDORA_DISTRO="FedoraLinux-43"    
-    
-    if wsl.exe -l -v | iconv -f UTF-16LE -t UTF-8 | sed 1,1d | awk '{print $2}' | grep -Fx "$FEDORA_DISTRO"; then
-        echo -e "${CYAN}$FEDORA_DISTRO already installed.${NC}"
-    else
-        echo -e "${MAGENTA}$FEDORA_DISTRO not found. Installing...${NC}"
-        wsl.exe --install -d "$FEDORA_DISTRO"
-        
-        wsl.exe --set-default $FEDORA_DISTRO
-
-        DEFAULT_DISTRO=$(wsl.exe -l -v | grep "Default" | awk '{print $1}' | tr -d '\r')
-
-        echo -e "${GREEN}Setting up WSL environment...${NC}"  
-        _setup_wsl_environment
-    fi
-}
 
 # if wsl fedora VM exists, skip setup (can be any wsl distro)
-# if ! wsl.exe -l -v | iconv -f UTF-16LE -t UTF-8 | sed '1d' | grep -q "Running\|Stopped"; then
-#     echo -e "       ${MAGENTA}WSL distribution not found. Setting up WSL...${NC}"
-#     setup_wsl
-# fi
+if ! wsl.exe -l -v | iconv -f UTF-16LE -t UTF-8 | sed '1d' | grep -q "Running\|Stopped"; then
+    echo -e "       ${CYAN}WSL distribution not found. Setting up WSL...${NC}"
+    setup_wsl
+else 
+    echo -e "       ${CYAN}WSL distribution already exists. Skipping WSL setup.${NC}"
+fi

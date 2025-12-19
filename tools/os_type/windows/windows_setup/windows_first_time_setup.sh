@@ -55,9 +55,3 @@ function _install_software_windows() {
     go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
 }
 
-
-if aws --version &> /dev/null; then
-    echo -e "   ${GREEN}Windows Configured.${NC}"
-else
-    windows_first_time_setup
-fi
