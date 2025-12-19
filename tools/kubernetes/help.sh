@@ -1,11 +1,5 @@
 
 function myhelp_kubernetes() {
-    echo -e ""
-    echo -e "Description:"
-    echo -e "------------------------------------------------------------------------------------------------------"
-    echo -e "${MAGENTA}This function provides a list of useful Kubernetes commands to help users "
-    echo -e "   navigate and manage their Kubernetes clusters effectively.${NC}"
-    echo -e ""
     echo -e "Kubernetes Commands:"
     echo -e "------------------------------------------------------------------------------------------------------"
     echo -e "     ${YELLOW}which_cluster${NC}                   - Shows which cluster you are currently connected to"

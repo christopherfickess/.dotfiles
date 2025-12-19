@@ -71,16 +71,3 @@ function exec_into_pod() {
         kubectl exec -n ${2} -it ${1} -- ${command_to_execute}
     fi
 }
-
-
-function myhelp_aws_commands() {
-    echo -e "AWS Commands:"
-    echo -e "------------------------------------------------------------------------------------------------------"
-    echo -e "     ${YELLOW}aws_auth_update${NC}                 - Update your AWS credentials file in ~/.aws/credentials"
-    echo -e "     ${YELLOW}aws_profile_switch${NC}              - Switch AWS profiles in your terminal"
-    echo -e "     ${YELLOW}list_node_group${NC}                 - List all running EC2 instances in the current node group"
-    echo -e "     ${YELLOW}ec2_id_function${NC}                 - Get the EC2 instance ID based on the instance name"
-    echo -e "     ${YELLOW}ec2_ssm_connection${NC}              - Start an SSM session to the EC2 instance using the ID from ec2_id_function"
-    echo -e "     ${YELLOW}list_kubernetes_objects${NC}         - List all Kubernetes objects in a specified namespace"
-    echo -e "     ${YELLOW}ssm_parse_command_to_node_id${NC}    - Start an SSM session to a specific EC2 instance and run a command"
-}

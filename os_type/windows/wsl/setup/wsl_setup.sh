@@ -141,6 +141,8 @@ function _setup_wsl_tools() {
 if ! wsl.exe -l -v | iconv -f UTF-16LE -t UTF-8 | sed '1d' | grep -q "Running\|Stopped"; then
     echo -e "       ${CYAN}WSL distribution not found. Setting up WSL...${NC}"
     setup_wsl
+elif [[ -n "$WSL_DISTRO_NAME" ]]; then
+    echo -e "       ${CYAN}Inside WSL environment. Skipping WSL setup.${NC}"
 else 
     echo -e "       ${CYAN}WSL distribution already exists. Skipping WSL setup.${NC}"
 fi

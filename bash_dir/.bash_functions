@@ -33,14 +33,6 @@ function create_ssh() {
 
 }
 
-function gfmain() { 
-    git fetch origin main:main
-} 
-
-function gmmain() { 
-    git merge main 
-} 
-
 function get_ip_address(){
     curl https://checkip.amazonaws.com
     # SSH WITH OPEN IPS then run who to see the IP address of the user
@@ -74,3 +66,7 @@ function show_code() {
     done
 }
 
+function speed_test() {
+    echo -e "${CYAN}Running speed test...${NC}"
+    time bash -lc 'exit'
+}

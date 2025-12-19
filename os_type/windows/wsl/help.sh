@@ -3,11 +3,6 @@
 
 function myhelp_wsl() {
     echo -e ""
-    echo -e "Description:"
-    echo -e "------------------------------------------------------------------------------------------------------"
-    echo -e "${MAGENTA}This function provides a list of useful WSL (Windows Subsystem for Linux) commands to help users "
-    echo -e "   navigate and manage their WSL environments effectively.${NC}"
-    echo -e ""
     echo -e "WSL Commands:"
     echo -e "------------------------------------------------------------------------------------------------------"
     echo -e "     ${YELLOW}install_wsl${NC}                     - Install WSL with default fedora distro with custom configurations"

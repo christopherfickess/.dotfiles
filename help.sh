@@ -5,6 +5,8 @@ function myhelp(){
     if [ "${1}" == -v ] || [ "${1}" == --version ]; then
         __verbose__=TRUE
         echo -e "${YELLOW}Verbose mode enabled.${NC}"
+    else
+        __verbose__=FALSE
     fi
     
 
@@ -19,7 +21,11 @@ function myhelp(){
     echo -e ""
 
     echo -e ""
-    myhelp_aws_commands
+    help_git_functions
+    echo -e ""
+
+    echo -e ""
+    myhelp_aws
     echo -e ""
 
     echo -e ""
