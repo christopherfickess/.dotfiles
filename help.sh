@@ -1,6 +1,15 @@
 #!/bin/bash
 
-function help_function(){
+function myhelp(){
+
+    if [ "${1}" == -v ] || [ "${1}" == --version ]; then
+        __verbose__=TRUE
+        echo -e "${YELLOW}Verbose mode enabled.${NC}"
+    else
+        __verbose__=FALSE
+    fi
+    
+
     echo -e ""
     echo -e "Description:"
     echo -e "------------------------------------------------------------------------------------------------------"
@@ -12,8 +21,17 @@ function help_function(){
     echo -e ""
 
     echo -e ""
-    _help_aws_commands
+    help_git_functions
     echo -e ""
+
+    echo -e ""
+    myhelp_aws
+    echo -e ""
+
+    echo -e ""
+    myhelp_kubernetes
+    echo -e ""
+
 
     echo -e ""
     if [ "$MATTERMOST" = "TRUE" ]; then  _help_mattermost; fi
@@ -21,6 +39,7 @@ function help_function(){
     
     echo -e ""
     if [ "$ISWINDOWS" = "TRUE" ]; then  _help_windows; fi
+    if [ "$ISWINDOWS" = "TRUE" ]; then  myhelp_wsl; fi
     echo -e ""
 
 
@@ -38,18 +57,6 @@ function _help_default_linux() {
     echo -e "     ${YELLOW}show_code${NC}                       - Show the code of important configuration files"
     echo -e "     ${YELLOW}which_cluster${NC}                   - Shows which Cluster the User is connected to"
 
-}
-
-function _help_aws_commands() {
-    echo -e "AWS Commands:"
-    echo -e "------------------------------------------------------------------------------------------------------"
-    echo -e "     ${YELLOW}aws_auth_update${NC}                 - Update your AWS credentials file in ~/.aws/credentials"
-    echo -e "     ${YELLOW}aws_profile_switch${NC}              - Switch AWS profiles in your terminal"
-    echo -e "     ${YELLOW}list_node_group${NC}                 - List all running EC2 instances in the current node group"
-    echo -e "     ${YELLOW}ec2_id_function${NC}                 - Get the EC2 instance ID based on the instance name"
-    echo -e "     ${YELLOW}ec2_ssm_connection${NC}              - Start an SSM session to the EC2 instance using the ID from ec2_id_function"
-    echo -e "     ${YELLOW}list_kubernetes_objects${NC}         - List all Kubernetes objects in a specified namespace"
-    echo -e "     ${YELLOW}ssm_parse_command_to_node_id${NC}    - Start an SSM session to a specific EC2 instance and run a command"
 }
 
 function _help_mattermost() {

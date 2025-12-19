@@ -28,8 +28,7 @@ function aws_profile_switch(){
 
 function ec2_id_function(){
     if [ -z "${1}" ];then 
-
-        echo -e "${RED}Pass in \$1 for instance name${NCR}"
+        echo -e "${RED}Pass in \$1 for instance name${NC}"
     else
         _ec2_id=$(aws ec2 describe-instances \
             --filters "Name=tag:Name,Values=${1}" \
@@ -42,13 +41,13 @@ function ec2_id_function(){
 
 function ec2_ssm_connection(){
     if [ -z "${_ec2_id}" ];then 
-        echo -e "${RED}Pass ec2_id_function for instance id${NCR}"
+        echo -e "${RED}Pass ec2_id_function for instance id${NC}"
     else
         aws ssm start-session --target ${_ec2_id}
     fi
 }
 
-function kubeconnect_aws(){
+function cluster_connect(){
     local __cluster_name__="${1//[^A-Za-z0-9_-]/}"
     if [[ -z "${1}" ]]; then 
         echo -e "${RED}Add the cluster name to proceed! ${NC}"
@@ -57,6 +56,7 @@ function kubeconnect_aws(){
     fi
 }
 
+# This function needs help
 function list_node_group(){
     if [[ -z "${TENANT_NAME}" || -z "${ACCOUNT_NAME}" || -z "${INSTANCE}" ]]; then 
         echo -e "${RED}Not connected to a cluster. Please connect to cluster! ${NC}"
