@@ -50,6 +50,12 @@ function _setup_wsl_tools() {
         if [ -d /mnt/c/Users/${USERNAME}/.dotfiles ]; then
             ln -sf /mnt/c/Users/${USERNAME}/.dotfiles ~/
         fi
+        if [ -f /mnt/c/Users/${USERNAME}/.gitconfig ]; then
+            ln -sf /mnt/c/Users/${USERNAME}/.gitconfig ~/.gitconfig
+        fi
+        if [ -f /mnt/c/Users/${USERNAME}/.git-credentials ]; then
+            ln -sf /mnt/c/Users/${USERNAME}/.git-credentials ~/.git-credentials
+        fi
         if [ -d /mnt/c/Users/${USERNAME}/git ]; then
             ln -sf /mnt/c/Users/${USERNAME}/git ~/
         fi
