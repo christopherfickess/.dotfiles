@@ -8,6 +8,7 @@ function help_git_functions() {
 
 function __help_git_functions() {
     if [[ "$__verbose__" = TRUE ]]; then
+        echo -e "     ${YELLOW}clear_credentials_manager${NC}       - Clear Git credentials from Windows Credential Manager."
         echo -e "     ${YELLOW}config_git [name] [email]${NC}       - Set up global Git configuration with optional name and email."
         echo -e "     ${YELLOW}gmmain${NC}                          - Merge the main branch into the current branch."
         echo -e "     ${YELLOW}gfmain${NC}                          - Fetch the latest changes from the main branch."

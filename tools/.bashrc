@@ -148,6 +148,7 @@ function __source_git_functions() {
         [[ -f "$__BASH_CONFIG_DIR/git_files/gitconfig.sh" ]] && source "$__BASH_CONFIG_DIR/git_files/gitconfig.sh"
         [[ -f "$__BASH_CONFIG_DIR/git_files/git_functions.sh" ]] && source "$__BASH_CONFIG_DIR/git_files/git_functions.sh"
         [[ -f "$__BASH_CONFIG_DIR/git_files/help.sh" ]] && source "$__BASH_CONFIG_DIR/git_files/help.sh"
+        [[ -f "$__BASH_CONFIG_DIR/git_files/git_creds_broken.sh" ]] && source "$__BASH_CONFIG_DIR/git_files/git_creds_broken.sh"
     fi
 }
 
