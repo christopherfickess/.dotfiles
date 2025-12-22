@@ -15,6 +15,7 @@ function __myhelp_aws() {
     echo -e "     ${YELLOW}aws_auth_update${NC}                 - Update AWS credentials"
     echo -e "     ${YELLOW}aws_help${NC}                        - Show AWS functions help"
     echo -e "     ${YELLOW}aws_profile_switch${NC}              - Switch AWS profiles"
+    echo -e "     ${YELLOW}aws_sts_assume_role${NC}             - Assume an AWS IAM role"
     echo -e "     ${YELLOW}cluster_connect${NC}                 - Connect to an EKS cluster"
     echo -e "     ${YELLOW}ec2_id_function${NC}                 - Get EC2 instance ID by name"
     echo -e "     ${YELLOW}ec2_ssm_connection${NC}              - Connect via SSM"

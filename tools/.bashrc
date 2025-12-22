@@ -3,6 +3,7 @@
 # Initialize base directory variables
 __DOTFILES_DIR="$HOME/.dotfiles"
 __TOOLS_DIR="$__DOTFILES_DIR/tools"
+__SRE_TOOLS_DIR="${__DOTFILES_DIR}/sre-tools"
 __BASH_CONFIG_DIR="${__DOTFILES_DIR}/bash_dir"
 __OS_TYPE_DIR="${__DOTFILES_DIR}/os_type"
 __MACOS_SETUP_DIR="${__OS_TYPE_DIR}/macos"
@@ -11,9 +12,14 @@ __WINDOWS_SETUP_DIR="${__OS_TYPE_DIR}/windows"
 __WSL_SETUP_DIR="${__WINDOWS_SETUP_DIR}/wsl"
 
 # Initialize tool-specific directory variables (used by setup.sh)
-__AWS_FUNCTIONS_DIR="${__TOOLS_DIR}/aws"
+__AWS_FUNCTIONS_DIR="${__SRE_TOOLS_DIR}/aws/defaults"
+__AWS_USERS_DIR="$__AWS_FUNCTIONS_DIR/users"
 __DOCKER_FUNCTIONS_DIR="${__TOOLS_DIR}/docker"
 __KUBERNETES_FUNCTIONS_DIR="${__TOOLS_DIR}/kubernetes"
+
+
+__GCP_USERS_DIR="$__TOOLS_DIR/gcp/users"
+__AZURE_USERS_DIR="$__TOOLS_DIR/azure/users"
 
 # Cache OS detection (computed once, used multiple times)
 function __detect_os_type() {
@@ -54,9 +60,16 @@ unset -f __detect_os_type  # Clean up function after use
 
 function __source_env_functions() {
     # This is to source key values for the SRE tools and hidden dotfiles and users
-    [[ -f "$__TOOLS_DIR/env.sh" ]] && source "$__TOOLS_DIR/env.sh"
-    [[ -f "$__TOOLS_DIR/tmp/env.sh" ]] && source "$__TOOLS_DIR/tmp/env.sh"
-    [[ -f "$__TOOLS_DIR/tmp/users.sh" ]] && source "$__TOOLS_DIR/tmp/users.sh"
+    [[ -f "$__TOOLS_DIR/env.sh" ]] && source "$__BASH_CONFIG_DIR/env.sh"
+    [[ -f "$__TOOLS_DIR/tmp/env.sh" ]] && source "$__BASH_CONFIG_DIR/public_env.sh"
+    # [[ -f "$__TOOLS_DIR/tmp/users.sh" ]] && source "$__TOOLS_DIR/tmp/users.sh"
+}
+
+function __source_cloud_users_functions() {
+    # Source cloud user functions if the file exists
+    [[ -f "$__AWS_USERS_DIR/users.sh" ]] && source "$__AWS_USERS_DIR/users.sh";
+    [[ -f "$__GCP_USERS_DIR/users.sh" ]] && source "$__GCP_USERS_DIR/users.sh";
+    [[ -f "$__AZURE_USERS_DIR/users.sh" ]] && source "$__AZURE_USERS_DIR/users.sh";
 }
 
 function __source_bashrc_functions() {
@@ -165,5 +178,6 @@ __source_git_functions
 __source_aws_functions
 __source_docker_functions
 __source_kubernetes_functions
+__source_cloud_users_functions
 setup_sre_tools
 

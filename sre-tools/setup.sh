@@ -10,101 +10,74 @@
 [[ -z "${__BASH_CONFIG_DIR}" ]] && __BASH_CONFIG_DIR="${__TOOLS_DIR}/bash_config"
 [[ -z "${__MATTERMOST_DIR}" ]] && __MATTERMOST_DIR="${__SRE_TOOLS_DIR}/mattermost"
 [[ -z "${__MINIKUBE_DIR}" ]] && __MINIKUBE_DIR="${__SRE_TOOLS_DIR}/minikube"
+[[ -z "${__GO_TOOLS_DIR}" ]] && __GO_TOOLS_DIR="${__SRE_TOOLS_DIR}/go"
 
 function sre_tools() {
     # Handle command-line arguments first
-    if [[ -n "${1}" ]]; then
-        case "${1}" in
-            -aws |--aws)
-                __source_aws_functions
-                echo -e "${GREEN}AWS functions loaded.${NC}"
-                return 0
-                ;;
-            -m|--minikube)
-                __source_minikube_functions
-                echo -e "${GREEN}Minikube functions loaded.${NC}"
-                return 0
-                ;;
-            -M|--mattermost)
-                __source_mattermost_functions
-                echo -e "${GREEN}Mattermost functions loaded.${NC}"
-                return 0
-                ;;
-            -a|--all)
-                echo -e "    ${MAGENTA}Setting up All...${NC}"
-                __source_all_functions
-                echo -e "${GREEN}All SRE tools setup completed.${NC}"
-                return 0
-                ;;
-            -h|--help)
-                help_sre_tools
-                return 0
-                ;;
-            -l|--list)
-                list_sre_tools
-                return 0
-                ;;
-            -r|--remove)
-                remove_sre_tools
-                return 0
-                ;;
-            -u|--update)
-                update_sre_tools
-                return 0
-                ;;
-            -v|--version)
-                show_sre_tools_version
-                return 0
-                ;;
-            *)
-                echo -e "${RED}Unknown option: ${1}${NC}"
-                help_sre_tools
-                return 1
-                ;;
-        esac
-    fi
+    [[ -n "${1}" ]] && choice="${1}" && __sre_tools_menu_logic && return $?
     
     # Interactive mode if no arguments provided
     echo -e "${CYAN}Which Functionality do you want to setup?${NC}"    
-    echo -e "   ${YELLOW}1${NC}   | ${YELLOW}-m${NC}  | --minikube      ${GREEN}Minikube${NC}"
-    echo -e "   ${YELLOW}2${NC}   | ${YELLOW}-M${NC}  | --mattermost    ${GREEN}Mattermost${NC}"
-    echo -e "   ${YELLOW}3${NC}   | ${YELLOW}-a${NC}  | --all           ${GREEN}All${NC}"
-    echo -e "   ${YELLOW}4${NC}   | ${YELLOW}-h${NC}  | --help          ${GREEN}Show Help${NC}"
-    echo -e "   ${YELLOW}5${NC}   | ${YELLOW}-l${NC}  | --list          ${GREEN}List Available Tools${NC}"
-    read -p "   Enter your choice: " choice
+    echo -e "   ${YELLOW}-aws${NC}  | --aws           ${CYAN}AWS Functions${NC}"
+    echo -e "   ${YELLOW}-m${NC}    | --minikube      ${CYAN}Minikube${NC}"
+    echo -e "   ${YELLOW}-M${NC}    | --mattermost    ${CYAN}Mattermost${NC}"
+    echo -e "   ${YELLOW}-g${NC}    | --go            ${CYAN}Go Tools${NC}"
+    echo -e "   ${YELLOW}-a${NC}    | --all           ${CYAN}All${NC}"
+    echo -e "   ${YELLOW}-h${NC}    | --help          ${CYAN}Show Help${NC}"
+    echo -e "   ${YELLOW}-l${NC}    | --list          ${CYAN}List Available Tools${NC}"
+    echo -e "   ${YELLOW}-u${NC}    | --update        ${CYAN}Update SRE Tools${NC}"
+    echo -e "   ${YELLOW}-v${NC}    | --version       ${CYAN}Show SRE Tools Version${NC}"
+    echo -e ""
 
+    read -p "   Enter your choice: " choice
+    
+    __sre_tools_menu_logic
+}
+
+function __sre_tools_menu_logic(){
     case $choice in
+        -a|--all)
+            __source_all_functions
+            ;;
         -aws|--aws)
             __source_aws_functions
-            echo -e "${GREEN}AWS functions loaded.${NC}"
             ;;
-        1|-m|--minikube)
-            __source_minikube_functions
-            echo -e "${GREEN}Minikube functions loaded.${NC}"
+        -g|--go)
+            __source_go_functions
             ;;
-        2|-M|--mattermost)
-            __source_mattermost_functions
-            echo -e "${GREEN}Mattermost functions loaded.${NC}"
-            ;;
-        3|-a|--all)
-            __source_all_functions
-            echo -e "${GREEN}All SRE tools setup completed.${NC}"
-            ;;
-        4|-h|--help)
+        -h|--help)
             help_sre_tools
             ;;
-        5|-l|--list)
+        -l|--list)
             list_sre_tools
+            ;;
+        -M|--mattermost)
+            __source_mattermost_functions
+            ;;
+        -m|--minikube)
+            __source_minikube_functions
+            ;;
+        -u|--update)
+            reload_sre_tools
+            unset choice
+            return 0
             ;;
         *)
             echo -e "${RED}Invalid choice.${NC}"
+            unset choice
             return 1
             ;;
+        
     esac
+    
+    unset choice
 }
 
 function __source_aws_functions() {
     local __AWS_SRE_TOOLS_SETUP_FILE="${__SRE_TOOLS_DIR}/aws/tools/setup.sh"
+    local __AWS_CONNECT_FILE="${__SRE_TOOLS_DIR}/aws/defaults/aws_connect.sh"
+    local __AWS_USERS_FILE="${__SRE_TOOLS_DIR}/aws/defaults/users/users.sh"
+    local __AWS_HELP_FILE="${__SRE_TOOLS_DIR}/help.sh"
     
     if [ -f "${__AWS_SRE_TOOLS_SETUP_FILE}" ]; then 
         source "${__AWS_SRE_TOOLS_SETUP_FILE}" && __source_all_aws_functions
@@ -114,10 +87,16 @@ function __source_aws_functions() {
         source "${__AWS_CONNECT_FILE}"
         echo -e "   ${GREEN}✓${NC} AWS connect functions"
     fi
+    if [ -f "${__AWS_USERS_FILE}" ]; then 
+        source "${__AWS_USERS_FILE}"
+        echo -e "   ${GREEN}✓${NC} AWS users functions"
+    fi
     if [ -f "${__AWS_HELP_FILE}" ]; then 
         source "${__AWS_HELP_FILE}"
         echo -e "   ${GREEN}✓${NC} AWS help"
     fi
+    
+    echo -e "${GREEN}AWS functions loaded.${NC}"
 }
 
 function __source_mattermost_functions() {
@@ -137,6 +116,8 @@ function __source_mattermost_functions() {
         source "${__MATTERMOST_HELP_FILE}"
         echo -e "   ${GREEN}✓${NC} Mattermost help"
     fi
+    
+    echo -e "${GREEN}Mattermost functions loaded.${NC}"
 }
 
 function __source_minikube_functions() {
@@ -156,26 +137,52 @@ function __source_minikube_functions() {
         source "${__MINIKUBE_HELP_FILE}"
         echo -e "   ${GREEN}✓${NC} Minikube help"
     fi
+    
+    echo -e "${GREEN}Minikube functions loaded.${NC}"
+}
+
+function __source_go_functions() {
+    local __GO_SETUP_FILE="${__GO_TOOLS_DIR}/setup.sh"
+    local __GO_HELP_FILE="${__GO_TOOLS_DIR}/help.sh"
+    
+    if [ -f "${__GO_SETUP_FILE}" ]; then 
+        source "${__GO_SETUP_FILE}"
+        echo -e "   ${GREEN}✓${NC} Go tools setup"
+    fi
+    if [ -f "${__GO_HELP_FILE}" ]; then 
+        source "${__GO_HELP_FILE}"
+        echo -e "   ${GREEN}✓${NC} Go tools help"
+    fi
+    echo -e "${GREEN}Go tools functions loaded.${NC}"
 }
 
 function __source_all_functions() {
     echo -e "${MAGENTA}Loading all SRE tools...${NC}"
+    __source_aws_functions
     __source_minikube_functions
     __source_mattermost_functions
+    __source_go_functions
+    
+    echo -e "${GREEN}All SRE tools setup completed.${NC}"
 }
 
-function update_sre_tools() {
-    echo -e "${CYAN}Updating SRE tools from dotfiles repository...${NC}"
-    if [ -d "${__TOOLS_DIR}" ] && [ -d "$(dirname "${__TOOLS_DIR}")/.git" ]; then
-        pushd "$(dirname "${__TOOLS_DIR}")" > /dev/null
-        git pull
-        popd > /dev/null
-        echo -e "${GREEN}SRE tools updated successfully.${NC}"
-        echo -e "${YELLOW}Note: You may need to reload your shell or run ${GREEN}bashrc${NC} to apply changes.${NC}"
-    else
-        echo -e "${RED}Could not find git repository. Manual update required.${NC}"
-    fi
+function reload_sre_tools(){
+    source "${__SRE_TOOLS_DIR}/setup.sh"
 }
+
+# function update_sre_tools() {
+#     echo -e "${CYAN}Updating SRE tools from dotfiles repository...${NC}"
+#     echo -e ""
+#     if [ -d "${__TOOLS_DIR}" ] && [ -d "$(dirname "${__TOOLS_DIR}")/.git" ]; then
+#         pushd "$(dirname "${__TOOLS_DIR}")" > /dev/null
+#         git pull
+#         popd > /dev/null
+#         echo -e "${GREEN}SRE tools updated successfully.${NC}"
+#         echo -e "${YELLOW}Note: You may need to reload your shell or run ${GREEN}bashrc${NC} to apply changes.${NC}"
+#     else
+#         echo -e "${RED}Could not find git repository. Manual update required.${NC}"
+#     fi
+# }
 
 function show_sre_tools_version() {
     local version_file="${__TOOLS_DIR}/VERSION"

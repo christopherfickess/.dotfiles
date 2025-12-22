@@ -6,9 +6,7 @@
 
 # Initialize directory variables if not already set
 function __source_all_aws_functions() {
-    if [[ -d "$__SRE_TOOLS_DIR/aws/tools/" ]]; then __AWS_SRE_TOOLS_DIR="${__SRE_TOOLS_DIR}/aws/tools"; fi
-
-    echo "${__AWS_FUNCTIONS_DIR}"
+    [[ -d "$__SRE_TOOLS_DIR/aws/tools/" ]] && __AWS_SRE_TOOLS_DIR="${__SRE_TOOLS_DIR}/aws/tools"
     [[ -f "$__AWS_SRE_TOOLS_DIR/cost/cost_functions.sh" ]] && source "${__AWS_SRE_TOOLS_DIR}/cost/cost_functions.sh"
     [[ -f "$__AWS_SRE_TOOLS_DIR/ec2/ec2_functions.sh" ]] && source "${__AWS_SRE_TOOLS_DIR}/ec2/ec2_functions.sh"
     [[ -f "$__AWS_SRE_TOOLS_DIR/eks/eks_functions.sh" ]] && source "${__AWS_SRE_TOOLS_DIR}/eks/eks_functions.sh"

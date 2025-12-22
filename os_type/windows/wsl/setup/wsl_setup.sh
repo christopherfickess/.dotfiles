@@ -93,6 +93,7 @@ function _setup_wsl_tools() {
             awscli \
             containers-common \
             curl \
+            dnf-plugins-core \
             docker \
             dos2unix \
             dstat \
@@ -134,6 +135,10 @@ function _setup_wsl_tools() {
         sudo install minikube-linux-amd64 /usr/local/bin/minikube && rm minikube-linux-amd64
 
         find ~/.dotfiles -type f -exec dos2unix {} +
+
+        echo -e \"${GREEN}Installing Terraform...${NC}\"
+        sudo dnf config-manager addrepo --from-repofile=https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+        sudo dnf -y install terraform
 
         source ~/.bashrc
         echo -e \"${GREEN}WSL setup process completed.${NC}\"

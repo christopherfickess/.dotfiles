@@ -61,3 +61,19 @@ playground/
 
 # debug information files
 *.dwo
+
+
+# Secret users files to connect to cloud providers
+*/users.sh
+*/*/users.sh
+*/*/*/users.sh
+*/*/*/*/users.sh
+*/*/*/*/*/users.sh
+*/*/*/*/*/*/users.sh
+
+# Secret env files
+*/env.sh
+*/*/env.sh
+*/*/*/env.sh
+*/*/*/*/env.sh
+*/*/*/*/*/env.sh
