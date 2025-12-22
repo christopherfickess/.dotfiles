@@ -1,4 +1,6 @@
-export __check_box="✔ "
+export __check_box="✔"
+export __failed_box="✘"
+
 export AWS_REGION="us-east-1"
 export TELEPORT_VERSION="v17.7.11"
 

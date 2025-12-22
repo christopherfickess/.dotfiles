@@ -90,7 +90,6 @@ function ssm_parse_command_to_node_id(){
     fi
 }
 
-
 # ------------------
 # Secret Functions
 # ------------------
