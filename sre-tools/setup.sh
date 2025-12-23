@@ -11,6 +11,7 @@
 [[ -z "${__MATTERMOST_DIR}" ]] && __MATTERMOST_DIR="${__SRE_TOOLS_DIR}/mattermost"
 [[ -z "${__MINIKUBE_DIR}" ]] && __MINIKUBE_DIR="${__SRE_TOOLS_DIR}/minikube"
 [[ -z "${__GO_TOOLS_DIR}" ]] && __GO_TOOLS_DIR="${__SRE_TOOLS_DIR}/go"
+[[ -z "${__PYTHON_TOOLS_DIR}" ]] && __PYTHON_TOOLS_DIR="${__SRE_TOOLS_DIR}/python"
 
 function sre_tools() {
     # Handle command-line arguments first
@@ -18,13 +19,14 @@ function sre_tools() {
     
     # Interactive mode if no arguments provided
     echo -e "${CYAN}Which Functionality do you want to setup?${NC}"    
-    echo -e "   ${YELLOW}-aws${NC}  | --aws           ${CYAN}AWS Functions${NC}"
-    echo -e "   ${YELLOW}-m${NC}    | --minikube      ${CYAN}Minikube${NC}"
-    echo -e "   ${YELLOW}-M${NC}    | --mattermost    ${CYAN}Mattermost${NC}"
-    echo -e "   ${YELLOW}-g${NC}    | --go            ${CYAN}Go Tools${NC}"
     echo -e "   ${YELLOW}-a${NC}    | --all           ${CYAN}All${NC}"
-    echo -e "   ${YELLOW}-h${NC}    | --help          ${CYAN}Show Help${NC}"
+    echo -e "   ${YELLOW}-aws${NC}  | --aws           ${CYAN}AWS Functions${NC}"
+    echo -e "   ${YELLOW}-g${NC}    | --go            ${CYAN}Go Tools${NC}"
     echo -e "   ${YELLOW}-l${NC}    | --list          ${CYAN}List Available Tools${NC}"
+    echo -e "   ${YELLOW}-h${NC}    | --help          ${CYAN}Show Help${NC}"
+    echo -e "   ${YELLOW}-M${NC}    | --mattermost    ${CYAN}Mattermost${NC}"
+    echo -e "   ${YELLOW}-m${NC}    | --minikube      ${CYAN}Minikube${NC}"
+    echo -e "   ${YELLOW}-p${NC}    | --python        ${CYAN}Python Tools${NC}"
     echo -e "   ${YELLOW}-u${NC}    | --update        ${CYAN}Update SRE Tools${NC}"
     echo -e "   ${YELLOW}-v${NC}    | --version       ${CYAN}Show SRE Tools Version${NC}"
     echo -e ""
@@ -56,6 +58,9 @@ function __sre_tools_menu_logic(){
             ;;
         -m|--minikube)
             __source_minikube_functions
+            ;;
+        -p|--python)
+            __source_python_functions
             ;;
         -u|--update)
             reload_sre_tools
@@ -154,6 +159,10 @@ function __source_go_functions() {
         echo -e "   ${GREEN}✓${NC} Go tools help"
     fi
     echo -e "${GREEN}Go tools functions loaded.${NC}"
+}
+
+function __source_python_functions(){ 
+    [[ -f "${__PYTHON_TOOLS_DIR}" ]] && source "${__PYTHON_TOOLS_DIR}"/python-functions.sh
 }
 
 function __source_all_functions() {
