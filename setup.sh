@@ -4,6 +4,8 @@ function setup_bashrc() {
     echo -e "${GREEN}Setting up .bashrc...${NC}"
     
     if [ -f "$HOME/.dotfiles/.bashrc" ]; then
+        echo >> "$HOME/.bashrc"
+
         echo "if [ -f \"\$HOME/.dotfiles/.bashrc\" ]; then  source \"\$HOME/.dotfiles/.bashrc\"; fi" >> $HOME/.bashrc
         source $HOME/.bashrc
         echo -e "${GREEN}.bashrc setup completed.${NC}"
