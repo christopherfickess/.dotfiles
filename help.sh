@@ -20,18 +20,23 @@ function myhelp(){
     _help_default_linux   
     echo -e ""
 
-    echo -e ""
-    help_git_functions
-    echo -e ""
+    if command -v git &>/dev/null; then 
+        echo -e ""
+        help_git_functions
+        echo -e ""
+    fi
 
-    echo -e ""
-    myhelp_aws
-    echo -e ""
+    if command -v aws &>/dev/null; then
+        echo -e ""
+        myhelp_aws
+        echo -e ""
+    fi
 
-    echo -e ""
-    myhelp_kubernetes
-    echo -e ""
-
+    if command -v kubectl &>/dev/null; then
+        echo -e ""
+        myhelp_kubernetes
+        echo -e ""
+    fi
 
     echo -e ""
     if [ "$MATTERMOST" = "TRUE" ]; then  _help_mattermost; fi
@@ -42,7 +47,13 @@ function myhelp(){
     if [ "$ISWINDOWS" = "TRUE" ]; then  myhelp_wsl; fi
     echo -e ""
 
+    if command -v python &>/dev/null; then
+        echo -e ""
+        myhelp_python
+        echo -e ""
+    fi
 
+    unset __verbose__
 }
 
 function _help_default_linux() {

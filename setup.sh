@@ -13,3 +13,5 @@ function setup_bashrc() {
         echo -e "${RED}.dotfiles/.bashrc file not found!${NC}"
     fi
 }
+
+setup_bashrc
