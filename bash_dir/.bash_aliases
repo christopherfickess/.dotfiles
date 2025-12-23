@@ -19,8 +19,12 @@ export MAGENTAR=$(tput setaf 5) #magenta used in a while loop after 'read';
 export CYANR=$(tput setaf 6) #cyan used in a while loop after 'read';
 export NCR=$(tput sgr0) #No color used in a while loop after 'read';
 
-alias ls="ls -a -1 --color"; 
+
+alias ls='ls --color=auto'
+alias la="ls -a -1 --color"; 
 alias ll="ls -al -1 --color"; 
+
+alias grep='grep --color=auto'
 
 alias cd="pushd ";
 
