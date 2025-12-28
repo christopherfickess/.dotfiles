@@ -11,7 +11,7 @@ if [ -d "/home/$USER/" ] && [ ! -z "$USER" ]; then export PATH=$PATH:/home/$USER
 if [ -d "$HOME/bin/teleport" ]; then export PATH=$HOME/bin/teleport:$PATH; fi
 
 # Bashrc for Various tools
-if [ -f "$__TOOLS_DIR/.bashrc" ]; then  source "$__TOOLS_DIR/.bashrc"; fi
+if [ -f "$__DOTFILES_DIR/deploy.sh" ]; then  source "$__DOTFILES_DIR/deploy.sh"; fi
 
 
 # This is the helper functions and aliases
