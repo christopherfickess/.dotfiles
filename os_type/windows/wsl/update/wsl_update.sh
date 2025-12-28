@@ -1,34 +1,62 @@
 #!/bin/bash
 
-function upgrade_wsl() {
+function update_wsl() {
     echo -e "${GREEN}Updating WSL configurations and scripts...${NC}"
 
     net session >/dev/null 2>&1
     if [[ $? -eq 0 ]]; then
         echo "Running as root (admin)"
+        
+
+        
+        before="$(__get_wsl_version__)"
+
+        echo "Checking for WSL updates..."
         wsl.exe --update
+
+        after="$(__get_wsl_version__)"
+
+        if [ -n "$before" ] && [ -n "$after" ] && [ "$before" != "$after" ]; then
+            echo "WSL was updated ($before → $after)"
+            
+            __upgrade_wsl_environment__
+            
+            echo -e "${GREEN}WSL upgrade completed.${NC}"
+        else
+            echo "WSL already up to date"
+        fi
+
     else
         echo "Not running as root"
     fi
-
-    
-
-    # Add your upgrade commands here
-    _upgrade_wsl_environment
-
-    echo -e "${GREEN}WSL upgrade completed.${NC}"
 }
 
 
 # ------------------
 # Secret Functions
 # ------------------
-function _upgrade_wsl_environment() {
+function __upgrade_wsl_environment__() {
     # Placeholder for future WSL environment upgrade logic
     echo -e "${GREEN}Checking for WSL environment updates...${NC}"
     
     wsl.exe sh -c "
-    
+        WIN_HOME="/mnt/c/Users/${USERNAME}"
+
+        [ -f "$WIN_HOME/.bashrc" ] && \
+            grep -qxF "$(cat "$WIN_HOME/.bashrc")" ~/.bashrc || \
+            cat "$WIN_HOME/.bashrc" >> ~/.bashrc
+
+        __safe_link__ "$WIN_HOME/.dotfiles"     "$HOME/.dotfiles"
+        __safe_link__ "$WIN_HOME/.gitconfig"    "$HOME/.gitconfig"
+        __safe_link__ "$WIN_HOME/.git-credentials" "$HOME/.git-credentials"
+        __safe_link__ "$WIN_HOME/git"           "$HOME/git"
+        __safe_link__ "$WIN_HOME/.aws"           "$HOME/.aws"
+        __safe_link__ "$WIN_HOME/.kube"          "$HOME/.kube"
+        __safe_link__ "$WIN_HOME/.minikube"      "$HOME/.minikube"
+        __safe_link__ "$WIN_HOME/.docker"        "$HOME/.docker"
+        __safe_link__ "$WIN_HOME/.ssh"           "$HOME/.ssh"
+        __safe_link__ "$WIN_HOME/.tsh"           "$HOME/.tsh"
+
     echo -e \"${GREEN}== Updating distribution packages ==${NC}\"
     sudo dnf upgrade --refresh -y
 
@@ -87,4 +115,29 @@ function _upgrade_wsl_environment() {
         sudo apt install --only-upgrade docker* -y 2>/dev/null || true
     fi
     "
+}
+
+
+
+function __safe_link__() {
+    local src="$1"
+    local dest="$2"
+
+    if [ -e "$dest" ] || [ -L "$dest" ]; then
+        if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
+            return 0
+        else
+            echo "Skipping $dest (already exists)"
+            return 0
+        fi
+    fi
+
+    ln -s "$src" "$dest"
+}
+
+
+function __get_wsl_version__() {
+    wsl.exe --version 2>/dev/null | \
+        iconv -f UTF-16LE -t UTF-8 | \
+        awk -F: '/WSL version/ { gsub(/^[ \t]+/, "", $2); print $2 }'
 }

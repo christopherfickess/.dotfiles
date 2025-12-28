@@ -12,35 +12,51 @@ function setup_wsl() {
     fi
     
     echo
-    _setup_wsl_init
+    _setup_wsl_init__
 }
 
 # ------------------
 # Secret Functions
 # ------------------
 
-function _setup_wsl_init(){
+function _setup_wsl_init__(){
     WIN_DOTFILES_DIR="$HOME/.dotfiles"
 
     # Target Fedora distro
-    FEDORA_DISTRO="FedoraLinux-43"    
+    if [[ -z "${1}" ]]; then
+        FEDORA_DISTRO="FedoraLinux-43"
+    fi
     
-    if wsl.exe -l -v | iconv -f UTF-16LE -t UTF-8 | sed 1,1d | awk '{print $2}' | grep -Fx "$FEDORA_DISTRO"; then
+
+    if __wsl_distro_exists__ "$FEDORA_DISTRO"; then
         echo -e "${CYAN}$FEDORA_DISTRO already installed.${NC}"
     else
         echo -e "${MAGENTA}$FEDORA_DISTRO not found. Installing...${NC}"
+
         wsl.exe --install -d "$FEDORA_DISTRO"
-        
-        wsl.exe --set-default $FEDORA_DISTRO
 
-        DEFAULT_DISTRO=$(wsl.exe -l -v | grep "Default" | awk '{print $1}' | tr -d '\r')
-
-        echo -e "${GREEN}Setting up WSL environment...${NC}"  
-        _setup_wsl_tools
+        echo -e "${YELLOW}WSL installation started.${NC}"
+        echo -e "${YELLOW}A system reboot may be required before continuing.${NC}"
+        echo -e "${YELLOW}Please reboot, then re-run this script.${NC}"
     fi
+
+    echo -e "${GREEN}Setting $FEDORA_DISTRO as default...${NC}"
+    wsl.exe --set-default "$FEDORA_DISTRO"
+
+    echo -e "${GREEN}Setting up WSL environment...${NC}"
+    __post_install_wsl_tools__
 }
 
-function _setup_wsl_tools() {
+function __wsl_distro_exists__() {
+    wsl.exe -l 2>/dev/null \
+        | iconv -f UTF-16LE -t UTF-8 \
+        | sed '1d' \
+        | awk '{print $1}' \
+        | grep -Fxq "$1"
+}
+
+
+function __post_install_wsl_tools__() {
     echo -e "${GREEN}Setting up WSL tools...${NC}"
     
     wsl.exe sh -c "
@@ -146,14 +162,3 @@ function _setup_wsl_tools() {
 
     echo -e "${GREEN}WSL tools installation completed.${NC}"
 }
-
-
-# if wsl fedora VM exists, skip setup (can be any wsl distro)
-if ! wsl.exe -l -v | iconv -f UTF-16LE -t UTF-8 | sed '1d' | grep -q "Running\|Stopped"; then
-    echo -e "       ${CYAN}WSL distribution not found. Setting up WSL...${NC}"
-    setup_wsl
-elif [[ -n "$WSL_DISTRO_NAME" ]]; then
-    echo -e "       ${CYAN}Inside WSL environment. Skipping WSL setup.${NC}"
-else 
-    echo -e "       ${CYAN}WSL distribution already exists. Skipping WSL setup.${NC}"
-fi

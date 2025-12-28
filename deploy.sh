@@ -100,17 +100,12 @@ function __source_os_type_functions() {
 
                 # On Windows (not inside WSL) - check if WSL needs setup
                 if command -v wsl.exe &>/dev/null; then
-                    # Check if any WSL distro exists (Running or Stopped)
-                    if ! wsl.exe -l -v 2>/dev/null | iconv -f UTF-16LE -t UTF-8 2>/dev/null | sed '1d' | grep -q "Running\|Stopped"; then
-                        echo -e "   ${CYAN}WSL distribution not found. Setting up WSL...${NC}"
-                        # Source wsl_setup.sh to get setup_wsl function, then call it
-                        [[ -f "$__WSL_SETUP_DIR/setup/wsl_setup.sh" ]] && source "$__WSL_SETUP_DIR/setup/wsl_setup.sh" && setup_wsl
-                    fi
+                    # Source WSL update/destroy functions if they exist
+                    [[ -f "$__WSL_SETUP_DIR/update/wsl_update.sh" ]] && source "$__WSL_SETUP_DIR/update/wsl_update.sh"
+                    [[ -f "$__WSL_SETUP_DIR/destroy/wsl_destroy.sh" ]] && source "$__WSL_SETUP_DIR/destroy/wsl_destroy.sh"
+                    [[ -f "$__WSL_SETUP_DIR/help.sh" ]] && source "$__WSL_SETUP_DIR/help.sh"
+                    [[ -f "$__WSL_SETUP_DIR/setup/wsl_setup.sh" ]] && source "$__WSL_SETUP_DIR/setup/wsl_setup.sh"
                 fi
-                # Source WSL update/destroy functions if they exist
-                [[ -f "$__WSL_SETUP_DIR/update/wsl_update.sh" ]] && source "$__WSL_SETUP_DIR/update/wsl_update.sh"
-                [[ -f "$__WSL_SETUP_DIR/destroy/wsl_destroy.sh" ]] && source "$__WSL_SETUP_DIR/destroy/wsl_destroy.sh"
-                [[ -f "$__WSL_SETUP_DIR/help.sh" ]] && source "$__WSL_SETUP_DIR/help.sh"
             fi
             ;;
         macos)
