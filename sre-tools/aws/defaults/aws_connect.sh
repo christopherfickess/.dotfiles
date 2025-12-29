@@ -16,29 +16,17 @@ function tshl() {
 function aws_sts_assume_role(){
     if [[ "${1}" == "-p" || "${1}" == "--palantir" && ! -z "${__palantir_aws_assume_role}" ]]; then
         SESSION_NAME="chrisfickess"
-        CREDENTIALS=$(aws sts assume-role --role-arn "$__palantir_aws_assume_role" --role-session-name "$SESSION_NAME" --output json)
+        # CREDENTIALS=$(aws sts assume-role --role-arn "$__palantir_aws_assume_role" --role-session-name "$SESSION_NAME" --output json)
 
-        export AWS_ACCESS_KEY_ID=$(echo $CREDENTIALS | jq -r '.Credentials.AccessKeyId')
-        export AWS_SECRET_ACCESS_KEY=$(echo $CREDENTIALS | jq -r '.Credentials.SecretAccessKey')
-        export AWS_SESSION_TOKEN=$(echo $CREDENTIALS | jq -r '.Credentials.SessionToken')
+        # export AWS_ACCESS_KEY_ID=$(echo $CREDENTIALS | jq -r '.Credentials.AccessKeyId')
+        # export AWS_SECRET_ACCESS_KEY=$(echo $CREDENTIALS | jq -r '.Credentials.SecretAccessKey')
+        # export AWS_SESSION_TOKEN=$(echo $CREDENTIALS | jq -r '.Credentials.SessionToken')
+    elif [[ "${1}" == "-d" || "${1}" == "--dev" && ! -z "${__dev_aws_assume_role}" ]]; then
+        SESSION_NAME="chrisfickess"    
     elif [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
-        echo -e "${MAGENTA}Usage:${NC} aws_sts_assume_role [Role ARN] [Session Name]"
-        echo -e "        -c|--clear     - Clear assumed role credentials from environment variables"
-        echo -e "        -p|--palantir  - Assume Palantir AWS role if set in env.sh"
-        echo -e "${YELLOW}This function assumes an AWS IAM role and sets the AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_SESSION_TOKEN environment variables.${NC}"
-    elif [[ "${1}" == "--clear" || "${1}" == "-c" ]]; then
-        unset AWS_ACCESS_KEY_ID
-        unset AWS_SECRET_ACCESS_KEY
-        unset AWS_SESSION_TOKEN
-        echo -e "${GREEN}Cleared assumed role credentials from environment variables.${NC}"
+        __aws_connect_options
     elif [[ -z "${1}" || -z "${2}" ]];then 
-        echo -e "${MAGENTA}Add \$1 = Role ARN and \$2 = Session Name to assume role!${NC}"
-        echo -e "${YELLOW}Example:${NC} sts_assume_role arn:aws:iam::123456789012:role/RoleName SessionName"
-        echo -e "${YELLOW}This will set the AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_SESSION_TOKEN environment variables.${NC}"
-        echo -e "${YELLOW}To clear the assumed role credentials, unset the above environment variables or start a new shell session.${NC}"
-        echo -e "${YELLOW}Make sure to have 'jq' installed to parse JSON responses.${NC}"
-        echo -e "${YELLOW}Install jq: https://stedolan.github.io/jq/download/${NC}"
-    
+        __aws_connect_options    
     else
         ROLE_ARN=${1}
         SESSION_NAME=${2}
@@ -51,15 +39,34 @@ function aws_sts_assume_role(){
     fi
 }
 
+function __aws_connect_options(){
+    
+        echo -e "${MAGENTA}Usage:${NC} aws_sts_assume_role [Role ARN] [Session Name]"
+        echo -e "       OR"
+        echo -e "        aws_sts_assume_role <flags>"
+        echo -e "           ${YELLOW}-r${NC}|--role      - ${CYAN}Specify the Role ARN to assume${NC}"
+        echo -e "           ${YELLOW}-s${NC}|--session   - ${CYAN}Specify the Session Name for the assumed role${NC}"
+        echo -e "           ${YELLOW}-c${NC}|--clear     - ${CYAN}Clear assumed role credentials from environment variables${NC}"
+        echo -e "           ${YELLOW}-p${NC}|--palantir  - ${CYAN}Assume Palantir AWS role if set in env.sh${NC}"
+        echo -e "           ${YELLOW}-d${NC}|--dev       - ${CYAN}Assume Dev AWS role if set in env.sh${NC}"
+        echo -e "           ${YELLOW}-h${NC}|--help      - ${CYAN}Show this help message${NC}"
+        echo -e "${YELLOW}This function assumes an AWS IAM role and sets the AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_SESSION_TOKEN environment variables.${NC}"
+}
+
 
 function aws_eks_connect_cluster(){
     if [[ ! -z "${__palantir_eks_cluster_name}" && "${1}" == "-p" || "${1}" == "--palantir" ]]; then
         palantir
         aws_sts_assume_role -p
-        local __cluster_name__="${__palantir_eks_cluster_name//[^A-Za-z0-9_-]/}"
+        export __cluster_name__="${__palantir_eks_cluster_name}"
 
-        echo -e "   Connecting to Palantir EKS cluster:    ${YELLOW}${__palantir_eks_cluster_name}${NC}"
-        aws eks --region "${AWS_REGION}" update-kubeconfig --name "${__palantir_eks_cluster_name}"
+        cluster_connect
+    elif [[ ! -z "${__dev_eks_cluster_name}" && "${1}" == "-d" || "${1}" == "--dev" ]]; then
+        dev
+        aws_sts_assume_role -d
+        export __cluster_name__="${__dev_eks_cluster_name}"
+
+        cluster_connect
     elif [[ -z "${1}" ]]; then 
         echo -e "${RED}Add the cluster name to proceed! ${NC}"
     elif [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
@@ -67,8 +74,8 @@ function aws_eks_connect_cluster(){
         echo -e "        -p|--palantir  - Assume Palantir AWS role if set in env.sh"
         echo -e "${YELLOW}This function connects to an EKS cluster by updating the kubeconfig file.${NC}"
     else
-        local __cluster_name__="${1//[^A-Za-z0-9_-]/}"
-        aws eks --region "${AWS_REGION}" update-kubeconfig --name "${__cluster_name__}"
+        local __cluster_name__="${1}"
+        cluster_connect
     fi
 }
 
@@ -89,7 +96,7 @@ function __output_aws_connection_info() {
     if [ $__aws_exit_code -ne 0 ] || [ -z "$__aws_output" ] || echo "$__aws_output" | grep -q "error\|Error\|ERROR"; then
         echo -e "   ${RED}✗${NC}   Unable to connect to AWS account. Please check your credentials."
         echo
-        return 1
+        return
     fi
     
     # Output just the name of the user not arn
