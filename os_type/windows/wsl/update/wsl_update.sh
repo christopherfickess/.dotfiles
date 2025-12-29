@@ -7,8 +7,6 @@ function update_wsl() {
     if [[ $? -eq 0 ]]; then
         echo "Running as root (admin)"
         
-
-        
         before="$(__get_wsl_version__)"
 
         echo "Checking for WSL updates..."
@@ -40,6 +38,9 @@ function __update_wsl_environment__() {
     echo -e "${GREEN}Checking for WSL environment updates...${NC}"
     
     wsl.exe sh -c '
+        # Figure this out later
+        # __safe_link__ "$WIN_HOME/.dotfiles"     "$HOME/.dotfiles"
+
         echo -e \"${GREEN}== Updating distribution packages ==${NC}\"
         sudo dnf upgrade --refresh -y
 
