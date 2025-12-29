@@ -56,7 +56,22 @@ To use this the wsl function has been over written to do preconfigurations by si
 wsl <distro-name>
 ```
 
+To setup wsl with fedora linux distro or your distro of choice you can run the following command
 
+```bash
+setup_wsl <DISTRO-NAME> 
+# or
+setup_wsl 
+```
+
+Without a value you will get fedora linux 43 version
+
+You will need to exit then run post install script to configure tools. This is built into the setup_wsl function but you must exit the wsl terminal and rerun the command to finalize the install process
+
+
+```bash
+setup_wsl 
+```
 
 ### Tool useful Install List
 

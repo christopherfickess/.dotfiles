@@ -16,6 +16,7 @@ __AWS_FUNCTIONS_DIR="${__SRE_TOOLS_DIR}/aws/defaults"
 __AWS_USERS_DIR="$__AWS_FUNCTIONS_DIR/users"
 __DOCKER_FUNCTIONS_DIR="${__TOOLS_DIR}/docker"
 __KUBERNETES_FUNCTIONS_DIR="${__TOOLS_DIR}/kubernetes"
+__PYTHON_FUNCTIONS_DIR="${__SRE_TOOLS_DIR}/python"
 
 
 __GCP_USERS_DIR="$__TOOLS_DIR/gcp/users"
@@ -60,8 +61,8 @@ unset -f __detect_os_type  # Clean up function after use
 
 function __source_env_functions() {
     # This is to source key values for the SRE tools and hidden dotfiles and users
-    [[ -f "$__TOOLS_DIR/env.sh" ]] && source "$__BASH_CONFIG_DIR/env.sh"
-    [[ -f "$__TOOLS_DIR/tmp/env.sh" ]] && source "$__BASH_CONFIG_DIR/public_env.sh"
+    [[ -f "$__BASH_CONFIG_DIR/env.sh" ]] && source "$__BASH_CONFIG_DIR/env.sh"
+    [[ -f "$__BASH_CONFIG_DIR/tmp/env.sh" ]] && source "$__BASH_CONFIG_DIR/tmp/env.sh"
     # [[ -f "$__TOOLS_DIR/tmp/users.sh" ]] && source "$__TOOLS_DIR/tmp/users.sh"
 }
 
@@ -99,17 +100,12 @@ function __source_os_type_functions() {
 
                 # On Windows (not inside WSL) - check if WSL needs setup
                 if command -v wsl.exe &>/dev/null; then
-                    # Check if any WSL distro exists (Running or Stopped)
-                    if ! wsl.exe -l -v 2>/dev/null | iconv -f UTF-16LE -t UTF-8 2>/dev/null | sed '1d' | grep -q "Running\|Stopped"; then
-                        echo -e "   ${CYAN}WSL distribution not found. Setting up WSL...${NC}"
-                        # Source wsl_setup.sh to get setup_wsl function, then call it
-                        [[ -f "$__WSL_SETUP_DIR/setup/wsl_setup.sh" ]] && source "$__WSL_SETUP_DIR/setup/wsl_setup.sh" && setup_wsl
-                    fi
+                    # Source WSL update/destroy functions if they exist
+                    [[ -f "$__WSL_SETUP_DIR/update/wsl_update.sh" ]] && source "$__WSL_SETUP_DIR/update/wsl_update.sh"
+                    [[ -f "$__WSL_SETUP_DIR/destroy/wsl_destroy.sh" ]] && source "$__WSL_SETUP_DIR/destroy/wsl_destroy.sh"
+                    [[ -f "$__WSL_SETUP_DIR/help.sh" ]] && source "$__WSL_SETUP_DIR/help.sh"
+                    [[ -f "$__WSL_SETUP_DIR/setup/wsl_setup.sh" ]] && source "$__WSL_SETUP_DIR/setup/wsl_setup.sh"
                 fi
-                # Source WSL update/destroy functions if they exist
-                [[ -f "$__WSL_SETUP_DIR/update/wsl_update.sh" ]] && source "$__WSL_SETUP_DIR/update/wsl_update.sh"
-                [[ -f "$__WSL_SETUP_DIR/destroy/wsl_destroy.sh" ]] && source "$__WSL_SETUP_DIR/destroy/wsl_destroy.sh"
-                [[ -f "$__WSL_SETUP_DIR/help.sh" ]] && source "$__WSL_SETUP_DIR/help.sh"
             fi
             ;;
         macos)
@@ -165,6 +161,13 @@ function __source_git_functions() {
     fi
 }
 
+function __source_default_python() {
+    if command -v python &>/dev/null; then 
+        [[ -f "${__PYTHON_FUNCTIONS_DIR}" ]] && source "${__PYTHON_FUNCTIONS_DIR}/help.sh";
+        [[ -f "${__PYTHON_FUNCTIONS_DIR}" ]] && source "${__PYTHON_FUNCTIONS_DIR}/defaults/python-functions.sh";
+    fi
+}
+
 function setup_sre_tools() {
     [[ -d "${__TOOLS_DIR}/sre-tools" ]] && __SRE_TOOLS_DIR="${__TOOLS_DIR}/sre-tools"
     [[ -f "$__SRE_TOOLS_DIR/setup.sh" ]] && source "$__SRE_TOOLS_DIR/setup.sh"
@@ -179,5 +182,6 @@ __source_aws_functions
 __source_docker_functions
 __source_kubernetes_functions
 __source_cloud_users_functions
+__source_default_python
 setup_sre_tools
 

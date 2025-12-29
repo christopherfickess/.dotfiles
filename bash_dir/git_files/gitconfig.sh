@@ -46,6 +46,8 @@ function config_git() {
     git config --global user.name "christopher.a.fickess";
     git config --global init.defaultBranch "main";
     git config --global color.ui true;
+    git config --global core.autocrlf input
+    git config --global core.eol lf;
     git config --global help.autocorrect 1;
     git config --global diff.tool code;
     git config --global rerere.enabled false;
