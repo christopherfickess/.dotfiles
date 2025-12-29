@@ -22,7 +22,7 @@ function aws_sts_assume_role(){
         # export AWS_SECRET_ACCESS_KEY=$(echo $CREDENTIALS | jq -r '.Credentials.SecretAccessKey')
         # export AWS_SESSION_TOKEN=$(echo $CREDENTIALS | jq -r '.Credentials.SessionToken')
     elif [[ "${1}" == "-d" || "${1}" == "--dev" && ! -z "${__dev_aws_assume_role}" ]]; then
-        SESSION_NAME="chrisfickess"    
+        SESSION_NAME="chrisfickess"
     elif [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
         __aws_connect_options
     elif [[ -z "${1}" || -z "${2}" ]];then 
