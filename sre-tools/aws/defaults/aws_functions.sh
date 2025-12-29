@@ -48,12 +48,25 @@ function ec2_ssm_connection(){
 }
 
 function cluster_connect(){
-    local __cluster_name__="${1//[^A-Za-z0-9_-]/}"
-    if [[ -z "${1}" ]]; then 
+    if [[ ! -z "${__cluster_name__}" ]]; then
+        local __cluster_name__="${__cluster_name__//[^A-Za-z0-9_-]/}"
+    elif [[ ! -z "${1}" ]]; then
+        local __cluster_name__="${1//[^A-Za-z0-9_-]/}"
+    elif [[ -z "${1}" ]]; then 
         echo -e "${RED}Add the cluster name to proceed! ${NC}"
-    else
-        aws eks --region "${AWS_REGION}" update-kubeconfig --name "${__cluster_name__}"
+        return
     fi
+    
+    __cluster_output=$(aws eks --region "${AWS_REGION}" update-kubeconfig --name "${__cluster_name__}" 2>&1)
+    __cluster_exit_code=$?
+    if [ $__cluster_exit_code -ne 0 ] || [ -z "$__cluster_output" ] || echo "$__cluster_output" | grep -q "error\|Error\|ERROR"; then
+        echo -e "   ${RED}✗${NC}   Unable to connect to EKS cluster. Please check your credentials and cluster name."
+        echo
+        return
+    fi
+    env_tag="${env_tag:-}"
+    echo -e "   ${GREEN}✓${NC} Connected to EKS cluster:    ${YELLOW}${__cluster_name__}${NC}"
+    echo
 }
 
 # This function needs help

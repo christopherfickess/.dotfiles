@@ -5,7 +5,7 @@
 [[ -z "${__TOOLS_DIR}" ]] && __TOOLS_DIR="$HOME/.dotfiles/tools"
 [[ -z "${__SRE_TOOLS_DIR}" ]] && __SRE_TOOLS_DIR="${__TOOLS_DIR}/sre-tools"
 [[ -z "${__AWS_SRE_TOOLS_DIR}" ]] && __AWS_SRE_TOOLS_DIR="${__SRE_TOOLS_DIR}/aws"
-[[ -z "${__AWS_CONNECT_FILE}" ]] && __AWS_CONNECT_FILE="${__AWS_SRE_TOOLS_DIR}/aws_connect.sh"
+[[ -z "${__AWS_CONNECT_FILE}" ]] && __AWS_CONNECT_FILE="${__AWS_SRE_TOOLS_DIR}/defaults/aws_connect.sh"
 [[ -z "${__AWS_HELP_FILE}" ]] && __AWS_HELP_FILE="${__AWS_SRE_TOOLS_DIR}/help.sh"
 [[ -z "${__BASH_CONFIG_DIR}" ]] && __BASH_CONFIG_DIR="${__TOOLS_DIR}/bash_config"
 [[ -z "${__MATTERMOST_DIR}" ]] && __MATTERMOST_DIR="${__SRE_TOOLS_DIR}/mattermost"

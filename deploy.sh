@@ -9,18 +9,18 @@ __OS_TYPE_DIR="${__DOTFILES_DIR}/os_type"
 __MACOS_SETUP_DIR="${__OS_TYPE_DIR}/macos"
 __LINUX_SETUP_DIR="${__OS_TYPE_DIR}/linux"
 __WINDOWS_SETUP_DIR="${__OS_TYPE_DIR}/windows"
-__WSL_SETUP_DIR="${__WINDOWS_SETUP_DIR}/wsl"
+__WSL_DIR="${__WINDOWS_SETUP_DIR}/wsl"
 
 # Initialize tool-specific directory variables (used by setup.sh)
 __AWS_FUNCTIONS_DIR="${__SRE_TOOLS_DIR}/aws/defaults"
 __AWS_USERS_DIR="$__AWS_FUNCTIONS_DIR/users"
-__DOCKER_FUNCTIONS_DIR="${__TOOLS_DIR}/docker"
-__KUBERNETES_FUNCTIONS_DIR="${__TOOLS_DIR}/kubernetes"
+__DOCKER_FUNCTIONS_DIR="${__SRE_TOOLS_DIR}/docker"
+__KUBERNETES_FUNCTIONS_DIR="${__SRE_TOOLS_DIR}/kubernetes"
 __PYTHON_FUNCTIONS_DIR="${__SRE_TOOLS_DIR}/python"
 
 
-__GCP_USERS_DIR="$__TOOLS_DIR/gcp/users"
-__AZURE_USERS_DIR="$__TOOLS_DIR/azure/users"
+# __GCP_USERS_DIR="$__SRE_TOOLS_DIR/gcp/users"
+# __AZURE_USERS_DIR="$__SRE_TOOLS_DIR/azure/users"
 
 # Cache OS detection (computed once, used multiple times)
 function __detect_os_type() {
@@ -62,6 +62,7 @@ unset -f __detect_os_type  # Clean up function after use
 function __source_env_functions() {
     # This is to source key values for the SRE tools and hidden dotfiles and users
     [[ -f "$__BASH_CONFIG_DIR/env.sh" ]] && source "$__BASH_CONFIG_DIR/env.sh"
+    [[ -f "$__BASH_CONFIG_DIR/public_env.sh" ]] && source "$__BASH_CONFIG_DIR/public_env.sh"
     [[ -f "$__BASH_CONFIG_DIR/tmp/env.sh" ]] && source "$__BASH_CONFIG_DIR/tmp/env.sh"
     # [[ -f "$__TOOLS_DIR/tmp/users.sh" ]] && source "$__TOOLS_DIR/tmp/users.sh"
 }
@@ -87,25 +88,20 @@ function __source_os_type_functions() {
     case "$__OS_TYPE" in
         windows|wsl)
             ISWINDOWS="TRUE"
+            
+            [[ -f "$__WSL_DIR/help.sh" ]] && source "$__WSL_DIR/help.sh"
 
             if [[ "$__OS_TYPE" == "wsl" ]]; then
                 echo -e "   ${MAGENTA}Inside WSL OS.${NC}"
                 # Source WSL help functions
-                [[ -f "$__WSL_SETUP_DIR/help.sh" ]] && source "$__WSL_SETUP_DIR/help.sh"
             else
                 echo -e "   ${MAGENTA}Windows OS.${NC}"
                 __WINDOWS_SETUP_CONFIG_DIR="$__WINDOWS_SETUP_DIR/windows_setup"
-                [[ -f "$__WINDOWS_SETUP_CONFIG_DIR/windows_first_time_setup.sh" ]] && source "$__WINDOWS_SETUP_CONFIG_DIR/windows_first_time_setup.sh"
-                [[ -f "$__WSL_SETUP_DIR/help.sh" ]] && source "$__WSL_SETUP_DIR/help.sh"
-
-                # On Windows (not inside WSL) - check if WSL needs setup
-                if command -v wsl.exe &>/dev/null; then
-                    # Source WSL update/destroy functions if they exist
-                    [[ -f "$__WSL_SETUP_DIR/update/wsl_update.sh" ]] && source "$__WSL_SETUP_DIR/update/wsl_update.sh"
-                    [[ -f "$__WSL_SETUP_DIR/destroy/wsl_destroy.sh" ]] && source "$__WSL_SETUP_DIR/destroy/wsl_destroy.sh"
-                    [[ -f "$__WSL_SETUP_DIR/help.sh" ]] && source "$__WSL_SETUP_DIR/help.sh"
-                    [[ -f "$__WSL_SETUP_DIR/setup/wsl_setup.sh" ]] && source "$__WSL_SETUP_DIR/setup/wsl_setup.sh"
-                fi
+                [[ -f "$__WSL_DIR/update/wsl_update.sh" ]] && source "$__WSL_DIR/update/wsl_update.sh"
+                [[ -f "$__WINDOWS_SETUP_CONFIG_DIR/first_time_setup.sh" ]] && source "$__WINDOWS_SETUP_CONFIG_DIR/first_time_setup.sh"
+                [[ -f "$__WSL_DIR/help.sh" ]] && source "$__WSL_DIR/help.sh"
+                [[ -f "$__WSL_DIR/destroy/wsl_destroy.sh" ]] && source "$__WSL_DIR/destroy/wsl_destroy.sh"
+                [[ -f "$__WSL_DIR/setup/wsl_setup.sh" ]] && source "$__WSL_DIR/setup/wsl_setup.sh"
             fi
             ;;
         macos)
@@ -138,7 +134,7 @@ function __source_aws_functions() {
 function __source_docker_functions() {
     # Use command -v (bash builtin) instead of --version (external command) - much faster
     if command -v docker &>/dev/null; then
-        [[ -f "$__DOCKER_FUNCTIONS_DIR/docker_functions.sh" ]] && source "$__DOCKER_FUNCTIONS_DIR/docker_functions.sh"
+        [[ -f "$__DOCKER_FUNCTIONS_DIR/defaults/docker_functions.sh" ]] && source "$__DOCKER_FUNCTIONS_DIR/defaults/docker_functions.sh"
         [[ -f "$__DOCKER_FUNCTIONS_DIR/help.sh" ]] && source "$__DOCKER_FUNCTIONS_DIR/help.sh"
     fi
 }
@@ -146,7 +142,7 @@ function __source_docker_functions() {
 function __source_kubernetes_functions() {
     # Use command -v (bash builtin) instead of version --client (external command) - much faster
     if command -v kubectl &>/dev/null; then
-        [[ -f "$__KUBERNETES_FUNCTIONS_DIR/kubernetes_functions.sh" ]] && source "$__KUBERNETES_FUNCTIONS_DIR/kubernetes_functions.sh"
+        [[ -f "$__KUBERNETES_FUNCTIONS_DIR/defaults/kubernetes_functions.sh" ]] && source "$__KUBERNETES_FUNCTIONS_DIR/defaults/kubernetes_functions.sh"
         [[ -f "$__KUBERNETES_FUNCTIONS_DIR/help.sh" ]] && source "$__KUBERNETES_FUNCTIONS_DIR/help.sh"
     fi
 }
@@ -163,8 +159,8 @@ function __source_git_functions() {
 
 function __source_default_python() {
     if command -v python &>/dev/null; then 
-        [[ -f "${__PYTHON_FUNCTIONS_DIR}" ]] && source "${__PYTHON_FUNCTIONS_DIR}/help.sh";
-        [[ -f "${__PYTHON_FUNCTIONS_DIR}" ]] && source "${__PYTHON_FUNCTIONS_DIR}/defaults/python-functions.sh";
+        [[ -f "${__PYTHON_FUNCTIONS_DIR}/help.sh" ]] && source "${__PYTHON_FUNCTIONS_DIR}/help.sh";
+        [[ -f "${__PYTHON_FUNCTIONS_DIR}/defaults/python-functions.sh" ]] && source "${__PYTHON_FUNCTIONS_DIR}/defaults/python-functions.sh";
     fi
 }
 
