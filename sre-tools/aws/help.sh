@@ -1,5 +1,5 @@
 
-function __myhelp_aws_sre_tools() {
+function __myhelp_aws_sre_tools__() {
     if [[ "$__verbose__" = TRUE ]]; then
         echo -e "     Profile Management:"
         echo -e "     ${YELLOW}aws_auth_update${NC}                 - Update AWS credentials"

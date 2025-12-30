@@ -4,16 +4,15 @@ function myhelp_aws() {
     echo -e "------------------------------------------------------------------------------------------------------"
 
     if [[ ! -z "${__AWS_FILE}" ]]; then
-        __myhelp_aws_sre_tools
+        __myhelp_aws_sre_tools__
     else 
-        __myhelp_aws
+        __myhelp_aws__
     fi
     
 }
 
-function __myhelp_aws() {
+function __myhelp_aws__() {
     echo -e "     ${YELLOW}aws_auth_update${NC}                 - Update AWS credentials"
-    echo -e "     ${YELLOW}aws_help${NC}                        - Show AWS functions help"
     echo -e "     ${YELLOW}aws_profile_switch${NC}              - Switch AWS profiles"
     echo -e "     ${YELLOW}aws_sts_assume_role${NC}             - Assume an AWS IAM role"
     echo -e "     ${YELLOW}cluster_connect${NC}                 - Connect to an EKS cluster"
@@ -23,6 +22,7 @@ function __myhelp_aws() {
     echo -e "     ${YELLOW}eks_list_clusters${NC}               - List all EKS clusters"
     echo -e "     ${YELLOW}list_kubernetes_objects${NC}         - List all Kubernetes objects in a specified namespace"
     echo -e "     ${YELLOW}list_node_group${NC}                 - List node groups for a cluster (Needs help)"
+    echo -e "     ${YELLOW}myhelp_aws${NC}                      - Show AWS functions help"
     echo -e "     ${YELLOW}ssm_parse_command_to_node_id${NC}    - Run command via SSM"
     echo -e "     ${YELLOW}tshl${NC}                            - Teleport SSH login helper"
 }
