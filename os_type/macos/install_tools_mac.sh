@@ -36,12 +36,12 @@ function _install_mac_software() {
 
         go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
 
-        teleport_version=$(brew list --versions teleport | awk '{print $2}')
-        if [ -z "$teleport_version" ]; then
+        __teleport_version__=$(brew list --versions teleport | awk '{print $2}')
+        if [ -z "$__teleport_version__" ]; then
             echo -e "${GREEN}Installing Teleport...${NC}"
             brew install teleport
         else
-            echo -e "${GREEN}Teleport is already installed (version: $teleport_version). Skipping installation.${NC}"
+            echo -e "${GREEN}Teleport is already installed (version: $__teleport_version__). Skipping installation.${NC}"
         fi
 
         echo -e "${GREEN}Mac tools installation completed.${NC}"

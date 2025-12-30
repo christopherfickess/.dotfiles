@@ -37,7 +37,8 @@ function __update_wsl_environment__() {
     # Placeholder for future WSL environment upgrade logic
     echo -e "${GREEN}Checking for WSL environment updates...${NC}"
     
-    wsl.exe sh -c '
+    wsl.exe -e env TELEPORT_VERSION="$TELEPORT_VERSION" sh -lc '
+        echo $TELEPORT_VERSION
         # Figure this out later
         # __safe_link__ "$WIN_HOME/.dotfiles"     "$HOME/.dotfiles"
 

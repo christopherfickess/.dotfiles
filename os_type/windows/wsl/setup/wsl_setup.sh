@@ -24,24 +24,24 @@ function __setup_wsl_init__(){
 
     # Target Fedora distro
     if [[ -z "${1}" ]]; then
-        FEDORA_DISTRO="FedoraLinux-43"
+        __distro_type__="FedoraLinux-43"
     fi
     
 
-    if __wsl_distro_exists__ "$FEDORA_DISTRO"; then
-        echo -e "${CYAN}$FEDORA_DISTRO already installed.${NC}"
+    if __wsl_distro_exists__ "$__distro_type__"; then
+        echo -e "${CYAN}$__distro_type__ already installed.${NC}"
     else
-        echo -e "${MAGENTA}$FEDORA_DISTRO not found. Installing...${NC}"
+        echo -e "${MAGENTA}$__distro_type__ not found. Installing...${NC}"
 
-        wsl.exe --install -d "$FEDORA_DISTRO"
+        wsl.exe --install -d "$__distro_type__"
 
         echo -e "${YELLOW}WSL installation started.${NC}"
         echo -e "${YELLOW}A system reboot may be required before continuing.${NC}"
         echo -e "${YELLOW}Please reboot, then re-run this script.${NC}"
     fi
 
-    echo -e "${GREEN}Setting $FEDORA_DISTRO as default...${NC}"
-    wsl.exe --set-default "$FEDORA_DISTRO"
+    echo -e "${GREEN}Setting $__distro_type__ as default...${NC}"
+    wsl.exe --set-default "$__distro_type__"
 
     echo -e "${GREEN}Setting up WSL environment...${NC}"
     __post_install_wsl_tools__
@@ -59,6 +59,7 @@ function __wsl_distro_exists__() {
 function __post_install_wsl_tools__() {
     echo -e "${GREEN}Setting up WSL tools...${NC}"
     
+    # wsl.exe -e env TELEPORT_VERSION="$TELEPORT_VERSION" sh -lc '
     wsl.exe sh -c "
         if [ -f /mnt/c/Users/${USERNAME}/.bashrc ]; then
             cat /mnt/c/Users/${USERNAME}/.bashrc >> ~/.bashrc
