@@ -12,14 +12,14 @@ function setup_wsl() {
     fi
     
     echo
-    _setup_wsl_init__
+    __setup_wsl_init__
 }
 
 # ------------------
 # Secret Functions
 # ------------------
 
-function _setup_wsl_init__(){
+function __setup_wsl_init__(){
     WIN_DOTFILES_DIR="$HOME/.dotfiles"
 
     # Target Fedora distro

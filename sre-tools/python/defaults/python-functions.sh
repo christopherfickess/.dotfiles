@@ -1,14 +1,14 @@
 
 function setup_python_env() {
     if [ -z "${1}" && ! -d "playground" ]; then 
-        local __env_name="playground"
+        local __env_name__="playground"
     elif [ ! -z "${1}" ]; then
-         local __env_name="${1}"
+         local __env_name__="${1}"
     else
         echo "   ${RED}${__failed_box}${NC} Please provide a \${1} values for <env_name>"
     fi
-    python -m venv "$__env_name"
-    source "$__env_name/bin/activate"
+    python -m venv "$__env_name__"
+    source "$__env_name__/bin/activate"
 
     pip install --upgrade pip setuptools wheel
 
@@ -19,11 +19,11 @@ function setup_python_env() {
 
 function disable_python_env() {
     if [ -z "${1}" && -d "playground" ]; then 
-        local __env_name="playground"
+        local __env_name__="playground"
     elif [ ! -z "${1}" ]; then
-         local __env_name="${1}"
+         local __env_name__="${1}"
     fi
-    deactivate "${__env_name}"
+    deactivate "${__env_name__}"
 }
 
 # tells you where you are and what kind of Python mess you are standing in.
@@ -33,8 +33,8 @@ function python_env_info() {
         return 1
     fi
 
-    local __env_name
-    __env_name="$(basename "$VIRTUAL_ENV")"
+    local __env_name__
+    __env_name__="$(basename "$VIRTUAL_ENV")"
 
     local __python_version
     __python_version="$(python --version 2>&1)"
@@ -45,7 +45,7 @@ function python_env_info() {
     local __pkg_count
     __pkg_count="$(pip list --format=freeze | wc -l | tr -d ' ')"
 
-    echo "Active env: $__env_name"
+    echo "Active env: $__env_name__"
     echo "Env path:  $VIRTUAL_ENV"
     echo "Python:    $__python_version"
     echo "Pip:       $__pip_version"

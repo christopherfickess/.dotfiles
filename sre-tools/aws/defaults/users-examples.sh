@@ -7,4 +7,7 @@ testing_dev() {
   export AWS_PROFILE="<YOUR_AWS_PROFILE>"
   export AWS_DEFAULT_REGION="<YOUR_AWS_REGION>"
   export AWS_REGION="<YOUR_AWS_REGION>"
+
+
+  __output_aws_connection_info__
 }

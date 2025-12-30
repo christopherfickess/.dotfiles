@@ -1,7 +1,12 @@
 # #!/bin/bash
 
-__DOTFILES_DIR="$HOME/.dotfiles"
-__TOOLS_DIR="$HOME/.dotfiles/tools"
+__dotfiles_dir__="$HOME/.dotfiles"
+__bash_config_dir__="${__dotfiles_dir__}/bash_dir"
+__sre_tools_dir__="${__dotfiles_dir__}/sre-tools"
+
+
+# __GCP_USERS_DIR="$__sre_tools_dir__/gcp/users"
+# __AZURE_USERS_DIR="$__sre_tools_dir__/azure/users"
 
 export PATH=$PATH:$HOME/go/bin
 export PATH=$PATH:$HOME/.local/bin
@@ -11,11 +16,11 @@ if [ -d "/home/$USER/" ] && [ ! -z "$USER" ]; then export PATH=$PATH:/home/$USER
 if [ -d "$HOME/bin/teleport" ]; then export PATH=$HOME/bin/teleport:$PATH; fi
 
 # Bashrc for Various tools
-if [ -f "$__DOTFILES_DIR/deploy.sh" ]; then  source "$__DOTFILES_DIR/deploy.sh"; fi
+if [ -f "$__dotfiles_dir__/deploy.sh" ]; then  source "$__dotfiles_dir__/deploy.sh"; fi
 
 
 # This is the helper functions and aliases
-if [ -f "$__DOTFILES_DIR/help.sh" ]; then  source "$__DOTFILES_DIR/help.sh"; fi
+if [ -f "$__dotfiles_dir__/help.sh" ]; then  source "$__dotfiles_dir__/help.sh"; fi
 
 # .bashrc 
 function branching_method_1 () {

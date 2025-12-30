@@ -7,17 +7,17 @@ function aws_auth_update() {
 function aws_profile_switch(){
     if [ -z "${1}" ];then 
         while true; do
-            _aws_profile_list
+            __aws_profile_list__
             
             echo -e "${YELLOW}Enter AWS Profile to switch to: ${NC}"
-            read -p "   :>  " selected_profile
+            read -p "   :>  " __selected_profile__
 
-            if grep -q "\[${selected_profile}\]" ~/.aws/credentials; then
-                export AWS_PROFILE=${selected_profile}
+            if grep -q "\[${__selected_profile__}\]" ~/.aws/credentials; then
+                export AWS_PROFILE=${__selected_profile__}
                 echo -e "${GREEN}Switched to profile: ${AWS_PROFILE}${NC}"
                 break
             else
-                echo -e "${RED}Profile '${selected_profile}' not found. Please try again.${NC}"
+                echo -e "${RED}Profile '${__selected_profile__}' not found. Please try again.${NC}"
             fi
         done
     else
@@ -30,7 +30,7 @@ function ec2_id_function(){
     if [ -z "${1}" ];then 
         echo -e "${RED}Pass in \$1 for instance name${NC}"
     else
-        _ec2_id=$(aws ec2 describe-instances \
+        __ec2_id__=$(aws ec2 describe-instances \
             --filters "Name=tag:Name,Values=${1}" \
             --query "Reservations[*].Instances[*].InstanceId" \
             --output text)
@@ -39,34 +39,38 @@ function ec2_id_function(){
     fi
 }
 
-function ec2_ssm_connection(){
-    if [ -z "${_ec2_id}" ];then 
-        echo -e "${RED}Pass ec2_id_function for instance id${NC}"
-    else
-        aws ssm start-session --target ${_ec2_id}
-    fi
-}
-
-function cluster_connect(){
-    if [[ ! -z "${__cluster_name__}" ]]; then
-        local __cluster_name__="${__cluster_name__//[^A-Za-z0-9_-]/}"
+function eks_cluster_info(){
+    if [[ "${1}" == "-p" && ! -z "${__palantir_eks_cluster_name}" ]]; then
+        local __cluster_name__="${__pal_eks_cluster_name}"
+        export AWS_DEFAULT_REGION="us-east-2"
+        export AWS_REGION="us-east-2"
+        
+    elif [[ "${1}" == "-d" || "${1}" == "--dev" && ! -z "${__dev_eks_cluster_name}" ]]; then
+        local __cluster_name__="${__dev_eks_cluster_name}"
+    elif [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
+        __aws_eks_cluster_options__
+        return
     elif [[ ! -z "${1}" ]]; then
-        local __cluster_name__="${1//[^A-Za-z0-9_-]/}"
+        local __cluster_name__="${1}"
     elif [[ -z "${1}" ]]; then 
         echo -e "${RED}Add the cluster name to proceed! ${NC}"
+        __aws_eks_cluster_options__
+        return
+    else
+        __aws_eks_cluster_options__
         return
     fi
+    local __cluster_name__="${__cluster_name__//[^A-Za-z0-9_-]/}"
     
-    __cluster_output=$(aws eks --region "${AWS_REGION}" update-kubeconfig --name "${__cluster_name__}" 2>&1)
-    __cluster_exit_code=$?
-    if [ $__cluster_exit_code -ne 0 ] || [ -z "$__cluster_output" ] || echo "$__cluster_output" | grep -q "error\|Error\|ERROR"; then
-        echo -e "   ${RED}✗${NC}   Unable to connect to EKS cluster. Please check your credentials and cluster name."
-        echo
-        return
-    fi
-    env_tag="${env_tag:-}"
-    echo -e "   ${GREEN}✓${NC} Connected to EKS cluster:    ${YELLOW}${__cluster_name__}${NC}"
-    echo
+    aws eks describe-cluster --name "${__cluster_name__}" --region "${AWS_REGION}" \
+        --query 'cluster.{Name:name,Status:status,Endpoint:endpoint,CreatedAt:createdAt}' \
+        --output table
+}
+
+function eks_list_clusters(){
+    aws eks list-clusters --region "${AWS_REGION}" \
+        --query 'clusters[]' \
+        --output table
 }
 
 # This function needs help
@@ -75,17 +79,17 @@ function list_node_group(){
         echo -e "${RED}Not connected to a cluster. Please connect to cluster! ${NC}"
     else
         if [[ -z ${1} ]]; then
-            NAME_NODE="name"
+            __node_name__="name"
         elif [[ "${1}" == "1" ]]; then
-            NAME_NODE="name"
+            __node_name__="name"
         elif [[ "${1}" == "2" ]]; then
-            NAME_NODE="name"
+            __node_name__="name"
         elif [[ "${1}" == "3" ]]; then
-            NAME_NODE="name"
+            __node_name__="name"
         fi
 
         aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=$NAME_NODE" "Name=instance-state-name,Values=running" \
+            --filters "Name=tag:Name,Values=$__node_name__" "Name=instance-state-name,Values=running" \
             --query "Reservations[].Instances[] | sort_by(@, &PrivateIpAddress)[].{ID:InstanceId,Name:Tags[?Key=='Name']|[0].Value,PrivateIP:PrivateIpAddress}" \
             --output table
     fi
@@ -95,9 +99,9 @@ function ssm_parse_command_to_node_id(){
     if [[ -z "${1}" || -z "${2}" ]];then 
         echo -e "${RED}Add \$1 = Instance ID and \$2 = Command to run in EC2 instance!${NC}"
     else
-        INSTANCE_ID=${1}
+        __instance_id__=${1}
         aws ssm start-session   \
-            --target $INSTANCE_ID   \
+            --target $__instance_id__   \
             --document-name AWS-StartNonInteractiveCommand  \
             --parameters "command=[\"$2\"]"
     fi
@@ -106,7 +110,7 @@ function ssm_parse_command_to_node_id(){
 # ------------------
 # Secret Functions
 # ------------------
-function _aws_profile_list(){
+function __aws_profile_list__(){
     echo -e "${YELLOW}Available AWS Profiles:${NC}"
     cat ~/.aws/credentials | grep "\[" | tr -d "[]"
 }

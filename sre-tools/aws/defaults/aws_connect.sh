@@ -14,72 +14,136 @@ function tshl() {
 
 
 function aws_sts_assume_role(){
-    if [[ "${1}" == "-p" || "${1}" == "--palantir" && ! -z "${__palantir_aws_assume_role}" ]]; then
-        SESSION_NAME="chrisfickess"
-        # CREDENTIALS=$(aws sts assume-role --role-arn "$__palantir_aws_assume_role" --role-session-name "$SESSION_NAME" --output json)
+    if [[ "${1}" == "-p" && ! -z "${__pal_aws_role}" ]]; then
+        __session_name__="chrisfickess"
 
-        # export AWS_ACCESS_KEY_ID=$(echo $CREDENTIALS | jq -r '.Credentials.AccessKeyId')
-        # export AWS_SECRET_ACCESS_KEY=$(echo $CREDENTIALS | jq -r '.Credentials.SecretAccessKey')
-        # export AWS_SESSION_TOKEN=$(echo $CREDENTIALS | jq -r '.Credentials.SessionToken')
+        export AWS_DEFAULT_REGION="us-east-2"
+        export AWS_REGION="us-east-2"
+        
+        palantir
+        __role_arn__="${__pal_aws_role}"
+        __credentials__=$(aws sts assume-role --role-arn "$__role_arn__" \
+                --role-session-name "$__session_name__" \
+                --output json)
+
+        export AWS_ACCESS_KEY_ID=$(echo $__credentials__ | jq -r '.Credentials.AccessKeyId')
+        export AWS_SECRET_ACCESS_KEY=$(echo $__credentials__ | jq -r '.Credentials.SecretAccessKey')
+        export AWS_SESSION_TOKEN=$(echo $__credentials__ | jq -r '.Credentials.SessionToken')
+
+
+        __check_role_arn__="${__pal_aws_assumed_role}"
+
     elif [[ "${1}" == "-d" || "${1}" == "--dev" && ! -z "${__dev_aws_assume_role}" ]]; then
-        SESSION_NAME="chrisfickess"
+        dev
+        __session_name__="christopher.fickess@mattermost.com"
+
+        __check_role_arn__="${__dev_aws_assumed_role}/${__session_name__}"
     elif [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
-        __aws_connect_options
+        __aws_connect_options__
+        return
     elif [[ -z "${1}" || -z "${2}" ]];then 
-        __aws_connect_options    
+        __aws_connect_options__
+        return
+    elif [[ ! -z "${1}" && ! -z "${2}" ]]; then
+        __role_arn__=${1}
+        __session_name__=${2}
+
+        __credentials__=$(aws sts assume-role --role-arn "$__role_arn__" --role-session-name "$__session_name__" --output json)
+        
+        export AWS_ACCESS_KEY_ID=$(echo $__credentials__ | jq -r '.Credentials.AccessKeyId')
+        export AWS_SECRET_ACCESS_KEY=$(echo $__credentials__ | jq -r '.Credentials.SecretAccessKey')
+        export AWS_SESSION_TOKEN=$(echo $__credentials__ | jq -r '.Credentials.SessionToken')
+
+        __check_role_arn__="${__role_arn__}/${__session_name__}"
     else
-        ROLE_ARN=${1}
-        SESSION_NAME=${2}
+        __aws_connect_options__
+        return
+    fi
 
-        CREDENTIALS=$(aws sts assume-role --role-arn "$ROLE_ARN" --role-session-name "$SESSION_NAME" --output json)
+    __check_connection__=$(aws sts get-caller-identity \
+        --query 'Arn' \
+        --output text)
 
-        export AWS_ACCESS_KEY_ID=$(echo $CREDENTIALS | jq -r '.Credentials.AccessKeyId')
-        export AWS_SECRET_ACCESS_KEY=$(echo $CREDENTIALS | jq -r '.Credentials.SecretAccessKey')
-        export AWS_SESSION_TOKEN=$(echo $CREDENTIALS | jq -r '.Credentials.SessionToken')
+    if [[ "${__check_role_arn__}" == "${__check_connection__}" ]]; then 
+        __output_aws_connection_info__
+    else
+        echo -e "   ${RED}${__failed_box}${NC}   Roles do not match."
+        echo -e "       Expected: ${YELLOW}${__check_role_arn__}${NC}"
+        echo -e "       Got:      ${YELLOW}${__check_connection__}${NC}"
+        echo
+    fi
+
+}
+
+function cluster_connect(){
+    if [[ "${1}" == "-p" && ! -z "${__palantir_eks_cluster_name}" ]]; then
+        local __cluster_name__="${__pal_eks_cluster_name}"
+        export AWS_DEFAULT_REGION="us-east-2"
+        export AWS_REGION="us-east-2"
+        
+    elif [[ "${1}" == "-d" || "${1}" == "--dev" && ! -z "${__dev_eks_cluster_name}" ]]; then
+        dev
+        local __cluster_name__="${__dev_eks_cluster_name}"
+    elif [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
+        __aws_eks_cluster_options__
+        return
+    elif [[ ! -z "${1}" ]]; then
+        local __cluster_name__="${1}"
+    elif [[ -z "${1}" ]]; then 
+        echo -e "${RED}Add the cluster name to proceed! ${NC}"
+        __aws_eks_cluster_options__
+        return
+    else
+        __aws_eks_cluster_options__
+        return
+    fi
+
+    local __cluster_name__="${__cluster_name__//[^A-Za-z0-9_-]/}"
+    
+    local __cluster_output__=$(aws eks --region "${AWS_REGION}" \
+            update-kubeconfig --name "${__cluster_name__}" 2>&1)
+    local __cluster_exit_code__=$?
+
+    if [ $__cluster_exit_code__ -ne 0 ] || [ -z "$__cluster_output__" ] || echo "$__cluster_output__" | grep -q "error\|Error\|ERROR"; then
+        echo -e "   ${RED}✗${NC}   Unable to connect to EKS cluster. Please check your credentials and cluster name."
+        echo
+        return
+    fi
+    # local env_tag="${env_tag:-}"
+    echo -e "   ${GREEN}✓${NC} Connected to EKS cluster:    ${YELLOW}${__cluster_name__}${NC}"
+    echo
+}
+
+function ec2_ssm_connection(){
+    if [ -z "${_ec2_id}" ];then 
+        echo -e "${RED}Pass ec2_id_function for instance id${NC}"
+    else
+        aws ssm start-session --target ${_ec2_id}
     fi
 }
 
-function __aws_connect_options(){
+function __aws_connect_options__(){
     
         echo -e "${MAGENTA}Usage:${NC} aws_sts_assume_role [Role ARN] [Session Name]"
         echo -e "       OR"
         echo -e "        aws_sts_assume_role <flags>"
-        echo -e "           ${YELLOW}-r${NC}|--role      - ${CYAN}Specify the Role ARN to assume${NC}"
-        echo -e "           ${YELLOW}-s${NC}|--session   - ${CYAN}Specify the Session Name for the assumed role${NC}"
-        echo -e "           ${YELLOW}-c${NC}|--clear     - ${CYAN}Clear assumed role credentials from environment variables${NC}"
-        echo -e "           ${YELLOW}-p${NC}|--palantir  - ${CYAN}Assume Palantir AWS role if set in env.sh${NC}"
-        echo -e "           ${YELLOW}-d${NC}|--dev       - ${CYAN}Assume Dev AWS role if set in env.sh${NC}"
-        echo -e "           ${YELLOW}-h${NC}|--help      - ${CYAN}Show this help message${NC}"
+        echo -e "           ${YELLOW}-p${NC}             - Assume Pal AWS role if set in env.sh"
+        echo -e "           ${YELLOW}-d${NC}|--dev       - Assume Dev AWS role if set in env.sh"
+        echo -e "           ${YELLOW}-h${NC}|--help      - Show this help message"
         echo -e "${YELLOW}This function assumes an AWS IAM role and sets the AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_SESSION_TOKEN environment variables.${NC}"
 }
 
-
-function aws_eks_connect_cluster(){
-    if [[ ! -z "${__palantir_eks_cluster_name}" && "${1}" == "-p" || "${1}" == "--palantir" ]]; then
-        palantir
-        aws_sts_assume_role -p
-        export __cluster_name__="${__palantir_eks_cluster_name}"
-
-        cluster_connect
-    elif [[ ! -z "${__dev_eks_cluster_name}" && "${1}" == "-d" || "${1}" == "--dev" ]]; then
-        dev
-        aws_sts_assume_role -d
-        export __cluster_name__="${__dev_eks_cluster_name}"
-
-        cluster_connect
-    elif [[ -z "${1}" ]]; then 
-        echo -e "${RED}Add the cluster name to proceed! ${NC}"
-    elif [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
-        echo -e "${MAGENTA}Usage:${NC} aws_eks_connect_cluster [Cluster Name]"
-        echo -e "        -p|--palantir  - Assume Palantir AWS role if set in env.sh"
-        echo -e "${YELLOW}This function connects to an EKS cluster by updating the kubeconfig file.${NC}"
-    else
-        local __cluster_name__="${1}"
-        cluster_connect
-    fi
+function __aws_eks_cluster_options__(){
+    echo -e "${MAGENTA}Usage:${NC} aws_eks_connect_cluster [Cluster Name]"
+    echo -e "       OR"
+    echo -e "       aws_eks_connect_cluster <flag>"
+    echo -e "           ${YELLOW}-p${NC}             - Assume Pal AWS role if set in env.sh"
+    echo -e "           ${YELLOW}-d|--dev${NC}       - Assume Dev AWS role if set in env.sh"
+    echo -e "           ${YELLOW}-h|--help${NC}      - Show this help message"
+    echo -e "${YELLOW}This function connects to an EKS cluster by updating the kubeconfig file.${NC}"
 }
 
-function __output_aws_connection_info() {
+function __output_aws_connection_info__() {
     echo
     # Check if AWS account is actually connected
     __aws_output=$(aws sts get-caller-identity --query Arn --output text 2>&1)
@@ -87,14 +151,14 @@ function __output_aws_connection_info() {
     
     # Check for expired token error
     if echo "$__aws_output" | grep -q "ExpiredToken"; then
-        echo -e "   ${RED}✗${NC} AWS credentials have expired. Please reconnect to AWS."
+        echo -e "   ${RED}${__failed_box}${NC} AWS credentials have expired. Please reconnect to AWS."
         echo
         return 1
     fi
     
     # Check for other connection errors
     if [ $__aws_exit_code -ne 0 ] || [ -z "$__aws_output" ] || echo "$__aws_output" | grep -q "error\|Error\|ERROR"; then
-        echo -e "   ${RED}✗${NC}   Unable to connect to AWS account. Please check your credentials."
+        echo -e "   ${RED}${__failed_box}${NC}   Unable to connect to AWS account. Please check your credentials."
         echo
         return
     fi

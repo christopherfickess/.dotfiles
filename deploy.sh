@@ -1,27 +1,20 @@
 #!/bin/bash
 
-# Initialize base directory variables
-__DOTFILES_DIR="$HOME/.dotfiles"
-__TOOLS_DIR="$__DOTFILES_DIR/tools"
-__SRE_TOOLS_DIR="${__DOTFILES_DIR}/sre-tools"
-__BASH_CONFIG_DIR="${__DOTFILES_DIR}/bash_dir"
-__OS_TYPE_DIR="${__DOTFILES_DIR}/os_type"
-__MACOS_SETUP_DIR="${__OS_TYPE_DIR}/macos"
-__LINUX_SETUP_DIR="${__OS_TYPE_DIR}/linux"
-__WINDOWS_SETUP_DIR="${__OS_TYPE_DIR}/windows"
-__WSL_DIR="${__WINDOWS_SETUP_DIR}/wsl"
+__os_type_dir__="${__dotfiles_dir__}/os_type"
+__macos_setup_dir__="${__os_type_dir__}/macos"
+__linux_setup_dir__="${__os_type_dir__}/linux"
+__windows_setup_dir__="${__os_type_dir__}/windows"
+__wsl_dir__="${__windows_setup_dir__}/wsl"
+
 
 # Initialize tool-specific directory variables (used by setup.sh)
-__AWS_FUNCTIONS_DIR="${__SRE_TOOLS_DIR}/aws/defaults"
-__AWS_USERS_DIR="$__AWS_FUNCTIONS_DIR/users"
-__DOCKER_FUNCTIONS_DIR="${__SRE_TOOLS_DIR}/docker"
-__KUBERNETES_FUNCTIONS_DIR="${__SRE_TOOLS_DIR}/kubernetes"
-__PYTHON_FUNCTIONS_DIR="${__SRE_TOOLS_DIR}/python"
+__aws_functions_dir__="${__sre_tools_dir__}/aws/defaults"
+__aws_users_dir__="$__aws_functions_dir__/users"
+__docker_functions_dir__="${__sre_tools_dir__}/docker"
+__kubernetes_functions_dir__="${__sre_tools_dir__}/kubernetes"
+__python_functions_dir__="${__sre_tools_dir__}/python"
 
-
-# __GCP_USERS_DIR="$__SRE_TOOLS_DIR/gcp/users"
-# __AZURE_USERS_DIR="$__SRE_TOOLS_DIR/azure/users"
-
+# Initialize base directory variables
 # Cache OS detection (computed once, used multiple times)
 function __detect_os_type() {
     # Use OSTYPE first (fastest, bash builtin variable)
@@ -61,23 +54,31 @@ unset -f __detect_os_type  # Clean up function after use
 
 function __source_env_functions() {
     # This is to source key values for the SRE tools and hidden dotfiles and users
-    [[ -f "$__BASH_CONFIG_DIR/env.sh" ]] && source "$__BASH_CONFIG_DIR/env.sh"
-    [[ -f "$__BASH_CONFIG_DIR/public_env.sh" ]] && source "$__BASH_CONFIG_DIR/public_env.sh"
-    [[ -f "$__BASH_CONFIG_DIR/tmp/env.sh" ]] && source "$__BASH_CONFIG_DIR/tmp/env.sh"
-    # [[ -f "$__TOOLS_DIR/tmp/users.sh" ]] && source "$__TOOLS_DIR/tmp/users.sh"
+    [[ -f "$__bash_config_dir__/env.sh" ]] && source "$__bash_config_dir__/env.sh"
+    [[ -f "$__bash_config_dir__/public_env.sh" ]] && source "$__bash_config_dir__/public_env.sh"
+    [[ -f "$__bash_config_dir__/tmp/env.sh" ]] && source "$__bash_config_dir__/tmp/env.sh"
+
+    unset -f __source_env_functions  # Clean up function after use
 }
 
 function __source_cloud_users_functions() {
     # Source cloud user functions if the file exists
-    [[ -f "$__AWS_USERS_DIR/users.sh" ]] && source "$__AWS_USERS_DIR/users.sh";
-    [[ -f "$__GCP_USERS_DIR/users.sh" ]] && source "$__GCP_USERS_DIR/users.sh";
-    [[ -f "$__AZURE_USERS_DIR/users.sh" ]] && source "$__AZURE_USERS_DIR/users.sh";
+    [[ -f "$__aws_users_dir__/users.sh" ]] && source "$__aws_users_dir__/users.sh";
+    [[ -f "$__gcp_functions_dir__/users.sh" ]] && source "$__gcp_functions_dir__/users.sh";
+    [[ -f "$__azure_functions_dir__/users.sh" ]] && source "$__azure_functions_dir__/users.sh";
+
+    unset -f __source_cloud_users_functions  # Clean up function after use
+    unset __aws_users_dir__
+    unset __gcp_functions_dir__
+    unset __azure_functions_dir__
 }
 
 function __source_bashrc_functions() {
     [[ -f /etc/bashrc ]] && source /etc/bashrc
-    [[ -f "$__BASH_CONFIG_DIR/.bash_aliases" ]] && source "$__BASH_CONFIG_DIR/.bash_aliases"
-    [[ -f "$__BASH_CONFIG_DIR/.bash_functions" ]] && source "$__BASH_CONFIG_DIR/.bash_functions"
+    [[ -f "$__bash_config_dir__/.bash_aliases" ]] && source "$__bash_config_dir__/.bash_aliases"
+    [[ -f "$__bash_config_dir__/.bash_functions" ]] && source "$__bash_config_dir__/.bash_functions"
+
+    unset -f __source_bashrc_functions  # Clean up function after use
 }
 
 
@@ -89,84 +90,103 @@ function __source_os_type_functions() {
         windows|wsl)
             ISWINDOWS="TRUE"
             
-            [[ -f "$__WSL_DIR/help.sh" ]] && source "$__WSL_DIR/help.sh"
+            [[ -f "$__wsl_dir__/help.sh" ]] && source "$__wsl_dir__/help.sh"
 
             if [[ "$__OS_TYPE" == "wsl" ]]; then
                 echo -e "   ${MAGENTA}Inside WSL OS.${NC}"
                 # Source WSL help functions
             else
                 echo -e "   ${MAGENTA}Windows OS.${NC}"
-                __WINDOWS_SETUP_CONFIG_DIR="$__WINDOWS_SETUP_DIR/windows_setup"
-                [[ -f "$__WSL_DIR/update/wsl_update.sh" ]] && source "$__WSL_DIR/update/wsl_update.sh"
+                __WINDOWS_SETUP_CONFIG_DIR="$__windows_setup_dir__/windows_setup"
+                [[ -f "$__wsl_dir__/update/wsl_update.sh" ]] && source "$__wsl_dir__/update/wsl_update.sh"
                 [[ -f "$__WINDOWS_SETUP_CONFIG_DIR/first_time_setup.sh" ]] && source "$__WINDOWS_SETUP_CONFIG_DIR/first_time_setup.sh"
-                [[ -f "$__WSL_DIR/help.sh" ]] && source "$__WSL_DIR/help.sh"
-                [[ -f "$__WSL_DIR/destroy/wsl_destroy.sh" ]] && source "$__WSL_DIR/destroy/wsl_destroy.sh"
-                [[ -f "$__WSL_DIR/setup/wsl_setup.sh" ]] && source "$__WSL_DIR/setup/wsl_setup.sh"
+                [[ -f "$__wsl_dir__/help.sh" ]] && source "$__wsl_dir__/help.sh"
+                [[ -f "$__wsl_dir__/destroy/wsl_destroy.sh" ]] && source "$__wsl_dir__/destroy/wsl_destroy.sh"
+                [[ -f "$__wsl_dir__/setup/wsl_setup.sh" ]] && source "$__wsl_dir__/setup/wsl_setup.sh"
             fi
             ;;
         macos)
             ISMACOS="TRUE"
             # Source MacOS specific bashrc and setup scripts
             echo -e "   ${MAGENTA}MacOS OS.${NC}"
-            [[ -f "$__MACOS_SETUP_DIR/macos_setup.sh" ]] && source "$__MACOS_SETUP_DIR/macos_setup.sh"
+            [[ -f "$__macos_setup_dir__/macos_setup.sh" ]] && source "$__macos_setup_dir__/macos_setup.sh"
             ;;
         linux)
             ISLINUX="TRUE"
             # Source Linux specific bashrc and setup scripts
             echo -e "   ${MAGENTA}Linux OS.${NC}"
-            [[ -f "$__LINUX_SETUP_DIR/linux_setup.sh" ]] && source "$__LINUX_SETUP_DIR/linux_setup.sh"
+            [[ -f "$__linux_setup_dir__/linux_setup.sh" ]] && source "$__linux_setup_dir__/linux_setup.sh"
             ;;
         *)
             echo "This OS is not specifically supported by this .bashrc setup."
             ;;
     esac
+
+    unset -f __source_os_type_functions  # Clean up function after use
+    unset __os_type_dir__
+    unset __macos_setup_dir__
+    unset __linux_setup_dir__
+    unset __windows_setup_dir__
+    unset __wsl_dir__
 }
 
 function __source_aws_functions() {
     # Use command -v (bash builtin) instead of --version (external command) - much faster
     if command -v aws &>/dev/null; then
-        [[ -f "$__AWS_FUNCTIONS_DIR/aws_functions.sh" ]] && source "$__AWS_FUNCTIONS_DIR/aws_functions.sh"
-        [[ -f "$__AWS_FUNCTIONS_DIR/aws_connect.sh" ]] && source "$__AWS_FUNCTIONS_DIR/aws_connect.sh"
-        [[ -f "$__AWS_FUNCTIONS_DIR/help.sh" ]] && source "$__AWS_FUNCTIONS_DIR/help.sh"
+        [[ -f "$__aws_functions_dir__/aws_functions.sh" ]] && source "$__aws_functions_dir__/aws_functions.sh"
+        [[ -f "$__aws_functions_dir__/aws_connect.sh" ]] && source "$__aws_functions_dir__/aws_connect.sh"
+        [[ -f "$__aws_functions_dir__/help.sh" ]] && source "$__aws_functions_dir__/help.sh"
     fi
+
+    unset -f __source_aws_functions  # Clean up function after use
+    unset __aws_functions_dir__
 }
 
 function __source_docker_functions() {
     # Use command -v (bash builtin) instead of --version (external command) - much faster
     if command -v docker &>/dev/null; then
-        [[ -f "$__DOCKER_FUNCTIONS_DIR/defaults/docker_functions.sh" ]] && source "$__DOCKER_FUNCTIONS_DIR/defaults/docker_functions.sh"
-        [[ -f "$__DOCKER_FUNCTIONS_DIR/help.sh" ]] && source "$__DOCKER_FUNCTIONS_DIR/help.sh"
+        [[ -f "$__docker_functions_dir__/defaults/docker_functions.sh" ]] && source "$__docker_functions_dir__/defaults/docker_functions.sh"
+        [[ -f "$__docker_functions_dir__/help.sh" ]] && source "$__docker_functions_dir__/help.sh"
     fi
+
+    unset -f __source_docker_functions  # Clean up function after use
+    unset __docker_functions_dir__
 }
 
 function __source_kubernetes_functions() {
     # Use command -v (bash builtin) instead of version --client (external command) - much faster
     if command -v kubectl &>/dev/null; then
-        [[ -f "$__KUBERNETES_FUNCTIONS_DIR/defaults/kubernetes_functions.sh" ]] && source "$__KUBERNETES_FUNCTIONS_DIR/defaults/kubernetes_functions.sh"
-        [[ -f "$__KUBERNETES_FUNCTIONS_DIR/help.sh" ]] && source "$__KUBERNETES_FUNCTIONS_DIR/help.sh"
+        [[ -f "$__kubernetes_functions_dir__/defaults/kubernetes_functions.sh" ]] && source "$__kubernetes_functions_dir__/defaults/kubernetes_functions.sh"
+        [[ -f "$__kubernetes_functions_dir__/help.sh" ]] && source "$__kubernetes_functions_dir__/help.sh"
     fi
+    unset -f __source_kubernetes_functions  # Clean up function after use
+    unset __kubernetes_functions_dir__
 }
 
 function __source_git_functions() {
     # Use command -v (bash builtin) instead of --version (external command) - much faster
     if command -v git &>/dev/null; then
-        [[ -f "$__BASH_CONFIG_DIR/git_files/gitconfig.sh" ]] && source "$__BASH_CONFIG_DIR/git_files/gitconfig.sh"
-        [[ -f "$__BASH_CONFIG_DIR/git_files/git_functions.sh" ]] && source "$__BASH_CONFIG_DIR/git_files/git_functions.sh"
-        [[ -f "$__BASH_CONFIG_DIR/git_files/help.sh" ]] && source "$__BASH_CONFIG_DIR/git_files/help.sh"
-        [[ -f "$__BASH_CONFIG_DIR/git_files/git_creds_broken.sh" ]] && source "$__BASH_CONFIG_DIR/git_files/git_creds_broken.sh"
+        [[ -f "$__bash_config_dir__/git_files/gitconfig.sh" ]] && source "$__bash_config_dir__/git_files/gitconfig.sh"
+        [[ -f "$__bash_config_dir__/git_files/git_functions.sh" ]] && source "$__bash_config_dir__/git_files/git_functions.sh"
+        [[ -f "$__bash_config_dir__/git_files/help.sh" ]] && source "$__bash_config_dir__/git_files/help.sh"
+        [[ -f "$__bash_config_dir__/git_files/git_creds_broken.sh" ]] && source "$__bash_config_dir__/git_files/git_creds_broken.sh"
     fi
+    unset -f __source_git_functions  # Clean up function after use
 }
 
 function __source_default_python() {
     if command -v python &>/dev/null; then 
-        [[ -f "${__PYTHON_FUNCTIONS_DIR}/help.sh" ]] && source "${__PYTHON_FUNCTIONS_DIR}/help.sh";
-        [[ -f "${__PYTHON_FUNCTIONS_DIR}/defaults/python-functions.sh" ]] && source "${__PYTHON_FUNCTIONS_DIR}/defaults/python-functions.sh";
+        [[ -f "${__python_functions_dir__}/help.sh" ]] && source "${__python_functions_dir__}/help.sh";
+        [[ -f "${__python_functions_dir__}/defaults/python-functions.sh" ]] && source "${__python_functions_dir__}/defaults/python-functions.sh";
     fi
+    
+    unset -f __source_default_python  # Clean up function after use
+    unset __python_functions_dir__
 }
 
-function setup_sre_tools() {
-    [[ -d "${__TOOLS_DIR}/sre-tools" ]] && __SRE_TOOLS_DIR="${__TOOLS_DIR}/sre-tools"
-    [[ -f "$__SRE_TOOLS_DIR/setup.sh" ]] && source "$__SRE_TOOLS_DIR/setup.sh"
+function reload_sre_tools() {
+    [[ -f "${__sre_tools_dir__}/setup.sh" ]] && source "${__sre_tools_dir__}/setup.sh"
+    [[ -f "${__sre_tools_dir__}/help.sh" ]] && source "${__sre_tools_dir__}/help.sh"
 }
 
 # Source functions in order
@@ -179,5 +199,5 @@ __source_docker_functions
 __source_kubernetes_functions
 __source_cloud_users_functions
 __source_default_python
-setup_sre_tools
+reload_sre_tools
 
