@@ -105,6 +105,9 @@ function __post_install_wsl_tools__() {
             sudo ./install
         popd
 
+        curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm" -o "session-manager-plugin.rpm"
+        curl -s https://fluxcd.io/install.sh | sudo bash
+        
         sudo dnf update -y
         sudo dnf install -y --skip-unavailable \
             awscli \
@@ -130,6 +133,7 @@ function __post_install_wsl_tools__() {
             nmap \
             openssl \
             pip \
+            session-manager-plugin.rpm \
             sysstat \
             tree \
             unzip \
@@ -140,6 +144,7 @@ function __post_install_wsl_tools__() {
             zsh
 
             
+        rm -f session-manager-plugin.rpm
         go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
 
         echo -e \"${GREEN}Configuring Docker User...${NC}\"

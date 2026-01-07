@@ -15,7 +15,7 @@ function tshl() {
 
 function aws_sts_assume_role(){
     if [[ "${1}" == "-p" && ! -z "${__pal_aws_role}" ]]; then
-        __session_name__="chrisfickess"
+        __session_name__="christopher.fickess@mattermost.com"
 
         export AWS_DEFAULT_REGION="us-east-2"
         export AWS_REGION="us-east-2"
@@ -32,6 +32,11 @@ function aws_sts_assume_role(){
 
 
         __check_role_arn__="${__pal_aws_assumed_role}"
+
+    elif [[ "${1}" == "-b" || "${1}" == "--breakglass" ]]; then
+        mattermost-breakglass
+        __session_name__="christopher.fickess@mattermost.com"
+        __role_arn__="${__breakglass_aws_role}/${__session_name__}"
 
     elif [[ "${1}" == "-d" || "${1}" == "--dev" && ! -z "${__dev_aws_assume_role}" ]]; then
         dev
@@ -87,6 +92,9 @@ function cluster_connect(){
     elif [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
         __aws_eks_cluster_options__
         return
+    elif [[ "${1}" == "-p" || "${1}" == "--playground" && -z "${__dev_eks_cluster_name}" ]]; then
+        dev
+        local __cluster_name__="${__playground_eks_cluster_name}"
     elif [[ ! -z "${1}" ]]; then
         local __cluster_name__="${1}"
     elif [[ -z "${1}" ]]; then 
@@ -137,9 +145,10 @@ function __aws_eks_cluster_options__(){
     echo -e "${MAGENTA}Usage:${NC} aws_eks_connect_cluster [Cluster Name]"
     echo -e "       OR"
     echo -e "       aws_eks_connect_cluster <flag>"
-    echo -e "           ${YELLOW}-p${NC}             - Assume Pal AWS role if set in env.sh"
-    echo -e "           ${YELLOW}-d|--dev${NC}       - Assume Dev AWS role if set in env.sh"
-    echo -e "           ${YELLOW}-h|--help${NC}      - Show this help message"
+    echo -e "           ${YELLOW}-p${NC}                - Assume Pal AWS role if set in env.sh"
+    echo -e "           ${YELLOW}-d|--dev${NC}          - Assume Dev AWS role if set in env.sh"
+    echo -e "           ${YELLOW}-h|--help${NC}         - Show this help message"
+    echo -e "           ${YELLOW}-p|--playground${NC}   - Connect to Playground EKS cluster if set in env.sh"
     echo -e "${YELLOW}This function connects to an EKS cluster by updating the kubeconfig file.${NC}"
 }
 
