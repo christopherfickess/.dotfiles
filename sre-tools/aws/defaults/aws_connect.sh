@@ -12,33 +12,8 @@ function tshl() {
     fi
 }
 
-
 function aws_sts_assume_role(){
-    if [[ "${1}" == "-p" && ! -z "${__pal_aws_role}" ]]; then
-        __session_name__="christopher.fickess@mattermost.com"
-
-        export AWS_DEFAULT_REGION="us-east-2"
-        export AWS_REGION="us-east-2"
-        
-        palantir
-        __role_arn__="${__pal_aws_role}"
-        __credentials__=$(aws sts assume-role --role-arn "$__role_arn__" \
-                --role-session-name "$__session_name__" \
-                --output json)
-
-        export AWS_ACCESS_KEY_ID=$(echo $__credentials__ | jq -r '.Credentials.AccessKeyId')
-        export AWS_SECRET_ACCESS_KEY=$(echo $__credentials__ | jq -r '.Credentials.SecretAccessKey')
-        export AWS_SESSION_TOKEN=$(echo $__credentials__ | jq -r '.Credentials.SessionToken')
-
-
-        __check_role_arn__="${__pal_aws_assumed_role}"
-
-    elif [[ "${1}" == "-b" || "${1}" == "--breakglass" ]]; then
-        mattermost-breakglass
-        __session_name__="christopher.fickess@mattermost.com"
-        __role_arn__="${__breakglass_aws_role}/${__session_name__}"
-
-    elif [[ "${1}" == "-d" || "${1}" == "--dev" && ! -z "${__dev_aws_assume_role}" ]]; then
+    if [[ "${1}" == "-d" || "${1}" == "--dev" && ! -z "${__dev_aws_assume_role}" ]]; then
         dev
         __session_name__="christopher.fickess@mattermost.com"
 
@@ -81,20 +56,21 @@ function aws_sts_assume_role(){
 }
 
 function cluster_connect(){
-    if [[ "${1}" == "-p" && ! -z "${__palantir_eks_cluster_name}" ]]; then
-        local __cluster_name__="${__pal_eks_cluster_name}"
-        export AWS_DEFAULT_REGION="us-east-2"
-        export AWS_REGION="us-east-2"
-        
-    elif [[ "${1}" == "-d" || "${1}" == "--dev" && ! -z "${__dev_eks_cluster_name}" ]]; then
+    if [[ "${1}" == "-d" || "${1}" == "--dev" && ! -z "${__dev_eks_cluster_name__}" ]]; then
         dev
-        local __cluster_name__="${__dev_eks_cluster_name}"
+        local __cluster_name__="${__dev_eks_cluster_name__}"
+    elif [[ "${1}" == "-i" || "${1}" == "--iron-badger" && ! -z "${__tsh_iron_badger_staging_eks_cluster__}" ]]; then
+        local __cluster_name__="${__tsh_iron_badger_staging_eks_cluster__}"
+        tshl.iron-badger.connect
     elif [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
         __aws_eks_cluster_options__
         return
-    elif [[ "${1}" == "-p" || "${1}" == "--playground" && -z "${__dev_eks_cluster_name}" ]]; then
+    elif [[ "${1}" == "-p" || "${1}" == "--prod" && ! -z "${__prod_eks_cluster_name__}" ]]; then
+        local __cluster_name__="${__prod_eks_cluster_name__}"
+        if [[ -z "${prod_mattermost}" ]]; then prod_mattermost; fi
+    elif [[ "${1}" == "-s" || "${1}" == "--sandbox" && -z "${__sandbox_eks_cluster_name__}" ]]; then
         dev
-        local __cluster_name__="${__playground_eks_cluster_name}"
+        local __cluster_name__="${__sandbox_eks_cluster_name__}"
     elif [[ ! -z "${1}" ]]; then
         local __cluster_name__="${1}"
     elif [[ -z "${1}" ]]; then 
@@ -106,7 +82,20 @@ function cluster_connect(){
         return
     fi
 
-    local __cluster_name__="${__cluster_name__//[^A-Za-z0-9_-]/}"
+    __cluster_connect__ "${__cluster_name__}"
+}
+
+function __cluster_connect__(){
+    if [[ -z "${1}" ]]; then 
+        echo -e "${RED}Add the cluster name to proceed! ${NC}"
+        __aws_eks_cluster_options__
+        return
+    elif [[ ! -z "${1}" ]]; then
+        local __cluster_name__="${1}"
+    else
+        __aws_eks_cluster_options__
+        return
+    fi
     
     local __cluster_output__=$(aws eks --region "${AWS_REGION}" \
             update-kubeconfig --name "${__cluster_name__}" 2>&1)
@@ -135,7 +124,6 @@ function __aws_connect_options__(){
         echo -e "${MAGENTA}Usage:${NC} aws_sts_assume_role [Role ARN] [Session Name]"
         echo -e "       OR"
         echo -e "        aws_sts_assume_role <flags>"
-        echo -e "           ${YELLOW}-p${NC}             - Assume Pal AWS role if set in env.sh"
         echo -e "           ${YELLOW}-d${NC}|--dev       - Assume Dev AWS role if set in env.sh"
         echo -e "           ${YELLOW}-h${NC}|--help      - Show this help message"
         echo -e "${YELLOW}This function assumes an AWS IAM role and sets the AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_SESSION_TOKEN environment variables.${NC}"
@@ -145,10 +133,11 @@ function __aws_eks_cluster_options__(){
     echo -e "${MAGENTA}Usage:${NC} aws_eks_connect_cluster [Cluster Name]"
     echo -e "       OR"
     echo -e "       aws_eks_connect_cluster <flag>"
-    echo -e "           ${YELLOW}-p${NC}                - Assume Pal AWS role if set in env.sh"
-    echo -e "           ${YELLOW}-d|--dev${NC}          - Assume Dev AWS role if set in env.sh"
+    echo -e "           ${YELLOW}-i${NC}                - Connect to iron-badger AWS cluster if set in tsh_connections.sh"
+    echo -e "           ${YELLOW}-d|--dev${NC}          - Connect to Dev AWS cluster if set in tsh_connections.sh"
+    echo -e "           ${YELLOW}-p|--prod${NC}         - Connect to Prod AWS cluster if set in env.sh"
     echo -e "           ${YELLOW}-h|--help${NC}         - Show this help message"
-    echo -e "           ${YELLOW}-p|--playground${NC}   - Connect to Playground EKS cluster if set in env.sh"
+    echo -e "           ${YELLOW}-s|--sandbox${NC}   - Connect to sandbox EKS cluster if set in env.sh"
     echo -e "${YELLOW}This function connects to an EKS cluster by updating the kubeconfig file.${NC}"
 }
 
