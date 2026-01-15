@@ -1,6 +1,8 @@
 #!/bin/bash
 
 export HISTFILESIZE=2000000 
+export EDITOR=vim
+export VISUAL=vim
 
 # The maximum number of lines contained in the history file
 export HISTCONTROL=ignoredups # Ignore duplicate commands 

@@ -63,7 +63,6 @@ function __source_env_functions() {
 
 function __source_cloud_users_functions() {
     # Source cloud user functions if the file exists
-    [[ -f "$__aws_users_dir__/users.sh" ]] && source "$__aws_users_dir__/users.sh";
     [[ -f "$__gcp_functions_dir__/users.sh" ]] && source "$__gcp_functions_dir__/users.sh";
     [[ -f "$__azure_functions_dir__/users.sh" ]] && source "$__azure_functions_dir__/users.sh";
 
@@ -130,15 +129,13 @@ function __source_os_type_functions() {
     unset __wsl_dir__
 }
 
-function __source_aws_functions() {
+function __source_aws_setup() {
     # Use command -v (bash builtin) instead of --version (external command) - much faster
     if command -v aws &>/dev/null; then
-        [[ -f "$__aws_functions_dir__/aws_functions.sh" ]] && source "$__aws_functions_dir__/aws_functions.sh"
-        [[ -f "$__aws_functions_dir__/aws_connect.sh" ]] && source "$__aws_functions_dir__/aws_connect.sh"
-        [[ -f "$__aws_functions_dir__/help.sh" ]] && source "$__aws_functions_dir__/help.sh"
+        [[ -f "$__aws_functions_dir__/setup.sh" ]] && source "$__aws_functions_dir__/setup.sh"
     fi
 
-    unset -f __source_aws_functions  # Clean up function after use
+    unset -f __source_aws_setup  # Clean up function after use
     unset __aws_functions_dir__
 }
 
@@ -194,7 +191,7 @@ __source_bashrc_functions
 __source_env_functions
 __source_os_type_functions
 __source_git_functions
-__source_aws_functions
+__source_aws_setup
 __source_docker_functions
 __source_kubernetes_functions
 __source_cloud_users_functions
