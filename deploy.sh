@@ -192,3 +192,11 @@ __source_kubernetes_functions
 __source_default_python
 reload_sre_tools
 
+unset __source_bashrc_functions
+unset __source_env_functions
+unset __source_os_type_functions
+unset __source_git_functions
+unset __source_cloud_setup__
+unset __source_docker_functions
+unset __source_kubernetes_functions
+unset __source_default_python
