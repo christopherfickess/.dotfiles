@@ -6,6 +6,7 @@ __aws_users_dir__="$__aws_functions_dir__/users"
 function __source_aws_functions() {
     # Use command -v (bash builtin) instead of --version (external command) - much faster
     if command -v aws &>/dev/null; then
+    # make a for loop that sources all aws related files in this directory __aws_functions_dir__
         [[ -f "$__aws_functions_dir__/aws_functions.sh" ]] && source "$__aws_functions_dir__/aws_functions.sh"
         [[ -f "$__aws_functions_dir__/aws_connect.sh" ]] && source "$__aws_functions_dir__/aws_connect.sh"
         [[ -f "$__aws_functions_dir__/help.sh" ]] && source "$__aws_functions_dir__/help.sh"

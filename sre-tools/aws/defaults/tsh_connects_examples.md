@@ -1,6 +1,9 @@
+# Example tshl commands
 
-# Example tshl functions to login and connect to a customer's Teleport cluster and EKS cluster
-# Replace the cluster names with the appropriate values for your setup
+The foolowing is examples tshl of functions to login and connect to a customer's Teleport cluster and EKS cluster
+- Replace the cluster names with the appropriate values for your setup
+
+```bash
 __customer_name__="Customer Name"
 __tsh_customer_name_staging_teleport_cluster__="customer-staging-customer-name"
 __tsh_customer_name_staging_eks_cluster__="staging-customer-name-workload"
@@ -24,3 +27,4 @@ function tshl.customer-name.connect() {
         echo "Teleport CLI (tsh) is not installed. Please install it to log in."
     fi
 }
+```
