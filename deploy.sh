@@ -9,9 +9,7 @@ __wsl_dir__="${__windows_setup_dir__}/wsl"
 
 # Initialize tool-specific directory variables (used by setup.sh)
 __aws_functions_dir__="${__sre_tools_dir__}/aws/defaults"
-__aws_users_dir__="$__aws_functions_dir__/users"
 __azure_functions_dir__="${__sre_tools_dir__}/azure/defaults"
-__azure_users_dir__="$__azure_functions_dir__/users"
 __docker_functions_dir__="${__sre_tools_dir__}/docker"
 __kubernetes_functions_dir__="${__sre_tools_dir__}/kubernetes"
 __python_functions_dir__="${__sre_tools_dir__}/python"
