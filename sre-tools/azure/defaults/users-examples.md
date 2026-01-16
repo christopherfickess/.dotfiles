@@ -12,7 +12,7 @@ function user() {
     echo "Setting Azure environment for Dev..."
 
     az cloud set --name AzureCloud
-    az account set --subscription "Dev Subscription"
+    az account set --subscription "User Subscription"
 
     az account show --output table
 }
