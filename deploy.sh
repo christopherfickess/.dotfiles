@@ -10,6 +10,8 @@ __wsl_dir__="${__windows_setup_dir__}/wsl"
 # Initialize tool-specific directory variables (used by setup.sh)
 __aws_functions_dir__="${__sre_tools_dir__}/aws/defaults"
 __aws_users_dir__="$__aws_functions_dir__/users"
+__azure_functions_dir__="${__sre_tools_dir__}/azure/defaults"
+__azure_users_dir__="$__azure_functions_dir__/users"
 __docker_functions_dir__="${__sre_tools_dir__}/docker"
 __kubernetes_functions_dir__="${__sre_tools_dir__}/kubernetes"
 __python_functions_dir__="${__sre_tools_dir__}/python"
@@ -59,17 +61,6 @@ function __source_env_functions() {
     [[ -f "$__bash_config_dir__/tmp/env.sh" ]] && source "$__bash_config_dir__/tmp/env.sh"
 
     unset -f __source_env_functions  # Clean up function after use
-}
-
-function __source_cloud_users_functions() {
-    # Source cloud user functions if the file exists
-    [[ -f "$__gcp_functions_dir__/users.sh" ]] && source "$__gcp_functions_dir__/users.sh";
-    [[ -f "$__azure_functions_dir__/users.sh" ]] && source "$__azure_functions_dir__/users.sh";
-
-    unset -f __source_cloud_users_functions  # Clean up function after use
-    unset __aws_users_dir__
-    unset __gcp_functions_dir__
-    unset __azure_functions_dir__
 }
 
 function __source_bashrc_functions() {
@@ -129,14 +120,20 @@ function __source_os_type_functions() {
     unset __wsl_dir__
 }
 
-function __source_aws_setup() {
+function __source_cloud_setup__() {
     # Use command -v (bash builtin) instead of --version (external command) - much faster
     if command -v aws &>/dev/null; then
         [[ -f "$__aws_functions_dir__/setup.sh" ]] && source "$__aws_functions_dir__/setup.sh"
     fi
+    echo "Sourcing Azure setup..."
 
-    unset -f __source_aws_setup  # Clean up function after use
+    if command -v az &>/dev/null; then
+        [[ -f "$__azure_functions_dir__/setup.sh" ]] && source "$__azure_functions_dir__/setup.sh"
+    fi
+
+    unset -f __source_cloud_setup__  # Clean up function after use
     unset __aws_functions_dir__
+    unset __azure_functions_dir__
 }
 
 function __source_docker_functions() {
@@ -191,10 +188,9 @@ __source_bashrc_functions
 __source_env_functions
 __source_os_type_functions
 __source_git_functions
-__source_aws_setup
+__source_cloud_setup__
 __source_docker_functions
 __source_kubernetes_functions
-__source_cloud_users_functions
 __source_default_python
 reload_sre_tools
 

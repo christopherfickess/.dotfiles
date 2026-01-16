@@ -32,6 +32,12 @@ function myhelp(){
         echo -e ""
     fi
 
+    if command -v az &>/dev/null; then
+        echo -e ""
+        myhelp_azure
+        echo -e ""
+    fi
+
     if command -v kubectl &>/dev/null; then
         echo -e ""
         myhelp_kubernetes
