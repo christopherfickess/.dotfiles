@@ -4,6 +4,8 @@ Bash Configuration Repo for Personal Use
 
 ##  Setup
 
+First install git on the system.
+
 To create this repo verify or make a file called `$HOME/.bashrc`
 
 Clone the repo into your `$HOME/`
@@ -12,8 +14,33 @@ Clone the repo into your `$HOME/`
 git clone https://github.com/christopherfickess/.dotfiles.git
 
 # Will configure your bashrc to work
-source $HOME/.dotfiles/setup.sh && setup_bashrc   
+source $HOME/.dotfiles/setup.sh
 ```
+
+### Windows
+
+To setup windows to work install git.
+
+To install dotfiles windows specific tools open a new terminal and run `windows_first_time_setup`
+
+To install wsl with `Fedora Linux system` run `setup_wsl`
+
+
+
+### Mac 
+
+To setup mac to work install Brew then git
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew --version
+
+brew install git
+```
+
+Create a `~/.bash_profile` and `source ${HOME}/.bashrc`
+
+To install dotfiles tools open a new terminal and run `mac_install`
 
 ### Org Setup
 
