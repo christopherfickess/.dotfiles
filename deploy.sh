@@ -123,7 +123,6 @@ function __source_cloud_setup__() {
     if command -v aws &>/dev/null; then
         [[ -f "$__aws_functions_dir__/setup.sh" ]] && source "$__aws_functions_dir__/setup.sh"
     fi
-    echo "Sourcing Azure setup..."
 
     if command -v az &>/dev/null; then
         [[ -f "$__azure_functions_dir__/setup.sh" ]] && source "$__azure_functions_dir__/setup.sh"
