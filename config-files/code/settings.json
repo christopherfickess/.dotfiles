@@ -1,0 +1,29 @@
+{
+  "latex-workshop.latex.tools": [
+    {
+      "name": "lualatex",
+      "command": "lualatex",
+      "args": [
+        "--interaction=nonstopmode",
+        "--synctex=1",
+        "-output-directory=build",
+        "%DOC%"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "LuaLaTeX",
+      "tools": ["lualatex"]
+    }
+  ],
+  "latex-workshop.latex.recipe.default": "LuaLaTeX",
+  "latex-workshop.message.log.show": "always",
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latex.outDir": "./build",
+  "editor.minimap.enabled": false,
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "editor.wordWrap": "on",
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "files.eol": "\n"
+}
