@@ -12,47 +12,41 @@ function tshl() {
     fi
 }
 
-function aws_sts_assume_role(){
-    if [[ "${1}" == "-d" || "${1}" == "--dev" && ! -z "${__dev_aws_assume_role}" ]]; then
-        dev
-        __session_name__="christopher.fickess@mattermost.com"
-
-        __check_role_arn__="${__dev_aws_assumed_role}/${__session_name__}"
-    elif [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
-        __aws_connect_options__
-        return
-    elif [[ -z "${1}" || -z "${2}" ]];then 
-        __aws_connect_options__
-        return
-    elif [[ ! -z "${1}" && ! -z "${2}" ]]; then
-        __role_arn__=${1}
-        __session_name__=${2}
-
-        __credentials__=$(aws sts assume-role --role-arn "$__role_arn__" --role-session-name "$__session_name__" --output json)
-        
-        export AWS_ACCESS_KEY_ID=$(echo $__credentials__ | jq -r '.Credentials.AccessKeyId')
-        export AWS_SECRET_ACCESS_KEY=$(echo $__credentials__ | jq -r '.Credentials.SecretAccessKey')
-        export AWS_SESSION_TOKEN=$(echo $__credentials__ | jq -r '.Credentials.SessionToken')
-
-        __check_role_arn__="${__role_arn__}/${__session_name__}"
-    else
-        __aws_connect_options__
-        return
-    fi
-
-    __check_connection__=$(aws sts get-caller-identity \
-        --query 'Arn' \
-        --output text)
-
-    if [[ "${__check_role_arn__}" == "${__check_connection__}" ]]; then 
-        __output_aws_connection_info__
-    else
-        echo -e "   ${RED}${__failed_box}${NC}   Roles do not match."
-        echo -e "       Expected: ${YELLOW}${__check_role_arn__}${NC}"
-        echo -e "       Got:      ${YELLOW}${__check_connection__}${NC}"
+function tshl.login(){
+    if command -v tsh &> /dev/null; then
+        if [ -z "${TELEPORT_LOGIN}" ]; then
+            echo -e "${RED}Please set TELEPORT_LOGIN environment variable before logging in.${NC}"
+            return
+        fi
+        if [ -z "${__customer_name__}" ]; then
+            echo -e "${RED}Please set __customer_name__ environment variable before logging in.${NC}"
+            return
+        fi
+        if [ -z "${__tsh_connect_eks_cluster__}" ]; then
+            echo -e "${RED}Please set __tsh_connect_eks_cluster__ environment variable before logging in.${NC}"
+            return
+        fi
+        echo -e "Logging into Teleport proxy ${MAGENTA}${TELEPORT_LOGIN}${NC}"
+        echo -e "    For Customer: ${MAGENTA}${__customer_name__}${NC}..."
         echo
+        tsh login --proxy="${TELEPORT_LOGIN}" --auth=microsoft "${__tsh_connect_eks_cluster__}"
+    else
+        echo "Teleport CLI (tsh) is not installed. Please install it to log in."
     fi
+}
 
+function tshl.connect(){
+    if command -v tsh &> /dev/null; then
+        if [ -z "${__tsh_connect_eks_cluster__}" ]; then
+            echo -e "${RED}Please set __tsh_connect_eks_cluster__ environment variable before connecting.${NC}"
+            return
+        fi
+        echo -e "Connecting to Kubernetes Cluster: ${MAGENTA}${__tsh_connect_eks_cluster__}${NC}..."
+        echo
+        tsh kube login "${__tsh_connect_eks_cluster__}"
+    else
+        echo "Teleport CLI (tsh) is not installed. Please install it to log in."
+    fi
 }
 
 function cluster_connect(){
@@ -109,14 +103,6 @@ function __cluster_connect__(){
     # local env_tag="${env_tag:-}"
     echo -e "   ${GREEN}✓${NC} Connected to EKS cluster:    ${YELLOW}${__cluster_name__}${NC}"
     echo
-}
-
-function ec2_ssm_connection(){
-    if [ -z "${_ec2_id}" ];then 
-        echo -e "${RED}Pass ec2_id_function for instance id${NC}"
-    else
-        aws ssm start-session --target ${_ec2_id}
-    fi
 }
 
 function __aws_connect_options__(){

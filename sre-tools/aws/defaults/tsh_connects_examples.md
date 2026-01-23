@@ -4,27 +4,19 @@ The foolowing is examples tshl of functions to login and connect to a customer's
 - Replace the cluster names with the appropriate values for your setup
 
 ```bash
-__customer_name__="Customer Name"
-__tsh_customer_name_staging_teleport_cluster__="customer-staging-customer-name"
-__tsh_customer_name_staging_eks_cluster__="staging-customer-name-workload"
+export TELEPORT_LOGIN="teleport.<domain>.com:443"
 
 
 # Login to Teleport proxy for the customer
 function tshl.customer-name.login() {
-    if command -v tsh &> /dev/null; then
-        echo "Logging into Teleport proxy at ${TELEPORT_LOGIN} for ${__customer_name__}..."
-        tsh login --proxy="${TELEPORT_LOGIN}" --auth=microsoft "${__tsh_customer_name_staging_teleport_cluster__}"
-    else
-        echo "Teleport CLI (tsh) is not installed. Please install it to log in."
-    fi
+    export __customer_name__="Customer Name - ENV"
+    export __tsh_connect_eks_cluster__="customer-name-env-eks-cluster"
+    tshl.login
 }
 
 function tshl.customer-name.connect() {
-    if command -v tsh &> /dev/null; then
-        echo "Logging into Teleport proxy at ${TELEPORT_LOGIN} for ${__customer_name__}..."
-        tsh kube login "${__tsh_customer_name_staging_eks_cluster__}"
-    else
-        echo "Teleport CLI (tsh) is not installed. Please install it to log in."
-    fi
+    export __customer_name__="Customer Name - ENV"
+    export __tsh_connect_eks_cluster__="customer-name-env-eks-cluster"
+    tshl.connect
 }
 ```

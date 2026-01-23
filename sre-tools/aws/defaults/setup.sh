@@ -12,6 +12,7 @@ function __source_aws_functions() {
         [[ -f "$__aws_functions_dir__/help.sh" ]] && source "$__aws_functions_dir__/help.sh"
         [[ -f "$__aws_users_dir__/tsl_connections.sh" ]] && source "$__aws_users_dir__/tsl_connections.sh"
         [[ -f "$__aws_users_dir__/users.sh" ]] && source "$__aws_users_dir__/users.sh";
+        [[ -f "$__aws_functions_dir__/aws_ssm_connection.sh" ]] && source "$__aws_functions_dir__/aws_ssm_connection.sh"
     fi
 
     unset -f __source_aws_functions  # Clean up function after use
