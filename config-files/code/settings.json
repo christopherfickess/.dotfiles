@@ -1,3 +1,6 @@
+//  ${HOME}/AppData/Roaming/Code/User/settings.json
+//  ${HOME}/.config/Code/User/settings.json
+//  ${HOME}/.config/Code - OSS/User/settings.json
 {
   "latex-workshop.latex.tools": [
     {
@@ -14,16 +17,22 @@
   "latex-workshop.latex.recipes": [
     {
       "name": "LuaLaTeX",
-      "tools": ["lualatex"]
+      "tools": [
+        "lualatex"
+      ]
     }
   ],
   "latex-workshop.latex.recipe.default": "LuaLaTeX",
   "latex-workshop.message.log.show": "always",
   "latex-workshop.latex.autoBuild.run": "onSave",
   "latex-workshop.latex.outDir": "./build",
+  "editor.formatOnSave": true,
+  "editor.inlineSuggest.experimental.emptyResponseInformation": false,
   "editor.minimap.enabled": false,
-  "terminal.integrated.defaultProfile.windows": "Git Bash",
   "editor.wordWrap": "on",
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
   "github.copilot.nextEditSuggestions.enabled": true,
+  "terminal.integrated.suggest.cdPath": "off",
+  "terminal.integrated.suggest.enabled": false,
   "files.eol": "\n"
 }

@@ -40,8 +40,8 @@ function ec2_id_function(){
 }
 
 function eks_cluster_info(){
-    if [[ "${1}" == "-p" && ! -z "${__palantir_eks_cluster_name}" ]]; then
-        local __cluster_name__="${__pal_eks_cluster_name}"
+    if [[ "${1}" == "-p" && ! -z "${__iron_badger_eks_cluster_name}" ]]; then
+        local __cluster_name__="${__iron_badger_eks_cluster_name}"
         export AWS_DEFAULT_REGION="us-east-2"
         export AWS_REGION="us-east-2"
         

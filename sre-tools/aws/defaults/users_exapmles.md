@@ -1,7 +1,9 @@
 
-# AWS Development Environment
+# AWS User Setup Functions
 
-# This is an example of how to set up your AWS development environment variables. Make sure to replace `<YOUR_AWS_PROFILE>` and `<YOUR_AWS_REGION>` with your actual AWS profile name and region.
+This is an example of how to set up your AWS development environment variables. Make sure to replace `<YOUR_AWS_PROFILE>` and `<YOUR_AWS_REGION>` with your actual AWS profile name and region.
+
+```bash
 __dev_eks_cluster_name__="eks_cluster_default_name"
 
 function dev() {
@@ -26,3 +28,4 @@ function dev.connect(){
     dev
     __cluster_connect__ "${__dev_eks_cluster_name__}"
 }
+```
