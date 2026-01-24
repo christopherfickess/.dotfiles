@@ -34,5 +34,10 @@
   "github.copilot.nextEditSuggestions.enabled": true,
   "terminal.integrated.suggest.cdPath": "off",
   "terminal.integrated.suggest.enabled": false,
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "github.copilot.editor.enableAutoCompletions": true,
+  "github.copilot.enable": {
+    "plaintext": true,
+    "markdown": true
+  }
 }

@@ -22,10 +22,10 @@ function __install_software_windows__() {
         return 1
     fi
 
-    __choco_install_tools__
+    __winget_install_tools__
 }
 
-function __choco_install_tools__() {
+function __winget_install_tools__() {
     
     echo -e "${GREEN}Installing Apps...${NC}"
     # curl.exe -O https://cdn.teleport.dev/teleport-v18.4.0-windows-amd64-bin.zip
@@ -33,20 +33,34 @@ function __choco_install_tools__() {
     # Upgrade first
     winget upgrade --all --accept-source-agreements --accept-package-agreements
 
-    # Install all these
-    winget install --id Git.Git --accept-source-agreements --accept-package-agreements -e
-    winget install --id HashiCorp.Terraform --accept-source-agreements --accept-package-agreements -e
-    winget install --id Python.Python.3.13.5 --accept-source-agreements --accept-package-agreements -e
-    winget install --id Amazon.AWSCLI --accept-source-agreements --accept-package-agreements -e
-    winget install --id Kubernetes.Kubectl --accept-source-agreements --accept-package-agreements -e
-    winget install --id Helm.Helm --accept-source-agreements --accept-package-agreements -e
-    winget install --id GoLang.Go --accept-source-agreements --accept-package-agreements -e
-    winget install --id MikeFarah.yq --accept-source-agreements --accept-package-agreements -e
-    winget install --id k9s.k9s --accept-source-agreements --accept-package-agreements -e
-    winget install --id GNU.Nano --accept-source-agreements --accept-package-agreements -e
-    winget install --id Stedolan.jq --accept-source-agreements --accept-package-agreements -e
-    winget install --id Kubecolor.kubecolor --accept-source-agreements --accept-package-agreements -e
-    winget install --id Derailed.k9s --accept-source-agreements --accept-package-agreements -e
+    packages=(
+        "Microsoft.VisualStudioCode:Visual Studio Code"
+        "Hashicorp.Terraform:Terraform"
+        "Python.Python.3.13.5:Python 3.13.5"
+        "OpenJS.NodeJS.LTS:Node.js LTS"
+        "Amazon.AWSCLI:AWS CLI"
+        "Kubernetes.Kubectl:Kubectl"
+        "Helm.Helm:Helm"
+        "GoLang.Go:Go"
+        "MikeFarah.yq:yq"
+        "Derailed.k9s"
+        "GNU.Nano:GNU Nano"
+        "jqlang.jq:jq"
+        "Kubecolor.kubecolor:Kubecolor"
+    )
+
+    echo -e "${GREEN}Installing required packages via winget...${NC}"
+
+    for entry in "${packages[@]}"; do
+        IFS=":" read -r id name <<< "$entry"
+
+        echo -e "   Installing ${MAGENTA}${name}...${NC}"
+        winget install -e --id "$id" \
+            --accept-source-agreements \
+            --accept-package-agreements
+        echo ""
+    done
+
 
     # Finally, do one last upgrade
     winget upgrade --all --accept-source-agreements --accept-package-agreements
