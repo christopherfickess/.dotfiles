@@ -1,5 +1,5 @@
 
-function config_git() {
+function setup_config_git() {
     echo -e "🔧 ${CYANR}Setting up your global Git configuration...${NC}"
     echo
 
