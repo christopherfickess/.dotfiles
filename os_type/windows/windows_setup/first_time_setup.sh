@@ -1,46 +1,18 @@
 #!/bin/bash
 
 
-function windows_first_time_setup() {
+function setup_windows() {
     echo -e "${GREEN}Starting Windows first-time setup...${NC}"
     
-    _install_software_windows
+    __install_software_windows__
     
     echo -e "${GREEN}Windows first-time setup completed.${NC}"
 }
 
-
 # ------------------
 # Secret Functions
 # ------------------
-function _choco_install_tools() {
-    
-    echo -e "${GREEN}Installing Chocolatey...${NC}"
-    # curl.exe -O https://cdn.teleport.dev/teleport-v18.4.0-windows-amd64-bin.zip
-
-
-    # echo -e "${GREEN}Installing software via Chocolatey...${NC}"
-    # choco install -y \
-    #     7zip \
-    #     awscli \
-    #     docker-desktop \
-    #     git \
-    #     golang \
-    #     helm \
-    #     jq \
-    #     k9s \
-    #     kubernetes-cli \
-    #     kubernetes-helm \
-    #     nano \
-    #     python \
-    #     terraform \
-    #     yq 
-    #     zsh \
-        # terracreds \
-
-}
-
-function _install_software_windows() {
+function __install_software_windows__() {
     echo -e "${GREEN}Setting up Windows Software...${NC}"
 
     echo -ne "${YELLOW}Are you in an Admin Terminal...?${NC}"
@@ -50,8 +22,32 @@ function _install_software_windows() {
         return 1
     fi
 
-    _choco_install
-    
-    go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
+    __choco_install_tools__
 }
 
+function __choco_install_tools__() {
+    
+    echo -e "${GREEN}Installing Apps...${NC}"
+    # curl.exe -O https://cdn.teleport.dev/teleport-v18.4.0-windows-amd64-bin.zip
+
+    # Upgrade first
+    winget upgrade --all --accept-source-agreements --accept-package-agreements
+
+    # Install all these
+    winget install --id Git.Git --accept-source-agreements --accept-package-agreements -e
+    winget install --id HashiCorp.Terraform --accept-source-agreements --accept-package-agreements -e
+    winget install --id Python.Python.3.13.5 --accept-source-agreements --accept-package-agreements -e
+    winget install --id Amazon.AWSCLI --accept-source-agreements --accept-package-agreements -e
+    winget install --id Kubernetes.Kubectl --accept-source-agreements --accept-package-agreements -e
+    winget install --id Helm.Helm --accept-source-agreements --accept-package-agreements -e
+    winget install --id GoLang.Go --accept-source-agreements --accept-package-agreements -e
+    winget install --id MikeFarah.yq --accept-source-agreements --accept-package-agreements -e
+    winget install --id k9s.k9s --accept-source-agreements --accept-package-agreements -e
+    winget install --id GNU.Nano --accept-source-agreements --accept-package-agreements -e
+    winget install --id Stedolan.jq --accept-source-agreements --accept-package-agreements -e
+    winget install --id Kubecolor.kubecolor --accept-source-agreements --accept-package-agreements -e
+    winget install --id Derailed.k9s --accept-source-agreements --accept-package-agreements -e
+
+    # Finally, do one last upgrade
+    winget upgrade --all --accept-source-agreements --accept-package-agreements
+}

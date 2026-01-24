@@ -39,6 +39,3 @@ alias connect="code ~/.aws/credentials; code ~/.aws/config";
 alias dotfiles="code $HOME/.dotfiles";
 
 alias kubectl="kubecolor";
-
-
-unset -f kubecolor 
