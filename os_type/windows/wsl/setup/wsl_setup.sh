@@ -1,7 +1,17 @@
 #!/bin/bash
 
+function log() { echo -e "${GREEN}[INFO]${NC} $*"; }
+function warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
+function err() { echo -e "${RED}[ERROR]${NC} $*"; }
+
 # WSL Setup Script
 function setup_wsl() {
+    if [[ -z "${1}" ]]; then
+        echo -e "$MAGENTA setup_wsl \${1} not set distro set to ${__distro_type__}"
+    fi
+
+    __distro_type__="${1:-FedoraLinux-43}"
+
     echo -e "${GREEN}Running pre-WSL checks...${NC}"
     echo
 
@@ -12,49 +22,55 @@ function setup_wsl() {
     fi
     
     echo
-    __setup_wsl_init__
+    __check_wsl__
+    __install_or_update_wsl__
+    __ensure_distro__
+    __post_install_wsl_tools__ 
 }
 
 # ------------------
 # Secret Functions
 # ------------------
-
-function __setup_wsl_init__(){
-    WIN_DOTFILES_DIR="$HOME/.dotfiles"
-
-    # Target Fedora distro
-    if [[ -z "${1}" ]]; then
-        __distro_type__="FedoraLinux-43"
+function __check_wsl__() {
+    if ! command -v wsl.exe &>/dev/null; then
+        echo -e "${RED}[ERROR]${NC}WSL not found. Please enable WSL and try again."
+        exit 1
     fi
-    
+}
 
-    if __wsl_distro_exists__ "$__distro_type__"; then
-        echo -e "${CYAN}$__distro_type__ already installed.${NC}"
+function __install_or_update_wsl__() {
+    if ! wsl.exe --update; then
+        echo -e "${YELLOW}[WARN]WSL update failed. Trying web-download..."
+        wsl.exe --install --web-download
+    fi
+}
+
+function __ensure_distro__() {
+
+    __check_distros__=$(wsl.exe -l 2>/dev/null \
+    | iconv -f UTF-16LE -t UTF-8 \
+    | tr -d '\0' \
+    | tail -n +2 \
+    | sed -E 's/^[* ]+//; s/ \(Default\)//; s/[[:space:]]+$//' \
+    | tr '\r' '\n')
+
+    echo "Installed __check_distros__:"
+    echo "$__check_distros__"
+
+    # Check if our distro exists
+    if echo "$__check_distros__" | grep -qx "$__distro_type__"; then
+        echo "$__distro_type__ already installed"
+        return 1
     else
-        echo -e "${MAGENTA}$__distro_type__ not found. Installing...${NC}"
-
+        echo "Installing $__distro_type__..."
         wsl.exe --install -d "$__distro_type__"
-
-        echo -e "${YELLOW}WSL installation started.${NC}"
-        echo -e "${YELLOW}A system reboot may be required before continuing.${NC}"
-        echo -e "${YELLOW}Please reboot, then re-run this script.${NC}"
+        echo "Installation started. Reboot may be required."
+        return
     fi
 
-    echo -e "${GREEN}Setting $__distro_type__ as default...${NC}"
+    echo -e "${RED}[ERROR]${NC}Setting $__distro_type__ as default..."
     wsl.exe --set-default "$__distro_type__"
-
-    echo -e "${GREEN}Setting up WSL environment...${NC}"
-    __post_install_wsl_tools__
 }
-
-function __wsl_distro_exists__() {
-    wsl.exe -l 2>/dev/null \
-        | iconv -f UTF-16LE -t UTF-8 \
-        | sed '1d' \
-        | awk '{print $1}' \
-        | grep -Fxq "$1"
-}
-
 
 function __post_install_wsl_tools__() {
     echo -e "${GREEN}Setting up WSL tools...${NC}"
