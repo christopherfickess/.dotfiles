@@ -3,6 +3,7 @@ export __failed_box="✘"
 
 export AWS_REGION="us-east-1"
 export TELEPORT_VERSION="v17.7.11"
+export TERRAFORM_VERSION="1.14.3"
 
 if [ "$MATTERMOST" = "TRUE" ]; then
     export MMCTL_RELEASE_VERSION="v11.1.0"

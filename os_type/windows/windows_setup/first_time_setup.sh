@@ -47,6 +47,9 @@ function __winget_install_tools__() {
         "GNU.Nano:GNU Nano"
         "jqlang.jq:jq"
         "Kubecolor.kubecolor:Kubecolor"
+        # "MiKTeX.MiKTeX:MiKTeX"
+        # "StrawberryPerl.StrawberryPerl:Strawberry Perl"
+
     )
 
     echo -e "${GREEN}Installing required packages via winget...${NC}"
