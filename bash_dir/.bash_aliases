@@ -21,23 +21,22 @@ export NCR=$(tput sgr0) #No color used in a while loop after 'read';
 
 
 alias ls='ls --color=auto'
-alias la="ls -a -1 --color"; 
-alias ll="ls -al -1 --color"; 
-
+alias la="ls -a -1 --color"
+alias ll="ls -al -1 --color"
 alias grep='grep --color=auto'
+alias cd="pushd"
+alias gs="git status"
+alias connect="code ~/.aws/credentials; code ~/.aws/config"
+alias dotfiles="code $HOME/.dotfiles"
+alias e="exit"
+alias c="clear"
 
-alias cd="pushd ";
-
-alias ...="cd ../..";
-alias ....="cd ../../..";
-alias .....="cd ../../../..";
-
-alias gs="git status";
-
-alias connect="code ~/.aws/credentials; code ~/.aws/config";
-
-alias dotfiles="code $HOME/.dotfiles";
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
 
 if command -v kubecolor >/dev/null 2>&1; then
-    alias kubectl="kubecolor";
+    alias kubectl="kubecolor"
 fi
+
+bind 'set bell-style none'  # Disable terminal bell
