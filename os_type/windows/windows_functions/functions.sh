@@ -1,37 +1,49 @@
 #!/bin/bash
 
 function cleanup_old_bash_processes() {
+    local __time_to_live__=2  # Default to 2 days
+    
     for arg in "$@"; do
         case $arg in
             --help|-h)
                 echo -e "${MAGENTA}Cleans up old bash processes running longer than a specified time.${NC}"
-                echo "Usage: cleanup_old_bash [--days=N] [--hours=N]"
-                echo "  --days=N    Number of days old processes to kill (default 2)"
-                echo "  --hours=N   Number of hours old processes to kill"
-                echo "  --help/-h   Show this help message"
+                echo "Usage: cleanup_old_bash_processes [ -d=N | --days=N ] \
+                    [ -H=N | --hours=N ] \
+                    [ -m=N | --minutes=N ] \
+                    [ -h | --help ]"
+                echo "  -d | --days=N    Number of days old processes to kill (default 2)"
+                echo "  -H | --hours=N   Number of hours old processes to kill"
+                echo "  -m | --minutes=N Number of minutes old processes to kill"
+                echo "  -h | --help      Show this help message"
                 echo
                 echo -e "${MAGENTA}Examples:${NC}"
-                echo "  cleanup_old_bash --days=3"
-                echo "  cleanup_old_bash --hours=12"
+                echo "  cleanup_old_bash_processes --days=3"
+                echo "  cleanup_old_bash_processes --hours=12"
+                echo "  cleanup_old_bash_processes --minutes=12"
                 return
                 ;;
             --days=*|-d=*)
-                DAYS="${arg#*=}"
+                __time_to_live__="${arg#*=}"
                 ;;
             --hours=*|-H=*)
                 HOURS="${arg#*=}"
                 # Convert hours to fractional days
-                DAYS=$(awk "BEGIN {printf \"%.4f\", $HOURS/24}")
+                __time_to_live__=$(awk "BEGIN {printf \"%.4f\", $HOURS/24}")
                 ;;
-            *)
+            --minutes=*|-m=*)
+                MINUTES="${arg#*=}"
+                # Convert minutes to fractional days
+                __time_to_live__=$(awk "BEGIN {printf \"%.6f\", $MINUTES/(24*60)}")
+                ;;
+            *)  
                 ;;
         esac
     done
 
-    echo -e "${GREEN}Cleaning up bash processes older than ${DAYS} days...${NC}"
+    echo -e "${GREEN}Cleaning up bash processes older than ${__time_to_live__} days...${NC}"
 
     powershell.exe -Command "
-    \$cutoff = (Get-Date).AddDays(-$DAYS)
+    \$cutoff = (Get-Date).AddDays(-$__time_to_live__)
     Get-Process bash -ErrorAction SilentlyContinue | 
         Where-Object { \$_.StartTime -lt \$cutoff } |
         ForEach-Object { 
