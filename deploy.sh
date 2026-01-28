@@ -79,19 +79,7 @@ function __source_os_type_functions__() {
             ISWINDOWS="TRUE"
             
             [[ -f "$__wsl_dir__/help.sh" ]] && source "$__wsl_dir__/help.sh"
-
-            if [[ "$__OS_TYPE" == "wsl" ]]; then
-                echo -e "   ${MAGENTA}Inside WSL OS.${NC}"
-                # Source WSL help functions
-            else
-                echo -e "   ${MAGENTA}Windows OS.${NC}"
-                __WINDOWS_SETUP_CONFIG_DIR="$__windows_setup_dir__/windows_setup"
-                [[ -f "$__wsl_dir__/update/wsl_update.sh" ]] && source "$__wsl_dir__/update/wsl_update.sh"
-                [[ -f "$__WINDOWS_SETUP_CONFIG_DIR/first_time_setup.sh" ]] && source "$__WINDOWS_SETUP_CONFIG_DIR/first_time_setup.sh"
-                [[ -f "$__wsl_dir__/help.sh" ]] && source "$__wsl_dir__/help.sh"
-                [[ -f "$__wsl_dir__/destroy/wsl_destroy.sh" ]] && source "$__wsl_dir__/destroy/wsl_destroy.sh"
-                [[ -f "$__wsl_dir__/setup/wsl_setup.sh" ]] && source "$__wsl_dir__/setup/wsl_setup.sh"
-            fi
+            [[ -f "$__windows_setup_dir__/setup.sh" ]] && source "$__windows_setup_dir__/setup.sh"
             ;;
         macos)
             ISMACOS="TRUE"

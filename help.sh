@@ -17,7 +17,7 @@ function myhelp(){
     echo -e "     functions to navigate the complex default functions stored in this repo!${NC}"
 
     echo -e ""
-    _help_default_linux   
+    __help_default_linux__   
     echo -e ""
 
     if command -v git &>/dev/null; then 
@@ -45,11 +45,11 @@ function myhelp(){
     fi
 
     echo -e ""
-    if [ "$MATTERMOST" = "TRUE" ]; then  _help_mattermost; fi
+    if [ "$MATTERMOST" = "TRUE" ]; then  __help_mattermost__; fi
     echo -e ""
     
     echo -e ""
-    if [ "$ISWINDOWS" = "TRUE" ]; then  _help_windows; fi
+    if [ "$ISWINDOWS" = "TRUE" ]; then  __help_windows__; fi
     if [ "$ISWINDOWS" = "TRUE" ]; then  myhelp_wsl; fi
     echo -e ""
 
@@ -62,7 +62,7 @@ function myhelp(){
     unset __verbose__
 }
 
-function _help_default_linux() {
+function __help_default_linux__() {
     echo -e "Default Linux Systems:"
     echo -e "------------------------------------------------------------------------------------------------------"
     echo -e "     ${YELLOW}bashrc${NC}                          - Update the Bashrc in Terminal for updated changes"
@@ -76,14 +76,14 @@ function _help_default_linux() {
 
 }
 
-function _help_mattermost() {
+function __help_mattermost__() {
     echo -e "Mattermost Functions:"
     echo -e "------------------------------------------------------------------------------------------------------"
     echo -e "     ${YELLOW}mattermost_functions_help${NC}       - List Mattermost functions and their descriptions"
     echo -e "     ${YELLOW}update_mattermost_ctl${NC}           - Update the Mattermost ctl Tool to the latest version"
 }   
 
-function _help_windows() {
+function __help_windows__() {
     echo -e "Windows WSL Functions:"
     echo -e "------------------------------------------------------------------------------------------------------"
     echo -e "     ${YELLOW}destroy_wsl_distro${NC}              - Uninstall and remove a specified WSL distribution from your system"
@@ -93,4 +93,10 @@ function _help_windows() {
     echo -e "     ${YELLOW}start_minikube_wsl${NC}              - Start Minikube in WSL environment"
     echo -e "     ${YELLOW}update_wsl_environment${NC}          - Update WSL-specific configurations and scripts"
     echo -e "     ${YELLOW}windows_first_time_setup${NC}        - Run Windows first-time setup script for installing software and configuring WSL"
+    echo -e ""
+    echo -e "Advanced Windows ${MAGENTA}ONLY:${NC}"
+    echo -e "------------------------------------------------------------------------------------------------------"
+    echo -e "     ${YELLOW}cleanup_old_bash_processes -h${NC}   - Clean up old bash processes running longer than a specified time"
+    echo -e "     ${YELLOW}count_terminals_open${NC}            - Count the number of open bash terminals"
+    echo -e "     ${YELLOW}show_terminals_time${NC}             - Show start times of open bash terminals"
 }
