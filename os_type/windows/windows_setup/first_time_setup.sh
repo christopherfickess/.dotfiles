@@ -156,6 +156,7 @@ function __choco_install_tools__() {
         [jq]="jq"
         [strawberryperl]="perl"
         [miktex.install]="pdflatex"
+        [openssh]="ssh"
     )
 
     if [[ "${__install_azure_tools__}" =~ ^[Yy]$ ]]; then
