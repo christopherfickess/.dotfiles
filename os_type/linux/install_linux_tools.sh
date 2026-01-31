@@ -48,6 +48,7 @@ function __install_linux_software__() {
 
         sudo dnf install -y \
             awscli \
+            azure-cli \
             containers-common \
             curl \
             docker \
