@@ -32,6 +32,9 @@ function __install_software_windows__() {
 
 function __winget_install_tools__() {
     
+    echo -e "${MAGENTA}   Do you wish to install Azure Tools (Azure CLI, Azure PowerShell, Azure Storage Explorer)?${NC}"
+    read -p "   (y/n): " __install_azure_tools__
+
     echo -e "${GREEN}Installing Apps...${NC}"
     # curl.exe -O https://cdn.teleport.dev/teleport-v18.4.0-windows-amd64-bin.zip
 
@@ -55,6 +58,13 @@ function __winget_install_tools__() {
         "StrawberryPerl.StrawberryPerl:Strawberry Perl"
         "MiKTeX.MiKTeX:MiKTeX"
     )
+
+    # how to do case sensitive comparison in bash
+    if [[ "${__install_azure_tools__}" =~ ^[Yy]$ ]]; then
+        packages+=("Microsoft.AzureCLI:Azure CLI"
+                    "Microsoft.Azure.PowerShell:Azure PowerShell"
+                    "Microsoft.Azure.StorageExplorer:Azure Storage Explorer")
+    fi
 
     echo -e "${GREEN}Installing required packages via winget...${NC}"
 
@@ -84,12 +94,43 @@ function __winget_install_tools__() {
         echo ""
     done
 
-
     # Finally, do one last upgrade
     winget upgrade --all --accept-source-agreements --accept-package-agreements
 }
 
+# --------------------------------------------
+# Custom Azure Tools Installation for winget
+# --------------------------------------------
+function __winget_install_azure_tools__() {
+    echo -e "${MAGENTA}   Do you wish to install Azure Tools (Azure CLI, Azure PowerShell, Azure Storage Explorer)?${NC}"
+    read -p "   (y/n): " __install_azure_tools__
+    
+
+    if [[ "$__install_azure_tools__" =~ ^[Yy]$ ]]; then
+        echo -e "${GREEN}   Installing / Updating Azure Tools...${NC}"
+
+        winget install -e --id Microsoft.AzureCLI \
+            --accept-source-agreements \
+            --accept-package-agreements
+
+        winget install -e --id Microsoft.Azure.PowerShell \
+            --accept-source-agreements \
+            --accept-package-agreements
+
+        winget install -e --id Microsoft.Azure.StorageExplorer \
+            --accept-source-agreements \
+            --accept-package-agreements
+    else
+        echo -e "${YELLOW}   Skipping Azure Tools installation as per user choice.${NC}"
+    fi
+}
+
+
 function __choco_install_tools__() {
+    
+    echo -e "${MAGENTA}   Do you wish to install Azure Tools (Azure CLI, Azure PowerShell, Azure Storage Explorer)?${NC}"
+    read -p "   (y/n): " __install_azure_tools__
+
     echo -e "${GREEN}Installing Apps via Chocolatey...${NC}"
 
 
@@ -117,6 +158,14 @@ function __choco_install_tools__() {
         [miktex.install]="pdflatex"
     )
 
+    if [[ "${__install_azure_tools__}" =~ ^[Yy]$ ]]; then
+        CHOCO_CMDS+=(
+            [azure-cli]="az"
+            [azure-powershell]="Azure"
+            [azure-storage-explorer]="StorageExplorer"
+        )
+    fi
+    
     echo -e "${GREEN}Installing required packages via Chocolatey...${NC}"
 
     # Note: If there is a 404 error, 
@@ -156,8 +205,26 @@ function __choco_install_tools__() {
         echo -e "   Installing ${MAGENTA}kubecolor${NC}..."
         go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
     fi
+    echo 
+    echo -e "${GREEN}Checking for Azure Tools installation...${NC}"
+    echo 
+    echo
+    __choco_install_azure_tools__
 
     echo -e "${GREEN}Chocolatey package installation completed.${NC}"
+}
+
+function __choco_install_azure_tools__() {
+    echo -e "${MAGENTA}Do you wish to install Azure Tools (Azure CLI, Azure PowerShell, Azure Storage Explorer)?${NC}"
+    read -p "   (y/n): " __install_azure_tools__
+    if [[ "$__install_azure_tools__" =~ ^[Yy]$ ]]; then
+        echo -e "${GREEN}   Installing Azure Tools...${NC}"
+        choco upgrade azure-cli -y
+        choco upgrade azure-powershell -y
+        choco upgrade azure-storage-explorer -y
+    else
+        echo -e "${YELLOW}   Skipping Azure Tools installation as per user choice.${NC}"
+    fi
 }
 
 function __command_exists__() {

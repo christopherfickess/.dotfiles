@@ -37,7 +37,24 @@
   "files.eol": "\n",
   "github.copilot.editor.enableAutoCompletions": true,
   "github.copilot.enable": {
+    "*": true,
     "plaintext": true,
-    "markdown": true
+    "markdown": true,
+    "shellscript": true,
+    "json": true,
+    "yaml": true,
+    "javascript": true,
+    "typescript": true,
+    "typescriptreact": true,
+    "python": true,
+    "go": true,
+    "ruby": true,
+    "java": true,
+    "c": true,
+    "lua": true,
+    "powershell": true,
+    "html": true,
+    "css": true,
+    "jsonc": true
   }
 }
