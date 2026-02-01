@@ -16,6 +16,7 @@ function __install_linux_software__() {
 
         sudo apt-get install -y \
             awscli \
+            azure-cli \
             containers-common \
             curl \
             docker.io \
@@ -161,6 +162,17 @@ function __install_linux_software__() {
     else
         __install_teleport__
     fi
+
+    
+    echo -e "${GREEN}Do you want to install Azure Tools? (y/n)${NC}"
+    read -p ": " install_azure_tools
+    if [[ ! "$install_azure_tools" =~ ^[Yy]$ ]]; then
+        echo -e "${YELLOW}Skipping Azure Tools installation.${NC}"
+        return
+    else
+        __azure_linux_tools_install__
+    fi
+    echo 
 }
 
 function __check_architecture__() {
@@ -282,4 +294,58 @@ function __install_teleport__() {
     rm -rf "$TMP_DIR"
 
     teleport version
+}
+
+function __azure_linux_tools_install__() {
+    echo
+        # Azure CLI extensions and tools
+    echo -e "${GREEN}Checking Azure extensions and tools...${NC}"
+
+    # Azure DevOps
+    if az extension list | grep -q devops; then
+        echo -e "${GREEN}Azure DevOps CLI extension already installed.${NC}"
+    else
+        echo -e "${GREEN}Installing Azure DevOps CLI extension...${NC}"
+        az extension add --name azure-devops
+    fi
+
+    # Azure IoT
+    if az extension list | grep -q iot; then
+        echo -e "${GREEN}Azure IoT CLI extension already installed.${NC}"
+    else
+        echo -e "${GREEN}Installing Azure IoT CLI extension...${NC}"
+        az extension add --name azure-iot
+    fi
+
+    # Azure Functions Core Tools
+    if command -v func >/dev/null 2>&1; then
+        echo -e "${GREEN}Azure Functions Core Tools already installed.${NC}"
+    else
+        echo -e "${GREEN}Installing Azure Functions Core Tools...${NC}"
+        if command -v apt-get >/dev/null 2>&1; then
+            curl -sL https://aka.ms/InstallAzureFunctionsCoreToolsDeb | sudo bash
+        elif command -v dnf >/dev/null 2>&1; then
+            sudo dnf install -y azure-functions-core-tools-4
+        elif command -v yum >/dev/null 2>&1; then
+            sudo yum install -y azure-functions-core-tools-4
+        fi
+    fi
+
+    # Bicep
+    if command -v bicep >/dev/null 2>&1; then
+        echo -e "${GREEN}Bicep CLI already installed.${NC}"
+    else
+        echo -e "${GREEN}Installing Bicep CLI...${NC}"
+        az bicep install
+    fi
+
+    # Azure Storage Explorer (Linux AppImage)
+    if command -v StorageExplorer >/dev/null 2>&1; then
+        echo -e "${GREEN}Azure Storage Explorer already installed.${NC}"
+    else
+        echo -e "${GREEN}Installing Azure Storage Explorer...${NC}"
+        mkdir -p "$HOME/Apps"
+        curl -sL https://aka.ms/storageexplorer-linux | tar -xzf - -C "$HOME/Apps"
+        echo -e "${YELLOW}   Add $HOME/Apps/StorageExplorer to PATH if desired.${NC}"
+    fi
 }
