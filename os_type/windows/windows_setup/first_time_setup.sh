@@ -17,7 +17,8 @@ function __install_software_windows__() {
 
     echo -ne "${YELLOW}Are you in an Admin Terminal...?${NC}"
     read -p ": (y/n): " admin_confirm
-    if [[ ! "$admin_confirm" =~ ^[Yy]$ ]]; then
+
+    if [[ "$admin_confirm" =~ ^[Yy]$ ]]; then
         echo -e "${RED}Since User is not admin, Installing local tools as Non Admin.${NC}"
         echo -e "${YELLOW}   To Continue with User Installation, Press Enter...${NC}"
         read -r
