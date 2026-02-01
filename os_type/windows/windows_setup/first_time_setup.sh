@@ -22,7 +22,7 @@ function __install_software_windows__() {
         echo -e "${YELLOW}   To Continue with User Installation, Press Enter...${NC}"
         read -r
         __winget_install_tools__
-    elif [[  "$admin_confirm" =~ ^[Yy]$ ]]; then
+    elif [[  ! "$admin_confirm" =~ ^[Yy]$ ]]; then
         echo -e "${GREEN}User confirmed Admin Terminal. Proceeding with Admin Installation...${NC}"
         echo -e "${YELLOW}   To Continue with Admin Installation, Press Enter...${NC}"
         read -r
@@ -156,6 +156,7 @@ function __choco_install_tools__() {
         [jq]="jq"
         [strawberryperl]="perl"
         [miktex.install]="pdflatex"
+        [openssh]="ssh"
     )
 
     if [[ "${__install_azure_tools__}" =~ ^[Yy]$ ]]; then
