@@ -23,7 +23,7 @@ function __install_software_windows__() {
         echo -e "${YELLOW}   To Continue with User Installation, Press Enter...${NC}"
         read -r
         __winget_install_tools__
-    elif [[  ! "$admin_confirm" =~ ^[Nn]$ ]]; then
+    elif [[  "$admin_confirm" =~ ^[Nn]$ ]]; then
         echo -e "${GREEN}User confirmed Admin Terminal. Proceeding with Admin Installation...${NC}"
         echo -e "${YELLOW}   To Continue with Admin Installation, Press Enter...${NC}"
         read -r
