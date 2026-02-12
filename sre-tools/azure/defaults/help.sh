@@ -10,9 +10,25 @@ function myhelp_azure() {
         __myhelp_azure__
 
         echo -e ""
+        echo -e "Azure Display Commands:"
+        echo -e "------------------------------------------------------------------------------------------------------"
+        __myhelp_azure_display__
+
+        echo -e ""
+        echo -e "Azure Getter Commands:"
+        echo -e "------------------------------------------------------------------------------------------------------"
+        __myhelp_azure_getters__
+
+        echo -e ""
+        echo -e "Azure Setters Commands:"
+        echo -e "------------------------------------------------------------------------------------------------------"
+        __myhelp_azure_setters__
+
+        echo -e ""
         echo -e "Safe Learning Commands:"
         echo -e "------------------------------------------------------------------------------------------------------"
         __myhelp_azure_safe_learning_commands__ 
+
         echo -e ""
         echo -e "Startup Checklist:"
         echo -e "------------------------------------------------------------------------------------------------------"
@@ -23,7 +39,7 @@ function myhelp_azure() {
 function __myhelp_azure__() {
     echo -e "     ${YELLOW}azure_auth_update${NC}               - Update Azure credentials"
     echo -e "     ${YELLOW}azure_profile_switch${NC}            - Switch Azure profiles"
-    echo -e "     ${YELLOW}azure_cluster_connect${NC}           - Connect to an AKS cluster"
+    echo -e "     ${YELLOW}azure.cluster.connect${NC}           - Connect to an AKS cluster"
     echo -e "     ${YELLOW}myhelp_azure${NC}                    - Show Azure functions help"
 }
 
