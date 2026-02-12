@@ -15,11 +15,17 @@ function azure.sandbox() {
     azure.display.env
 }
 
-function azure.sandbox.connect(){
-    __azure_cluster_name__="${__sandbox_cluster_name__}"
-    __resource_group__="${__aks_resource_group__}"
-
+function azure.sandbox.login() {
+    echo -e "Logging into Azure environment for ${CYAN}Sandbox...${NC}"
+    az login --tenant "$AZURE_TENANT_ID" --subscription "$SUBSCRIPTION_NAME"
     azure.sandbox
+}
+
+function azure.sandbox.connect(){
+    azure.sandbox
+    export __azure_cluster_name__="${__sandbox_cluster_name__}"
+    export __resource_group__="${__aks_resource_group__}"
+    echo $__azure_cluster_name__
     echo 
     echo -e "Connecting to AKS cluster ${CYAN}$__azure_cluster_name__...${NC}"
     azure.get.aks_credentials $__azure_cluster_name__ $__resource_group__

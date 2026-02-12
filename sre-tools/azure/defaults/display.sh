@@ -1,12 +1,12 @@
-function azure.show.subscription.details(){
+function azure.display.subscription.details(){
     az account show --output json 
 }
 
-function azure.show.subscription.id(){
+function azure.display.subscription.id(){
     az account show --query "id" --output tsv
 }
 
-function azure.show.sp.id.from.name(){
+function azure.display.sp.id.from.name(){
     if [ -z "${1}" ];then 
         echo -e "${RED}Pass in \$1 for service principal name${NC}"
         __service_principal_name__="terraform-sp-chris"
@@ -17,18 +17,18 @@ function azure.show.sp.id.from.name(){
     echo -e "${MAGENTA}Service Principal App ID:${NC} ${__appID__}"
 }
 
-function azure.show.sp.role.assignments(){
+function azure.display.sp.role.assignments(){
     if [ -z "${1}" ];then 
         echo -e "${RED}Pass in \$1 for service principal name${NC}"
         __service_principal_name__="terraform-sp-chris"
     else
         __service_principal_name__="${1}"
     fi
-    azure.show.sp.id.from.name "${__service_principal_name__}"
+    azure.display.sp.id.from.name "${__service_principal_name__}"
     az role assignment list --assignee "${__appID__}" --output table
 }
 
-function azure.show.sp.credentials(){
+function azure.display.sp.credentials(){
     if [ -z "${1}" ];then 
         echo -e "${RED}Pass in \$1 for service principal name${NC}"
         __service_principal_name__="terraform-sp-chris"
@@ -39,11 +39,11 @@ function azure.show.sp.credentials(){
 }
 
 function azure.assign.role.sp(){
-    __subscription_id__=$(azure.show.subscription.id)
+    __subscription_id__=$(azure.display.subscription.id)
     __rg_name__="chrisfickess-tfstate-azk"
     __storage_account__="tfstatechrisfickess"
     __container_name__="azure-azk-tfstate"
-    azure.show.sp.id.from.name "terraform-sp-chris"
+    azure.display.sp.id.from.name "terraform-sp-chris"
     echo -e "${MAGENTA}Resource Group:${NC} $__rg_name__"
     echo -e "${MAGENTA}Storage Account:${NC} $__storage_account__"
     echo -e "${MAGENTA}Container Name:${NC} $__container_name__"
@@ -73,10 +73,10 @@ function azure.assign.role.sp(){
 }
 
 function __myhelp_azure_display__(){
-    echo -e "     ${YELLOW}azure.show.subscription.details${NC}           - Show details of the current Azure subscription"
-    echo -e "     ${YELLOW}azure.show.subscription.id${NC}                - Show the current Azure subscription ID"
-    echo -e "     ${YELLOW}azure.show.sp.id.from.name <sp-name>${NC}      - Get the App ID of a service principal by name"
-    echo -e "     ${YELLOW}azure.show.sp.role.assignments <sp-name>${NC}  - Show role assignments for a service principal"
-    echo -e "     ${YELLOW}azure.show.sp.credentials <sp-name>${NC}       - Show credentials for a service principal"
+    echo -e "     ${YELLOW}azure.display.subscription.details${NC}           - Show details of the current Azure subscription"
+    echo -e "     ${YELLOW}azure.display.subscription.id${NC}                - Show the current Azure subscription ID"
+    echo -e "     ${YELLOW}azure.display.sp.id.from.name <sp-name>${NC}      - Get the App ID of a service principal by name"
+    echo -e "     ${YELLOW}azure.display.sp.role.assignments <sp-name>${NC}  - Show role assignments for a service principal"
+    echo -e "     ${YELLOW}azure.display.sp.credentials <sp-name>${NC}       - Show credentials for a service principal"
     echo -e "     ${YELLOW}azure.assign.role.sp${NC}                      - Assign Storage Blob Data Contributor and Contributor roles to the SP on the storage account and resource group"
 }

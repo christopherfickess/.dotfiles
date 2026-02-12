@@ -30,6 +30,7 @@ alias connect="code ~/.aws/credentials; code ~/.aws/config"
 alias dotfiles="code $HOME/.dotfiles"
 alias e="exit"
 alias c="clear"
+alias w="wsl"
 
 alias ...="cd ../.."
 alias ....="cd ../../.."
