@@ -105,6 +105,22 @@ function __cluster_connect__(){
     echo
 }
 
+# Connect to BYOC Staging Internal Bastion Host via SSM
+function __bastion_connect_host__(){
+    __bastion_host_id=$(aws ec2 describe-instances \
+        --filters "Name=tag:Name,Values=${__bastion_host_name__}" \
+        --query "Reservations[].Instances[].InstanceId" \
+        --output text)
+
+    echo -e "Starting SSM Session to Bastion Host: ${CYAN}${__bastion_host_id}${NC}"
+
+    aws ssm start-session --target "${__bastion_host_id}" \
+        --document-name AWS-StartInteractiveCommand \
+        --parameters 'command=["sudo -iu ec2-user"]' \
+        --profile "${AWS_PROFILE}"
+}
+
+
 function __aws_connect_options__(){
     
         echo -e "${MAGENTA}Usage:${NC} aws_sts_assume_role [Role ARN] [Session Name]"

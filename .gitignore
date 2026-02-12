@@ -62,13 +62,15 @@ playground/
 *.dwo
 
 
-# Secret users files to connect to cloud providers
-*/users/*
-*/*/users/*
-*/*/*/users/*
-*/*/*/*/users/*
-*/*/*/*/*/users/*
-*/*/*/*/*/*/users/*
+# # Secret users files to connect to cloud providers
+# */users/*
+# */*/users/*
+# */*/*/users/*
+# */*/*/*/users/*
+# */*/*/*/*/users/*
+# */*/*/*/*/*/users/*
+service_principle.sh
+
 
 # Secret env files
 */env.sh

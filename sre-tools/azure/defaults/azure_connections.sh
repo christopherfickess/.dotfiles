@@ -1,5 +1,5 @@
 
-function azure_cluster_connect(){
+function azure.cluster.connect(){
     if [[ -z "${1}" ]]; then 
         echo -e "${RED}Add the cluster name to proceed! ${NC}"
         __azure_eks_cluster_options__
@@ -11,21 +11,21 @@ function azure_cluster_connect(){
         return
     fi
 
-    __azure_cluster_connect__ "${__cluster_name__}"
+    __azure.cluster.connect__ "${__cluster_name__}"
 }
 
 function __azure_eks_cluster_options__(){
-    echo -e "Usage: azure_cluster_connect [options] <cluster-name>"
+    echo -e "Usage: azure.cluster.connect [options] <cluster-name>"
     echo
     echo -e "Options:"
     echo -e "  -h, --help            Show this help message and exit"
     echo
     echo -e "Example:"
-    echo -e "  azure_cluster_connect my-aks-cluster"
+    echo -e "  azure.cluster.connect my-aks-cluster"
     echo
 }
 
-function __azure_cluster_connect__(){
+function __azure.cluster.connect__(){
     if [[ -z "${1}" && -z "${2}" ]]; then 
         echo -e "${RED}Add the cluster name \$1 and \$2 for resource group to proceed! ${NC}"
         __azure_eks_cluster_options__

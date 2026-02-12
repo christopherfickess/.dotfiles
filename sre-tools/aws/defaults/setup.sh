@@ -11,7 +11,10 @@ function __source_aws_functions() {
         [[ -f "$__aws_functions_dir__/aws_connect.sh" ]] && source "$__aws_functions_dir__/aws_connect.sh"
         [[ -f "$__aws_functions_dir__/help.sh" ]] && source "$__aws_functions_dir__/help.sh"
         [[ -f "$__aws_users_dir__/tsl_connections.sh" ]] && source "$__aws_users_dir__/tsl_connections.sh"
-        [[ -f "$__aws_users_dir__/users.sh" ]] && source "$__aws_users_dir__/users.sh";
+        [[ -f "$__aws_users_dir__/aws.users.sh" ]] && source "$__aws_users_dir__/aws.users.sh";
+        [[ -f "$__aws_users_dir__/byoc.staging.sh" ]] && source "$__aws_users_dir__/byoc.staging.sh";
+        [[ -f "$__aws_users_dir__/byoc.staging.iron-badger.sh" ]] && source "$__aws_users_dir__/byoc.staging.iron-badger.sh";
+        [[ -f "$__aws_users_dir__/byoc.prod.iron-badger.sh" ]] && source "$__aws_users_dir__/byoc.prod.iron-badger.sh";
         [[ -f "$__aws_functions_dir__/aws_ssm_connection.sh" ]] && source "$__aws_functions_dir__/aws_ssm_connection.sh"
     fi
 
