@@ -224,22 +224,4 @@ function minikube_cleanup() {
     echo -e "${GREEN}Cleanup completed.${NC}"
 }
 
-function minikube_help() {
-    echo -e "${CYAN}Minikube Functions:${NC}"
-    echo -e "------------------------------------------------------------------------------------------------------"
-    echo -e "   ${YELLOW}delete_minikube${NC}           - Delete Minikube cluster (destructive)"
-    echo -e "   ${YELLOW}minikube_addons${NC}           - List/enable/disable Minikube addons"
-    echo -e "   ${YELLOW}minikube_cleanup${NC}          - Clean up unused resources"
-    echo -e "   ${YELLOW}minikube_dashboard${NC}        - Open Minikube dashboard"
-    echo -e "   ${YELLOW}minikube_docker_env${NC}       - Configure Docker to use Minikube"
-    echo -e "   ${YELLOW}minikube_help${NC}             - Show this help message"
-    echo -e "   ${YELLOW}minikube_load_image${NC}       - Load Docker image into Minikube"
-    echo -e "   ${YELLOW}minikube_logs${NC}             - View pod logs"
-    echo -e "   ${YELLOW}minikube_port_forward${NC}     - Port forward a service"
-    echo -e "   ${YELLOW}minikube_service_url${NC}      - Get service URL and open in browser"
-    echo -e "   ${YELLOW}minikube_shell${NC}            - Open shell in Minikube node"
-    echo -e "   ${YELLOW}minikube_status${NC}           - Show Minikube status and info"
-    echo -e "   ${YELLOW}minikube_test_deployment${NC}  - Test and inspect a deployment"
-    echo -e "   ${YELLOW}start_minikube_wsl${NC}        - Start Minikube cluster (WSL/Linux optimized)"
-    echo -e "   ${YELLOW}stop_minikube${NC}             - Stop Minikube cluster"
-}
+# Help function moved to help.sh

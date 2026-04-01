@@ -13,11 +13,11 @@ function aws.byoc.staging.login() {
 
 function aws.byoc.staging.connect() {
     aws.byoc.staging
-    __cluster_connect__ "${__staging_internal_eks_cluster_name__}"
+    aws.connect.eks_cluster "${__staging_internal_eks_cluster_name__}"
 }
 
 function aws.byoc.staging.bastion.connect() {
     aws.byoc.staging
     __bastion_host_name__="${__staging_internal_bastion_host_name__}"
-    __bastion_connect_host__
+    aws.connect.bastion "${__bastion_host_name__}"
 }

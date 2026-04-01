@@ -3,7 +3,7 @@
 function list_kubernetes_objects(){
     echo
     if [ -z $1 ]; then
-        echo -e "${YELLOW}Which namespace do you want to search all resources? ${NC}"
+        echo -e "${__COMMAND_COLOR__}Which namespace do you want to search all resources? ${NC}"
         read -p "   :>  " __namespace__
 
         __namespace__=__namespace__

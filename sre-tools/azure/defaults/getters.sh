@@ -52,13 +52,3 @@ function azure.get.tenant_id() {
     export ARM_TENANT_ID="$AZURE_TENANT_ID"
     echo -e "${MAGENTA}Azure Tenant ID:${NC} $AZURE_TENANT_ID"  
 }
-
-function __myhelp_azure_getters__() {
-    echo -e "     ${YELLOW}azure.get.aks_credentials <cluster_name> <rg>${NC}   - Get AKS cluster credentials and update kubeconfig"
-    echo -e "     ${YELLOW}azure.get.aks_roles <cluster_name> <rg>${NC}         - Get role assignments for an AKS cluster"
-    echo -e "     ${YELLOW}azure.get.details${NC}                               - Get details about the Azure environment"
-    echo -e "     ${YELLOW}azure.get.member_groups <user_email>${NC}            - Get Azure AD group assignments for a user"
-    echo -e "     ${YELLOW}azure.get.role_assignments <user_email>${NC}         - Get role assignments for a user"
-    echo -e "     ${YELLOW}azure.get.subscription_id${NC}                       - Get the current Azure subscription ID"
-    echo -e "     ${YELLOW}azure.get.tenant_id${NC}                             - Get the current Azure tenant ID"
-}

@@ -26,6 +26,6 @@ function dev.login(){
 function dev.connect(){
     echo -e "Logging into AWS SSO for ${CYAN}Development...${NC}"
     dev
-    __cluster_connect__ "${__dev_eks_cluster_name__}"
+    aws.connect.eks_cluster "${__dev_eks_cluster_name__}"
 }
 ```

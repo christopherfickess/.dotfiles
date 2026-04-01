@@ -1,0 +1,28 @@
+layout {
+    pane split_direction="vertical" {
+
+        // Left column
+        pane split_direction="horizontal" size="50%" {
+            pane name="📦 Pods" size="50%" {
+                command "k9s"
+                args "--headless" "-A" "-c" "pods"
+            }
+            pane name="📋 Events" size="50%" {
+                command "k9s"
+                args "--headless" "-A" "-c" "events"
+            }
+        }
+
+        // Right column
+        pane split_direction="horizontal" size="50%" {
+            pane name="🚀 Deployments" size="50%" {
+                command "k9s"
+                args "--headless" "-A" "-c" "deployments"
+            }
+            pane name="📊 HelmReleases" size="50%" {
+                command "k9s"
+                args "--headless" "-A" "-c" "helmreleases"
+            }
+        }
+    }
+}

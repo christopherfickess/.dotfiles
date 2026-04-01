@@ -21,20 +21,5 @@ function aws.byoc.iron-badger.prod.bastion.connect(){
     aws.byoc.iron-badger.prod
 
     __bastion_host_name__="${__prod_iron_badger_bastion_host_name__}"
-    __bastion_connect_host__
-}
-
-
-# Login to Teleport proxy for Iron Badger
-function tshl.iron-badger.prod.login() {
-    export __customer_name__="Iron Badger - Prod"
-    export __tsh_connect_eks_cluster__="${__prod_iron_badger_eks_cluster_name__}"
-    tshl.login
-}
-
-function tshl.iron-badger.prod.connect() {
-    export __customer_name__="Iron Badger - Prod"
-    export __tsh_connect_eks_cluster__="${__prod_iron_badger_eks_cluster_name__}"
-
-    tshl.connect
+    aws.connect.bastion "${__bastion_host_name__}"
 }

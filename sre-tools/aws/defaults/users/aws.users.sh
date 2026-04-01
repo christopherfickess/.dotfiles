@@ -20,7 +20,7 @@ function aws.dev.login(){
 function aws.dev.connect(){
     echo -e "Logging into AWS SSO for ${CYAN}Development...${NC}"
     aws.dev
-    __cluster_connect__ "${__dev_eks_cluster_name__}"
+    aws.connect.eks_cluster "${__dev_eks_cluster_name__}"
 }
 
 # Login to prod AWS SSO and set environment variables
@@ -46,7 +46,7 @@ function aws.prod.mattermost.login() {
 function aws.prod.mattermost.connect() {
     echo -e "Logging into AWS SSO for ${CYAN}Mattermost Prod...${NC}"
     aws.prod.mattermost
-    __cluster_connect__ "${__prod_eks_cluster_name__}"
+    aws.connect.eks_cluster "${__prod_eks_cluster_name__}"
 }
 
 # Login to sandbox AWS SSO and set environment variables
@@ -70,7 +70,7 @@ function aws.sandbox.login(){
 function aws.sandbox.connect(){
     echo -e "Logging into AWS SSO for ${CYAN}Sandbox...${NC}"
     aws.sandbox
-    __cluster_connect__ "${__sandbox_eks_cluster_name__}"
+    aws.connect.eks_cluster "${__sandbox_eks_cluster_name__}"
 }
 
 

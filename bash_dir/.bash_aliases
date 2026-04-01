@@ -7,6 +7,7 @@ export YELLOW='\033[0;33m';
 export BLUE='\033[0;34m';
 export MAGENTA='\033[0;35m';
 export CYAN='\033[0;36m';
+export WHITE='\033[0;37m';
 export NC='\033[0m' 
 
 # No color 
@@ -19,6 +20,7 @@ export MAGENTAR=$(tput setaf 5) #magenta used in a while loop after 'read';
 export CYANR=$(tput setaf 6) #cyan used in a while loop after 'read';
 export NCR=$(tput sgr0) #No color used in a while loop after 'read';
 
+# export zellij="$(bash <(curl -L https://zellij.dev/launch))"
 
 alias ls='ls --color=auto'
 alias la="ls -a -1 --color"
@@ -30,6 +32,7 @@ alias connect="code ~/.aws/credentials; code ~/.aws/config"
 alias dotfiles="code $HOME/.dotfiles"
 alias e="exit"
 alias c="clear"
+alias w="wsl"
 
 alias ...="cd ../.."
 alias ....="cd ../../.."

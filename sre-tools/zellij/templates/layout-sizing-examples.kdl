@@ -1,0 +1,114 @@
+// Zellij Layout Sizing Examples
+// This file demonstrates different ways to control pane sizes
+
+// EXAMPLE 1: Percentage-based sizing (most common)
+// Sizes must add up to 100% (or close to it)
+layout {
+    pane split_direction="vertical" {
+        // Left column: 70% of width
+        pane size="70%" split_direction="horizontal" {
+            // Top: 40% of height
+            pane size="40%" {
+                command "k9s"
+                args "--headless" "-c" "pods"
+            }
+            // Bottom: 60% of height
+            pane size="60%" {
+                command "k9s"
+                args "--headless" "-c" "deployments"
+            }
+        }
+
+        // Right column: 30% of width
+        pane size="30%" {
+            command "kubectl"
+            args "get" "nodes" "-w"
+        }
+    }
+}
+
+// EXAMPLE 2: Three-column uneven split
+// layout {
+//     pane split_direction="vertical" {
+//         pane size="20%" {  // Narrow left sidebar
+//             command "bash"
+//         }
+//         pane size="60%" {  // Wide middle section
+//             command "k9s"
+//         }
+//         pane size="20%" {  // Narrow right sidebar
+//             command "kubectl"
+//             args "get" "events" "-w"
+//         }
+//     }
+// }
+
+// EXAMPLE 3: Grid layout (2x2)
+// layout {
+//     pane split_direction="vertical" {
+//         pane size="50%" split_direction="horizontal" {
+//             pane size="50%" {
+//                 command "k9s"
+//                 args "-c" "hr"
+//             }
+//             pane size="50%" {
+//                 command "k9s"
+//                 args "-c" "gitrepo"
+//             }
+//         }
+//         pane size="50%" split_direction="horizontal" {
+//             pane size="50%" {
+//                 command "k9s"
+//                 args "-c" "kustomizations"
+//             }
+//             pane size="50%" {
+//                 command "bash"
+//             }
+//         }
+//     }
+// }
+
+// EXAMPLE 4: Stacked horizontal with different heights
+// layout {
+//     pane split_direction="horizontal" {
+//         pane size="10%" {  // Small top bar
+//             command "kubectl"
+//             args "config" "current-context"
+//         }
+//         pane size="70%" {  // Main work area
+//             command "k9s"
+//         }
+//         pane size="20%" {  // Bottom logs area
+//             command "kubectl"
+//             args "logs" "-f" "pod-name"
+//         }
+//     }
+// }
+
+// EXAMPLE 5: Master-detail layout (big main, small sidebars)
+// layout {
+//     pane split_direction="vertical" {
+//         pane size="15%" {  // Left sidebar
+//             command "bash"
+//         }
+//         pane size="70%" {  // Main central pane
+//             command "k9s"
+//             args "--headless"
+//         }
+//         pane size="15%" {  // Right sidebar
+//             command "kubectl"
+//             args "top" "nodes"
+//         }
+//     }
+// }
+
+// SIZING TIPS:
+// - split_direction="vertical" = side-by-side columns (| |)
+// - split_direction="horizontal" = stacked rows (top/bottom)
+// - Percentages should total 100% (small rounding ok)
+// - You can nest splits infinitely
+// - Without size specified, panes split evenly
+// - Use size="1" for borderless UI elements
+
+// To use this example:
+// zellij --layout ~/.dotfiles/sre-tools/zellij/templates/layout-sizing-examples.kdl

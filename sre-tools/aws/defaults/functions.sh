@@ -1,6 +1,42 @@
+#!/bin/bash
+
+function aws.profile.switch(){
+    if [ -z "${1}" ];then 
+        while true; do
+            __aws.profile.list__
+            
+            echo -e "${YELLOW}Enter AWS Profile to switch to: ${NC}"
+            read -p "   :>  " __selected_profile__
+
+            if grep -q "\[${__selected_profile__}\]" ~/.aws/credentials; then
+                export AWS_PROFILE=${__selected_profile__}
+                echo -e "${GREEN}Switched to profile: ${AWS_PROFILE}${NC}"
+                break
+            else
+                echo -e "${RED}Profile '${__selected_profile__}' not found. Please try again.${NC}"
+            fi
+        done
+    else
+        export AWS_PROFILE=${1}
+        echo -e "${GREEN}Switched to profile: ${AWS_PROFILE}${NC}"
+    fi
+}
+
+
+function aws.connect.ssm.parse.command(){
+    if [[ -z "${1}" || -z "${2}" ]];then 
+        echo -e "${RED}Add \$1 = Instance ID and \$2 = Command to run in EC2 instance!${NC}"
+    else
+        __instance_id__=${1}
+        aws ssm start-session   \
+            --target $__instance_id__   \
+            --document-name AWS-StartNonInteractiveCommand  \
+            --parameters "command=[\"$2\"]"
+    fi
+}
 
 # Assume an AWS IAM role and set temporary credentials
-function aws_sts_assume_role(){
+function aws.sts.assume.role(){
     if [[ "${1}" == "-d" || "${1}" == "--dev" && ! -z "${__dev_aws_assume_role}" ]]; then
         dev
         __session_name__="christopher.fickess@mattermost.com"
@@ -43,10 +79,10 @@ function aws_sts_assume_role(){
 
 }
 
-function ec2.ssm.connection(){
-    if [ -z "${_ec2_id}" ];then 
-        echo -e "${RED}Pass ec2_id_function for instance id${NC}"
-    else
-        aws ssm start-session --target ${_ec2_id}
-    fi
+# ------------------
+# Secret Functions
+# ------------------
+function __aws.profile.list__(){
+    echo -e "${YELLOW}Available AWS Profiles:${NC}"
+    cat ~/.aws/credentials | grep "\[" | tr -d "[]"
 }

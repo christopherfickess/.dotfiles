@@ -7,7 +7,3 @@ function azure.set.subscription() {
     fi
     az account set --subscription "${1}"
 }
-
-function __myhelp_azure_setters__() {
-    echo -e "     ${YELLOW}azure.set.subscription <subscription-name>${NC}  - Set the active Azure subscription by name"
-}
