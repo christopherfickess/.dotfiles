@@ -57,6 +57,9 @@ function __sre_tools_menu_logic__(){
         -aws|--aws)
             __source_aws_functions__
             ;;
+        -f|--flux)
+            __source_flux_functions__
+            ;;
         -g|--go)
             __source_go_functions__
             ;;
@@ -100,6 +103,8 @@ function __list_sre_tools__(){
         __choice__="${1}"
     elif [[ "${1}" == "-aws" || "${1}" == "--aws" ]]; then
         __choice__="${1}"
+    elif [[ "${1}" == "-f" || "${1}" == "--flux" ]]; then
+        __choice__="${1}"
     elif [[ "${1}" == "-g" || "${1}" == "--go" ]]; then
         __choice__="${1}"
     elif [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
@@ -123,6 +128,7 @@ function __list_sre_tools__(){
         echo -e "${CYAN}Which Functionality do you want to setup?${NC}"
         echo -e "   ${__COMMAND_COLOR__}-a${NC}    | --all           ${CYAN}All${NC}"
         echo -e "   ${__COMMAND_COLOR__}-aws${NC}  | --aws           ${CYAN}AWS Functions${NC}"
+        echo -e "   ${__COMMAND_COLOR__}-f${NC}    | --flux          ${CYAN}Flux Functions${NC}"
         echo -e "   ${__COMMAND_COLOR__}-g${NC}    | --go            ${CYAN}Go Tools${NC}"
         echo -e "   ${__COMMAND_COLOR__}-l${NC}    | --list          ${CYAN}List Available Tools${NC}"
         echo -e "   ${__COMMAND_COLOR__}-h${NC}    | --help          ${CYAN}Show Help${NC}"
@@ -176,6 +182,28 @@ function __source_aws_functions__() {
     unset __aws_users_file__
     unset __aws_help_file__
 }
+
+function __source_flux_functions__() {
+    local __flux_setup_file__="${__sre_tools_dir__}/flux/setup.sh"
+    local __flux_help_file__="${__sre_tools_dir__}/flux/help.sh"
+
+    if [ -f "${__flux_setup_file__}" ]; then
+        source "${__flux_setup_file__}"
+        echo -e "   ${GREEN}✓${NC} Flux functions"
+    fi
+    if [ -f "${__flux_help_file__}" ]; then
+        source "${__flux_help_file__}"
+        echo -e "   ${GREEN}✓${NC} Flux help"
+    fi
+
+    echo -e "${MAGENTA}Flux functions loaded.${NC}"
+
+    # Register tool as loaded
+    __SRE_TOOLS_LOADED__[flux]="true"
+
+    unset __flux_setup_file__
+    unset __flux_help_file__
+}   
 
 function __source_mattermost_functions__() {
     local __mattermost_setup__="${__mattermost_dir__}/setup.sh"
@@ -295,9 +323,10 @@ function __source_zellij_functions__() {
 
 function __source_all_functions__() {
     __source_aws_functions__
-    __source_minikube_functions__
-    __source_mattermost_functions__
+    __source_flux_functions__
     __source_go_functions__
+    __source_mattermost_functions__
+    __source_minikube_functions__
     __source_python_functions__
     __source_zellij_functions__
 
