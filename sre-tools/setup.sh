@@ -6,6 +6,7 @@
 function sre_tools() {
     [[ -z "${__aws_sre_tools_dir__}" ]] && __aws_sre_tools_dir__="${__sre_tools_dir__}/aws"
     [[ -z "${__aws_connect_file__}" ]] && __aws_connect_file__="${__aws_sre_tools_dir__}/defaults/aws_connect.sh"
+    [[ -z "${__flux_setup_file__}" ]] && __flux_setup_file__="${__sre_tools_dir__}/flux/setup.sh"
     [[ -z "${__aws_help_file__}" ]] && __aws_help_file__="${__aws_sre_tools_dir__}/help.sh"
     [[ -z "${__mattermost_dir__}" ]] && __mattermost_dir__="${__sre_tools_dir__}/mattermost"
     [[ -z "${__minikube_dir__}" ]] && __minikube_dir__="${__sre_tools_dir__}/minikube"
@@ -185,7 +186,6 @@ function __source_aws_functions__() {
 
 function __source_flux_functions__() {
     local __flux_setup_file__="${__sre_tools_dir__}/flux/setup.sh"
-    local __flux_help_file__="${__sre_tools_dir__}/flux/help.sh"
 
     if [ -f "${__flux_setup_file__}" ]; then
         source "${__flux_setup_file__}"

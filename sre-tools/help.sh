@@ -86,11 +86,11 @@ function myhelp_sre_tools() {
     echo -e "${BOLD}Main Commands:${NC}"
     echo -e "  ${__COMMAND_COLOR__}sre_tools -a${NC}, ${__COMMAND_COLOR__}--all${NC}         Load all SRE tools"
     echo -e "  ${__COMMAND_COLOR__}sre_tools -aws${NC}, ${__COMMAND_COLOR__}--aws${NC}       Load AWS functions"
-    echo -e "  ${__COMMAND_COLOR__}sre_tools -z${NC}, ${__COMMAND_COLOR__}--zellij${NC}      Load Zellij functions"
-    echo -e "  ${__COMMAND_COLOR__}sre_tools -M${NC}, ${__COMMAND_COLOR__}--mattermost${NC}  Load Mattermost functions"
-    echo -e "  ${__COMMAND_COLOR__}sre_tools -m${NC}, ${__COMMAND_COLOR__}--minikube${NC}    Load Minikube functions"
     echo -e "  ${__COMMAND_COLOR__}sre_tools -h${NC}, ${__COMMAND_COLOR__}--help${NC}        Show this help"
     echo -e "  ${__COMMAND_COLOR__}sre_tools -l${NC}, ${__COMMAND_COLOR__}--list${NC}        List available tools"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -M${NC}, ${__COMMAND_COLOR__}--mattermost${NC}  Load Mattermost functions"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -m${NC}, ${__COMMAND_COLOR__}--minikube${NC}    Load Minikube functions"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -z${NC}, ${__COMMAND_COLOR__}--zellij${NC}      Load Zellij functions"
 }
 
 function __myhelp_sre_tools_list__() {
