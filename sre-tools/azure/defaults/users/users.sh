@@ -19,7 +19,7 @@ function azure.sandbox.login() {
     echo -e "Logging into Azure environment for ${CYAN}Sandbox...${NC}"
 
     azure.dev.set.cloud
-    az login --tenant "$AZURE_TENANT_ID" # --subscription "$SUBSCRIPTION_NAME"
+    az login --tenant "$AZURE_TENANT_ID" 
     azure.sandbox
 }
 
