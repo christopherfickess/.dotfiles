@@ -79,4 +79,4 @@ service_principle.sh
 */*/*/*/env.sh
 */*/*/*/*/env.sh
 
-.claude
+.claude/
