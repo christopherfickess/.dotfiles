@@ -17,7 +17,9 @@ function azure.sandbox() {
 
 function azure.sandbox.login() {
     echo -e "Logging into Azure environment for ${CYAN}Sandbox...${NC}"
-    az login --tenant "$AZURE_TENANT_ID" # --subscription "$SUBSCRIPTION_NAME"
+
+    azure.dev.set.cloud
+    az login --tenant "$AZURE_TENANT_ID" 
     azure.sandbox
 }
 
@@ -55,7 +57,15 @@ function azure.create.sandbox.service.principal() {
 }
 
 
+function azure.dev.set.cloud(){ 
+    az cloud set --name AzureCloud
+}
 
+function azure.govleap.login() {
+    az cloud set --name AzureUSGovernment
+    az account clear
+    az login --allow-no-subscriptions
+}
 
 
 

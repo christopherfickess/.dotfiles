@@ -49,6 +49,50 @@
 **Stack:** Python, SQL, JavaScript/TypeScript, Bash, Terraform, YAML, Helm, Ansible
 **Primary domains:** Infra/DevOps (Terraform, Helm, Ansible) and backend scripting (Python, Bash)
 
+**Version policy — always verify, training data is stale:**
+- Never output a version number as if it's current. AI training data lags reality by months minimum.
+- **When to do a live version lookup (WebSearch/WebFetch required):**
+  - You are choosing and outputting a version number for the user to use — image tag, chart version, provider version, etc.
+  - You are flagging that a pinned version in existing config may be behind the latest patch
+- **When no lookup is needed:**
+  - The user has already specified the version — they made the choice, not you
+  - You are reviewing, explaining, or editing existing config that already has pinned versions
+  - The task is conceptual with no version being recommended or written
+- **The rule in plain terms:** If the version in the output is your recommendation, verify it live before writing it. If the version came from the user or the existing codebase, trust it and work with it.
+- Verification commands when a lookup is needed:
+  - Helm chart: `helm search repo <repo>/<chart> --versions | head -5` or check ArtifactHub directly
+  - Docker image: check the upstream registry (Docker Hub, GHCR, ECR Public) directly
+  - Terraform provider: registry.terraform.io
+- Use **exact version pins everywhere** — `image.tag: "1.2.3"`, chart `version: "1.2.3"`. Never use `latest` tag. Never use floating ranges.
+- Use **tag-based versioning** (`v1.2.3`) — no digest pinning.
+- Pull from **upstream registries directly** — Docker Hub, GHCR, vendor registries. No private mirrors.
+- **LTS track awareness:** "Latest stable" is not always the highest version number. Many projects maintain multiple LTS tracks (e.g., Postgres 15, 16, 17 are all maintained). If the existing environment is already on a maintained track, default to the latest patch of that track — never recommend a major version jump without explicitly flagging the migration path, breaking changes, and whether the current version still receives security patches. For greenfield, recommend the latest stable major and state which LTS track and why.
+- **Flag when pinned versions are behind:** If context shows a pinned version that is behind the latest patch of its track, flag it with the current latest and the upgrade command. Always verify the latest via live lookup before flagging — do not rely on training data.
+
+**Always use `mattermost/mattermost-enterprise-edition` when deploying Mattermost** — never `mattermost-team-edition` or any other variant. This applies to Docker images, Helm charts, and any other deployment method.
+
+**Enterprise vs community charts — verify before choosing:**
+- Always check whether an official vendor/enterprise Helm chart exists before reaching for a community chart (e.g., Bitnami). Vendor charts receive first-party security patches and direct support.
+- Do not assume an enterprise chart is still maintained — verify by checking the vendor's current docs for the official Helm repo URL. If it's deprecated or unmaintained, say so explicitly and document why community was chosen.
+- Check ArtifactHub (artifacthub.io) filtering by "Official" and "Verified Publisher" before selecting a chart source.
+- **Flag charts without provenance files** as an informational note — e.g., "This chart does not publish `.prov` files, so `helm pull --verify` is not available. Relying on source trust (known repo URL + pinned version)."
+
+**CVE awareness:**
+- You cannot run a live scanner. When recommending an image or chart version, flag any CRITICAL or HIGH CVEs known at training time — with the caveat that your data is stale and must be verified.
+- Always include the scan command alongside any version recommendation: `trivy image <image>:<tag>` or `grype <image>:<tag>`.
+- **Standing gap to review:** This environment has no automated CVE scanner in the pipeline. Blocking on CRITICAL and HIGH is the target policy. Flag this as an open item whenever security-relevant image or chart choices are made — recommend integrating Trivy or Grype into CI as a gate.
+- Image signature verification is not currently in use. When supply chain hardening is relevant, flag cosign verification as **optional hardening** — not a blocker.
+
+**Environment context — required before security-relevant tasks:**
+
+Security-relevant tasks include: network policies, firewall/ingress rules, RBAC, TLS/cert config, secrets handling, image pull policies, auth config, CVE mitigations, service account permissions, or anything touching infrastructure.
+
+Ask upfront: **"Is this for production or a test/dev environment?"**
+
+- **Test/dev:** Proceed, but warn explicitly what the security implication is before outputting config — e.g., "This disables mTLS between services, meaning pod-to-pod traffic is unencrypted. Acceptable for testing, not for production." Never assume they know the risk.
+- **Production:** Lead with concrete hardening guidance — what to block, what to enable, what to audit, what compensating controls exist. Flag any config that reduces security posture and explain the blast radius if misconfigured.
+- **Ambiguous:** Treat as production. Ask before outputting anything that could weaken security posture if applied to prod.
+
 ### Before Writing Any Code
 
 **This is a hard rule, not a guideline. Do not write a single line of code until you have asked and received answers to the questions below.**
