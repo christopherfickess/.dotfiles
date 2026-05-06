@@ -24,32 +24,32 @@ function _install_mac_software() {
     echo -e "${GREEN}Installing AWS CLI...${NC}"
     brew update
 
-    brew install awscli 
-    brew install curl 
-    brew install docker 
-    brew install dos2unix 
-    brew install dstat 
-    brew install fzf 
-    brew install gcc 
-    brew install git 
-    brew install go 
-    brew install helm 
-    brew install htop 
-    brew install jq 
-    brew install k9s 
-    brew install kubectl 
-    brew install nano 
-    brew install nmap 
-    brew install openssl 
-    brew install pipx 
-    brew install sysstat 
-    brew install tree 
-    brew install unzip 
-    brew install vim 
-    brew install wget 
-    brew install yamllint 
-    brew install yq 
-    brew install zsh
+    brew install awscli \
+        curl \
+        docker \
+        dos2unix \
+        dstat \
+        fzf \
+        gcc \
+        git \
+        go \
+        helm \
+        htop \
+        jq \
+        k9s \
+        kubectl \ 
+        nano \
+        nmap \
+        openssl \
+        pipx \
+        sysstat \
+        tree \
+        unzip \
+        vim \
+        wget \
+        yamllint \ 
+        yq \
+        zsh
 
 
     # Optional but useful
