@@ -11,6 +11,16 @@ shopt -s histappend;
 
 export HISTTIMEFORMAT="%F %T " # Add timestamps to history (optional)
 
+# kubeComplete 
+command -v kubectl > /dev/null 2>&1 && source <(kubectl completion bash)
+alias k=kubectl
+complete -F __start_kubectl k
+command -v helm > /dev/null 2>&1 && source <(helm completion bash)
+alias h=helm
+complete -F __start_helm h
+
+
+
 ## Bash_functions function 
 function bashrc() {
     echo -e "     Updating ${GREEN}.bashrc${NC} with latest from .dotfiles..."
