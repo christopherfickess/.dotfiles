@@ -1,7 +1,7 @@
 
 
 function azure.sandbox() {
-    azure.sandbox.env;
+    azure.dev.env;
     
     # Set the default subscription
     azure.set.subscription "$SUBSCRIPTION_NAME"
