@@ -1,0 +1,68 @@
+// Namespace drill-down layout
+// Launch via envsubst: NAMESPACE_PATTERN=mattermost zellij --layout namespace-watch.kdl.tpl
+// Or via wrapper script that handles the default
+
+layout {
+    pane split_direction="vertical" {
+
+        // ── Left: 60% ─────────────────────────────────────────────────────────
+        pane size="60%" split_direction="horizontal" {
+
+            // Pods - live watch, shows status/restarts/age cleanly
+            pane size="35%" name="📦 Pods · $NAMESPACE_PATTERN" {
+                command "watch"
+                args "-t" "-n2" "kubectl" "get" "pods" "-n" "$NAMESPACE_PATTERN" "-o" "custom-columns=NAME:.metadata.name,READY:.status.containerStatuses[0].ready,STATUS:.status.phase,RESTARTS:.status.containerStatuses[0].restartCount,AGE:.metadata.creationTimestamp,NODE:.spec.nodeName"
+            }
+
+            // Middle row: restart leaders + namespace status
+            pane size="30%" split_direction="vertical" {
+                pane size="60%" name="🔁 Pod Resources" {
+                    command "watch"
+                    args "-t" "-n5" "kubectl" "get" "pods" "-n" "$NAMESPACE_PATTERN" "-o" "custom-columns=NAME:.metadata.name,CPU-REQ:.spec.containers[0].resources.requests.cpu,CPU-LIM:.spec.containers[0].resources.limits.cpu,MEM-REQ:.spec.containers[0].resources.requests.memory,MEM-LIM:.spec.containers[0].resources.limits.memory"
+                }
+
+                pane size="40%" name="🗂️ Namespace Overview" {
+                    command "bash"
+                    args "-c" "watch -t -n5 kubectl get namespace $NAMESPACE_PATTERN -o wide"
+                }
+            }
+
+            // Events - tail sorted by time
+            pane size="35%" name="📋 Events · $NAMESPACE_PATTERN" {
+                command "bash"
+                args "-c" "watch -t -n3 'kubectl get events -n $NAMESPACE_PATTERN --sort-by=.lastTimestamp | tail -25'"
+            }
+        }
+
+        // ── Right: 40% ────────────────────────────────────────────────────────
+        pane size="40%" split_direction="horizontal" {
+
+            pane size="20%" name="🚀 Deployments · $NAMESPACE_PATTERN" {
+                command "bash"
+                args "-c" "watch -t -n2 kubectl get deployments -n $NAMESPACE_PATTERN"
+            }
+
+            pane size="20%" name="♻️ ReplicaSets · $NAMESPACE_PATTERN" {
+                command "bash"
+                args "-c" "watch -t -n3 kubectl get rs -n $NAMESPACE_PATTERN"
+            }
+
+            pane size="20%" name="🔌 Services · $NAMESPACE_PATTERN" {
+                command "bash"
+                args "-c" "watch -t -n5 kubectl get services -n $NAMESPACE_PATTERN"
+            }
+
+            // Combines sts + ds cleanly without nested quote issues
+            pane size="20%" name="📊 STS · DS · PV · PVC · $NAMESPACE_PATTERN" {
+                command "bash"
+                args "-c" "watch -t -n3 'echo \"=== StatefulSets ===\"; kubectl get sts -n $NAMESPACE_PATTERN 2>/dev/null; echo; echo \"=== DaemonSets ===\"; kubectl get ds -n $NAMESPACE_PATTERN 2>/dev/null; echo; echo \"=== PersistentVolumes ===\"; kubectl get pv -n $NAMESPACE_PATTERN 2>/dev/null; echo; echo \"=== PersistentVolumeClaims ===\"; kubectl get pvc -n $NAMESPACE_PATTERN 2>/dev/null'"
+            }
+
+            // Combines ingress + netpol cleanly
+            pane size="20%" name="🌐 Ingress · NetPol · HttpRoutes" {
+                command "bash"
+                args "-c" "watch -t -n5 'echo \"=== Ingress ===\"; kubectl get ingress -n $NAMESPACE_PATTERN 2>/dev/null; echo; echo \"=== NetworkPolicies ===\"; kubectl get netpol -n $NAMESPACE_PATTERN 2>/dev/null; echo; echo \"=== HttpRoutes ===\"; kubectl get httproutes -n $NAMESPACE_PATTERN 2>/dev/null'"
+            }
+        }
+    }
+}

@@ -1,58 +1,67 @@
 #!/bin/bash
 
-
 function myhelp_wsl() {
-    echo -e ""
-    echo -e "WSL Commands:"
-    echo -e "------------------------------------------------------------------------------------------------------"
-    echo -e "     ${YELLOW}install_wsl${NC}                     - Install WSL with default fedora distro with custom configurations"
-    echo -e "     ${YELLOW}destroy_wsl_distro${NC}              - Uninstall and remove a specified WSL distribution from your system"
-    echo -e "     ${YELLOW}update_wsl${NC}                      - Update WSL kernel and components to the latest version"
-    echo -e ""
-    echo -e "Built-in WSL Commands:"
-    echo -e "------------------------------------------------------------------------------------------------------"
-    _list_windows_wsl_commands
+    echo -e "${__HEADER_COLOR__}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${__HEADER_COLOR__} WSL Commands${NC}"
+    echo -e "${__HEADER_COLOR__}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
 
-    echo -e ""
-    echo -e "${MAGENTA}For more information, visit: https://docs.microsoft.com/en-us/windows/wsl/reference${NC}"
+    if [[ "${SRE_TOOLS_VERBOSE:-false}" == "true" ]]; then
+        __myhelp_wsl_advanced__
+    else
+        __myhelp_wsl_basic__
+    fi
+
+    echo ""
+    if [[ "${SRE_TOOLS_VERBOSE:-false}" != "true" ]]; then
+        echo -e "${__COMMAND_COLOR__}Tip:${NC} Set ${__DETAILS_COLOR__}SRE_TOOLS_VERBOSE=true${NC} or use ${__DETAILS_COLOR__}myhelp -v${NC} for all WSL commands"
+    fi
+    echo ""
+    echo -e "For more information: ${__INFO_COLOR__}https://docs.microsoft.com/en-us/windows/wsl/reference${NC}"
 }
 
+function __myhelp_wsl_basic__() {
+    echo -e "${BOLD}Custom WSL Functions:${NC}"
+    echo -e "  ${__COMMAND_COLOR__}install_wsl${NC}                  Install WSL with Fedora"
+    echo -e "  ${__COMMAND_COLOR__}destroy_wsl_distro${NC}           Uninstall WSL distribution"
+    echo -e "  ${__COMMAND_COLOR__}update_wsl${NC}                   Update WSL kernel"
+    echo ""
+    echo -e "${BOLD}Built-in WSL Commands:${NC}"
+    echo -e "  ${__COMMAND_COLOR__}wsl -l${NC}                       List installed distributions"
+    echo -e "  ${__COMMAND_COLOR__}wsl --status${NC}                 Show WSL status"
+    echo -e "  ${__COMMAND_COLOR__}wsl --shutdown${NC}               Shut down all WSL instances"
+    echo -e "  ${__COMMAND_COLOR__}wsl --terminate <distro>${NC}     Stop specific distro"
+    echo -e "  ${__COMMAND_COLOR__}wsl <command>${NC}                Run command in default distro"
+    echo -e "  ${__COMMAND_COLOR__}wsl --update${NC}                 Update WSL components"
+}
 
-# ------------------
-# Secret Functions
-# ------------------
-function _list_windows_wsl_commands(){
-    if [ "${__verbose__}" == "TRUE" ]; then
-        echo -e "     ${YELLOW}wsl -l${NC}                          - List installed Linux distributions"
-        echo -e "     ${YELLOW}wsl -l -v${NC}                       - List installed distros with version/state"
-        echo -e ""
-        echo -e "     ${YELLOW}wsl --install${NC}                   - Install WSL with default distro"
-        echo -e "     ${YELLOW}wsl --install <distro>${NC}          - Install a specific distro"
-        echo -e "     ${YELLOW}wsl --set-default <distro>${NC}      - Set default distro"
-        echo -e ""
-        echo -e "     ${YELLOW}wsl --status${NC}                    - Show WSL status + default distro"
-        echo -e "     ${YELLOW}wsl --shutdown${NC}                  - Shut down all WSL instances"
-        echo -e "     ${YELLOW}wsl --terminate <distro>${NC}        - Stop a specific distro"
-        echo -e ""
-        echo -e "     ${YELLOW}wsl sh -c \"<command>\"${NC}         - Run command in default distro"
-        echo -e ""
-        echo -e "     ${YELLOW}wsl hostname${NC}                    - Get hostname inside WSL"
-        echo -e "     ${YELLOW}wsl ip addr${NC}                     - Get IP/network info"
-        echo -e "     ${YELLOW}wsl cat /proc/version${NC}           - Show kernel version"
-        echo -e ""
-        echo -e "     ${YELLOW}wslpath <WinPath>${NC}               - Convert Windows path to Linux path"
-        echo -e "     ${YELLOW}wslpath -w <LinuxPath>${NC}          - Convert Linux path to Windows path"
-        echo -e ""
-        echo -e "     ${YELLOW}wsl --update${NC}                    - Update WSL kernel and components"
-        echo -e "     ${YELLOW}wsl --update rollback${NC}           - Roll back last WSL kernel update"
+function __myhelp_wsl_advanced__() {
+    __myhelp_wsl_basic__
+    echo ""
+    echo -e "${BOLD}Advanced Built-in Commands:${NC}"
+    echo -e "  ${__COMMAND_COLOR__}wsl -l -v${NC}                    List distros with version/state"
+    echo -e "  ${__COMMAND_COLOR__}wsl --install${NC}                Install WSL with default distro"
+    echo -e "  ${__COMMAND_COLOR__}wsl --install <distro>${NC}       Install specific distro"
+    echo -e "  ${__COMMAND_COLOR__}wsl --set-default <distro>${NC}   Set default distro"
+    echo ""
+    echo -e "${BOLD}Network & System:${NC}"
+    echo -e "  ${__COMMAND_COLOR__}wsl hostname${NC}                 Get WSL hostname"
+    echo -e "  ${__COMMAND_COLOR__}wsl ip addr${NC}                  Get IP/network info"
+    echo -e "  ${__COMMAND_COLOR__}wsl cat /proc/version${NC}        Show kernel version"
+    echo ""
+    echo -e "${BOLD}Path Conversion:${NC}"
+    echo -e "  ${__COMMAND_COLOR__}wslpath <WinPath>${NC}            Convert Windows to Linux path"
+    echo -e "  ${__COMMAND_COLOR__}wslpath -w <LinuxPath>${NC}       Convert Linux to Windows path"
+    echo ""
+    echo -e "${BOLD}Update Management:${NC}"
+    echo -e "  ${__COMMAND_COLOR__}wsl --update rollback${NC}        Roll back WSL kernel update"
+}
+
+# Legacy function name support
+function _list_windows_wsl_commands() {
+    if [[ "${SRE_TOOLS_VERBOSE:-false}" == "true" ]] || [[ "${__verbose__}" == "TRUE" ]]; then
+        __myhelp_wsl_advanced__
     else
-        echo -e "     ${YELLOW}wsl -l${NC}                          - List installed Linux distributions"
-        echo -e "     ${YELLOW}wsl --status${NC}                    - Show WSL status + default distro"
-        echo -e "     ${YELLOW}wsl --shutdown${NC}                  - Shut down all WSL instances"
-        echo -e "     ${YELLOW}wsl --terminate <distro>${NC}        - Stop a specific distro"
-        echo -e ""
-        echo -e "     ${YELLOW}wsl <command>${NC}                   - Run command in default distro"
-        echo -e "     ${YELLOW}wsl --update${NC}                    - Update WSL kernel and components"
+        __myhelp_wsl_basic__
     fi
-    
 }

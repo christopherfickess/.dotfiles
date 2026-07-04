@@ -1,0 +1,42 @@
+// Template for watching resources in namespaces matching a pattern
+// Set NAMESPACE_PATTERN environment variable before launching
+// Example: NAMESPACE_PATTERN="mattermost" zellij --layout namespace-filtered-watch.kdl
+
+layout {
+    pane split_direction="vertical" {
+        // Left side - K9s instances with namespace filtering
+        pane size="50%" split_direction="horizontal" {
+            pane size="50%" name="🚀 All Deploys" {
+                command "k9s"
+                args "--headless" "-c" "deployments" "-A"
+            }
+            pane size="50%" name="📦 All Pods" {
+                command "k9s"
+                args "--headless" "-c" "pods" "-A"
+            }
+        }
+
+        // Right side - kubectl watches with pattern matching
+        pane size="50%" split_direction="horizontal" {
+            pane size="25%" name="📦 $NAMESPACE_PATTERN Pods" {
+                command "k9s"
+                args "--headless" "-A" "-c" "pods /$NAMESPACE_PATTERN" 
+            }
+
+            pane size="25%" name="🚀 $NAMESPACE_PATTERN Deployments" {
+                command "k9s"
+                args "--headless" "-A" "-c" "deployments /$NAMESPACE_PATTERN"
+            }
+
+            pane size="25%" name="🛠️ $NAMESPACE_PATTERN Services" {
+                command "k9s"
+                args "--headless" "-A" "-c" "services /$NAMESPACE_PATTERN"
+            }
+
+            pane size="25%" name="📅 $NAMESPACE_PATTERN Events" {
+                command "k9s"
+                args "--headless" "-A" "-c" "events /$NAMESPACE_PATTERN"
+            }
+        }
+    }
+}

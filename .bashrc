@@ -62,6 +62,36 @@ function branching_method_2() {
 
 function branching_method_3() {
     # Get current branch (only if inside git repo)
+    git_repo_path() {
+        # Not in a git repo
+        if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+            if [[ "$PWD" == "$HOME" ]]; then
+                echo "~"
+            elif [[ "$PWD" == "$HOME/"* ]]; then
+                echo "~${PWD#$HOME}"
+            else
+                pwd
+            fi
+            return
+        fi
+
+        local repo_root repo_name prefix
+
+        repo_root="$(git rev-parse --show-toplevel)"
+        repo_name="$(basename "$repo_root")"
+        prefix="$(git rev-parse --show-prefix)"
+
+        # Remove trailing slash from prefix
+        prefix="${prefix%/}"
+
+        if [[ -z "$prefix" ]]; then
+            echo "$repo_name"
+        else
+            echo "$repo_name/$prefix"
+        fi
+    }
+
+    # Show Branch Name
     git_branch_name() {
         if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
             git symbolic-ref --short HEAD 2>/dev/null
@@ -127,7 +157,12 @@ function branching_method_3() {
         [[ -f ~/.bashrc ]] && source ~/.bashrc
     else
         # Bash prompt escapes
-        PS1="\[\e[1;34m\]\w\[\e[0m\] \[\e[32m\]\$(git_branch_name)\[\e[0m\]\[\e[37m\] \$(git_branch_ahead_behind)\[\e[0m\] \[\e[0;31m\]> \[\e[0m\]"
+        # This is full path from ~, with git repo path and branch info
+        # PS1="\[\e[1;34m\]\w\[\e[0m\] \[\e[32m\] \$(git_branch_name)\[\e[0m\]\[\e[37m\] \$(git_branch_ahead_behind)\[\e[0m\] \[\e[0;31m\]> \[\e[0m\]"
+        
+        # This is repo path only if in git repo, otherwise full path from ~
+        PS1="\[\e[1;34m\]\$(git_repo_path)\[\e[0m\] \[\e[32m\]\$(git_branch_name)\[\e[0m\] \[\e[37m\]\$(git_branch_ahead_behind)\[\e[0m\] \[\e[0;31m\]> \[\e[0m\]"
+
     fi
 }
 

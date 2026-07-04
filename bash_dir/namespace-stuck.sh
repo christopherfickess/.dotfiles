@@ -1,7 +1,7 @@
 
-function stuck_namespace_fix() {
+function delete_namespace() {
     if [ -z "$1" ]; then
-        echo -e "${RED}Error: No namespace provided. Usage: stuck_namespace_fix <namespace>${NC}"
+        echo -e "${RED}Error: No namespace provided. Usage: delete_namespace <namespace>${NC}"
         return 1
     fi
     NAMESPACE="${1}"

@@ -10,19 +10,6 @@ function eks_list_clusters() {
     aws eks list-clusters --region "${region}" --output table
 }
 
-function eks_cluster_info() {
-    local cluster_name="${1}"
-    local region="${AWS_REGION:-us-east-1}"
-    
-    if [ -z "${cluster_name}" ]; then
-        echo -e "${RED}Usage: eks_cluster_info <cluster-name> [region]${NC}"
-        return 1
-    fi
-    
-    echo -e "${CYAN}Getting info for cluster: ${cluster_name}${NC}"
-    aws eks describe-cluster --name "${cluster_name}" --region "${region}" --output json | jq '.'
-}
-
 function eks_node_groups() {
     local cluster_name="${1}"
     local region="${AWS_REGION:-us-east-1}"

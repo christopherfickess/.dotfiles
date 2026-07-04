@@ -1,0 +1,28 @@
+
+
+layout {
+    pane split_direction="vertical" {
+        pane split_direction="horizontal" {
+            pane command="k9s" {
+                args "get" "pods" "-w" "-A"
+            }
+            pane command="k9s" {
+                args "get" "events" "-w" "-n" "velero"
+            }
+            pane command="k9s" {
+                args "get" "nodes" "-w"
+            }
+        }
+        pane split_direction="horizontal" {
+            pane command="kubectl" {
+                args "top" "pods" "-n" "default"
+            }
+            pane command="kubectl" {
+                args "get" "services" "-w" "-n" "default"
+            }
+            pane command="watch" {
+                args "kubectl" "get" "pvc" "-n" "default"
+            }
+        }
+    }
+}

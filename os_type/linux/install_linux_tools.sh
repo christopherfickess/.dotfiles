@@ -348,4 +348,55 @@ function __azure_linux_tools_install__() {
         curl -sL https://aka.ms/storageexplorer-linux | tar -xzf - -C "$HOME/Apps"
         echo -e "${YELLOW}   Add $HOME/Apps/StorageExplorer to PATH if desired.${NC}"
     fi
+
+function __k9s_install__() {
+    curl -LO https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.rpm
+    sudo dnf install ./k9s_Linux_amd64.rpm
+}
+
+function __zellij_install__() {
+    wget https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz
+    tar -xvf zellij-x86_64-unknown-linux-musl.tar.gz
+    sudo mv zellij /usr/local/bin/
+}
+
+function __cilium_cli_install__() {
+    CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
+    CLI_ARCH=amd64
+    if [ "$(uname -m)" = "aarch64" ]; then CLI_ARCH=arm64; fi
+
+    curl -L --fail --remote-name-all \
+    https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+
+    sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
+    sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
+    rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+
+    cilium version
+}
+
+function __hubble_install__() {
+    HUBBLE_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/hubble/master/stable.txt)
+    HUBBLE_ARCH=amd64
+    if [ "$(uname -m)" = "aarch64" ]; then HUBBLE_ARCH=arm64; fi
+
+    curl -L --fail --remote-name-all \
+    https://github.com/cilium/hubble/releases/download/${HUBBLE_VERSION}/hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
+
+    sha256sum --check hubble-linux-${HUBBLE_ARCH}.tar.gz.sha256sum
+    sudo tar xzvfC hubble-linux-${HUBBLE_ARCH}.tar.gz /usr/local/bin
+    rm hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
+
+    hubble version
+}
+
+function __argo_install__() {
+    VERSION=$(curl -L -s https://raw.githubusercontent.com/argoproj/argo-cd/stable/VERSION)
+    curl -sSL -o argocd-linux-amd64 \
+    https://github.com/argoproj/argo-cd/releases/download/v${VERSION}/argocd-linux-amd64
+
+    sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+    rm argocd-linux-amd64
+
+    argocd version --client
 }
