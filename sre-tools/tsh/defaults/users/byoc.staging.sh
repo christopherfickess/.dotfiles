@@ -2,6 +2,7 @@
 
 # TSL Connections
 function tshl.staging.login() {
+    export TELEPORT_LOGIN="${__byoc_teleport_login__}"
     export __customer_name__="Internal - Staging"
     export __tsh_connect_teleport_cluster__="${__staging_internal_teleport_cluster_name__}"
     tshl.login

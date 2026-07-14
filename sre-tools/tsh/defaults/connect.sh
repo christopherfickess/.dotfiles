@@ -25,7 +25,7 @@ function tshl.login(){
         echo -e "Logging into Teleport proxy ${MAGENTA}${TELEPORT_LOGIN}${NC}"
         echo -e "    For Customer: ${MAGENTA}${__customer_name__}${NC}..."
         echo
-        tsh login --proxy="${TELEPORT_LOGIN}" --auth=microsoft "${__tsh_connect_teleport_cluster__}"
+        tsh login --proxy="${TELEPORT_LOGIN}" --auth=microsoft # "${__tsh_connect_teleport_cluster__}"
     else
         echo "Teleport CLI (tsh) is not installed. Please install it to log in."
     fi

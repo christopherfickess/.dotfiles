@@ -2,6 +2,7 @@
 
 # Login to Teleport proxy for Iron Badger
 function tshl.iron-badger.prod.login() {
+    export TELEPORT_LOGIN="${__byoc_teleport_login__}"
     export __customer_name__="Iron Badger - Prod"
     export __tsh_connect_teleport_cluster__="${__prod_iron_badger_teleport_cluster_name__}"
     tshl.login

@@ -7,16 +7,6 @@
 
 # URLs
 
-function mmctl() {
-    if ! command -v mmctl &> /dev/null; then
-        echo -e "${RED}mmctl could not be found. Please install it first.${NC}"
-        update_mattermost_ctl
-        return 1
-    else
-        echo -e "${CYAN}     mmctl is installed.${NC}"
-    fi
-} 
-
 function update_mattermost_ctl() {
     if [ -z "$ISWINDOWS" ] || [ "$ISWINDOWS" != "TRUE" ]; then
         echo -e "${RED}This function is only supported on Windows systems.${NC}"

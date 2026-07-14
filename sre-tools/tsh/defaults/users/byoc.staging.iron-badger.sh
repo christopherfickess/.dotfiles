@@ -1,6 +1,7 @@
 
 # TSL Connections
 function tshl.iron-badger.staging.login() {
+    export TELEPORT_LOGIN="${__byoc_teleport_login__}"
     export __customer_name__="Iron Badger - Staging"
     export __tsh_connect_teleport_cluster__="${__staging_iron_badger_teleport_cluster_name__}"
     tshl.login
