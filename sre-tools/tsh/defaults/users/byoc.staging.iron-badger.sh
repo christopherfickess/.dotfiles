@@ -1,3 +1,4 @@
+[[ -z "${__staging_iron_badger_teleport_cluster_name__}" ]] && return
 
 # TSL Connections
 function tshl.iron-badger.staging.login() {
