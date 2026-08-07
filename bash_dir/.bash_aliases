@@ -38,8 +38,8 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
-# if command -v kubecolor >/dev/null 2>&1; then
-#     alias kubectl="kubecolor"
-# fi
+if command -v kubecolor >/dev/null 2>&1; then
+    alias kubectl="kubecolor"
+fi
 
 bind 'set bell-style none'  # Disable terminal bell
