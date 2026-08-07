@@ -11,6 +11,8 @@ These variables are used in the `tshl.login` function to log into the correct Te
 To set these variables, you can create a new file in the `sre-tools/tsh/defaults/users.sh` directory with the name of the customer and environment. For example, if you are logging into the Staging Internal environment, you can create a file named `byoc.staging.sh` with the following content:
 
 ```bash
+[[ -z "${__staging_teleport_cluster_name__}" ]] && return
+
 # TSL Connections
 function tshl.staging.login() {
     export __customer_name__="Internal - Staging"
@@ -25,6 +27,8 @@ function tshl.staging.connect() {
     tshl.connect
 }
 ```
+
+The guard clause at the top ensures the file's functions are only defined if the relevant cluster variable is set (e.g. via your hidden env vars file below). This keeps `tshl.<customer>.<env>.*` functions from appearing for customers/environments you don't have access to.
 
 To hide the names of the customers and environments, you can use a hidden file in the location of your choice and source it in to the bashrc or zshrc file. For example, you can create a file named `.tsh_env_vars` with the following content:
 
