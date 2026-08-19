@@ -1,4 +1,5 @@
 
+
 function tshl() {
     if command -v tsh &> /dev/null; then
         echo "Logging into Teleport proxy at ${TELEPORT_LOGIN}..."
@@ -44,3 +45,13 @@ function tshl.connect(){
         echo "Teleport CLI (tsh) is not installed. Please install it to log in."
     fi
 }
+
+function tshl.local.login(){
+    if command -v tsh &> /dev/null; then
+        echo -e "Logging into Teleport proxy ${MAGENTA}${TELEPORT_LOGIN}${NC}..."
+        echo
+        tsh login --proxy="${TELEPORT_LOGIN}" --user="${TELEPORT_USER}"
+    else
+        echo "Teleport CLI (tsh) is not installed. Please install it to log in."
+    fi
+}   

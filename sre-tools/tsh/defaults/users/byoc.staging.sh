@@ -1,4 +1,4 @@
-
+[[ -z "${__staging_internal_teleport_cluster_name__}" ]] && return
 
 # TSL Connections
 function tshl.staging.login() {

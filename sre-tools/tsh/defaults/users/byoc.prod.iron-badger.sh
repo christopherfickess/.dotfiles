@@ -1,4 +1,4 @@
-
+[[ -z "${__prod_iron_badger_teleport_cluster_name__}" ]] && return
 
 # Login to Teleport proxy for Iron Badger
 function tshl.iron-badger.prod.login() {
