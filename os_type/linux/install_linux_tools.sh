@@ -129,7 +129,7 @@ function __install_linux_software__() {
     fi
     if command -v docker &>/dev/null; then
         __configure_docker__
-    else
+    else 
         if command -v apt-get >/dev/null 2>&1; then
             echo -e "${GREEN}Installing Docker...${NC}"
             sudo apt-get install -y docker.io
