@@ -6,6 +6,7 @@ function mac_install(){
     echo -e "${GREEN}Installing Base tool chain for Mac${NC}"
 
     _install_mac_software
+    __zellij_install__
 }
 
 function _install_mac_software() {
@@ -73,4 +74,10 @@ function _install_mac_software() {
     echo -e "${GREEN}Installing Terraform...${NC}"
     brew tap hashicorp/tap
     brew install hashicorp/tap/terraform
+}
+
+function __zellij_install__() {
+    wget https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-apple-darwin.tar.gz
+    tar -xvf zellij-x86_64-apple-darwin.tar.gz
+    sudo mv zellij /usr/local/bin/
 }

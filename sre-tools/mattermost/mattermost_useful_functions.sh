@@ -12,3 +12,17 @@ function mattermost_rollout() {
 
     kubectl -n "${1}" rollout restart deployment
 }
+
+function mattermost_desktop_app_clear_cache() {
+    # Clear the Mattermost desktop app cache
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        rm -rf ~/Library/Containers/Mattermost.Desktop/Data/Library/Application\ Support/Mattermost/Cache
+        rm -rf ~/Library/Containers/Mattermost.Desktop/Data/Library/Application\ Support/Mattermost/GPUCache
+        echo -e "${YELLOW}Mattermost desktop app cache cleared on macOS.${NC}"
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        rm -rf ~/.config/Mattermost
+        echo -e "${YELLOW}Mattermost desktop app cache cleared on Linux.${NC}"
+    else
+        echo -e "${RED}Unsupported OS for clearing Mattermost desktop app cache.${NC}"
+    fi
+}

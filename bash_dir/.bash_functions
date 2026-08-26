@@ -12,6 +12,10 @@ shopt -s histappend;
 export HISTTIMEFORMAT="%F %T " # Add timestamps to history (optional)
 
 # kubeComplete 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    export BASH_COMPLETION_COMPAT_DIR="/opt/homebrew/etc/bash_completion.d"
+    [[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]] && source "/opt/homebrew/etc/profile.d/bash_completion.sh"
+fi
 command -v kubectl > /dev/null 2>&1 && source <(kubectl completion bash)
 alias k=kubectl
 complete -F __start_kubectl k
