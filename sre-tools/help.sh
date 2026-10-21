@@ -33,42 +33,43 @@ function myhelp_sre_tools() {
         echo ""
 
         for tool in "${loaded_tools[@]}"; do
+            # Use echo -e so NC / __*_COLOR__ (\033[...m) expand like the rest of help
             case "${tool}" in
                 ai)
-                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}AI skills/agents${NC}" "${__COMMAND_COLOR__}setup_ai_tools${NC}"
+                    echo -e "  ${__DETAILS_COLOR__}AI skills/agents${NC}     ${__COMMAND_COLOR__}setup_ai_tools${NC}"
                     ;;
                 aws)
-                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}AWS Functions${NC}" "${__COMMAND_COLOR__}myhelp_aws${NC}"
+                    echo -e "  ${__DETAILS_COLOR__}AWS Functions${NC}        ${__COMMAND_COLOR__}myhelp_aws${NC}"
                     ;;
                 azure)
-                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}Azure Functions${NC}" "${__COMMAND_COLOR__}myhelp_azure${NC}"
+                    echo -e "  ${__DETAILS_COLOR__}Azure Functions${NC}      ${__COMMAND_COLOR__}myhelp_azure${NC}"
                     ;;
                 docker)
-                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}Docker Functions${NC}" "${__COMMAND_COLOR__}myhelp_docker${NC}"
+                    echo -e "  ${__DETAILS_COLOR__}Docker Functions${NC}     ${__COMMAND_COLOR__}myhelp_docker${NC}"
                     ;;
                 flux)
-                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}Flux Functions${NC}" "${__COMMAND_COLOR__}myhelp_flux${NC}"
+                    echo -e "  ${__DETAILS_COLOR__}Flux Functions${NC}       ${__COMMAND_COLOR__}myhelp_flux${NC}"
                     ;;
                 go)
-                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}Go Tools${NC}" "${__COMMAND_COLOR__}myhelp_go${NC}"
+                    echo -e "  ${__DETAILS_COLOR__}Go Tools${NC}              ${__COMMAND_COLOR__}myhelp_go${NC}"
                     ;;
                 kubernetes)
-                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}Kubernetes Functions${NC}" "${__COMMAND_COLOR__}myhelp_kubernetes${NC}"
+                    echo -e "  ${__DETAILS_COLOR__}Kubernetes Functions${NC} ${__COMMAND_COLOR__}myhelp_kubernetes${NC}"
                     ;;
                 mattermost)
-                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}Mattermost Tools${NC}" "${__COMMAND_COLOR__}myhelp_mattermost${NC}"
+                    echo -e "  ${__DETAILS_COLOR__}Mattermost Tools${NC}     ${__COMMAND_COLOR__}myhelp_mattermost${NC}"
                     ;;
                 minikube)
-                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}Minikube Functions${NC}" "${__COMMAND_COLOR__}myhelp_minikube${NC}"
+                    echo -e "  ${__DETAILS_COLOR__}Minikube Functions${NC}   ${__COMMAND_COLOR__}myhelp_minikube${NC}"
                     ;;
                 python)
-                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}Python Tools${NC}" "${__COMMAND_COLOR__}myhelp_python${NC}"
+                    echo -e "  ${__DETAILS_COLOR__}Python Tools${NC}          ${__COMMAND_COLOR__}myhelp_python${NC}"
                     ;;
                 zellij)
-                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}Zellij Layouts${NC}" "${__COMMAND_COLOR__}myhelp_zellij${NC}"
+                    echo -e "  ${__DETAILS_COLOR__}Zellij Layouts${NC}        ${__COMMAND_COLOR__}myhelp_zellij${NC}"
                     ;;
                 *)
-                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}${tool}${NC}" "${__COMMAND_COLOR__}(loaded)${NC}"
+                    echo -e "  ${__DETAILS_COLOR__}${tool}${NC}  ${__COMMAND_COLOR__}(loaded)${NC}"
                     ;;
             esac
         done
