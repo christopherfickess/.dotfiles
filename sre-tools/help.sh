@@ -3,7 +3,7 @@
 # Global registry to track loaded tools
 declare -gA __SRE_TOOLS_LOADED__ 2>/dev/null || true
 
-# Main unified help function
+# Main unified help (sre_tools -h)
 function myhelp_sre_tools() {
     __color_help__
     echo -e "${__HEADER_COLOR__}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -11,33 +11,32 @@ function myhelp_sre_tools() {
     echo -e "${__HEADER_COLOR__}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
 
-    # Show main SRE tools help
-    myhelp_sre_tools
+    __myhelp_sre_tools_commands__
 
     echo ""
 
-    # Auto-discover and show loaded tools
     local loaded_count=0
     local loaded_tools=()
+    local tool
 
-    # Check which tools are loaded
-    for tool in aws azure docker go kubernetes mattermost minikube python zellij; do
+    for tool in ai aws azure docker flux go kubernetes mattermost minikube python zellij; do
         if [[ "${__SRE_TOOLS_LOADED__[$tool]}" == "true" ]]; then
-            loaded_tools+=("$tool")
-            ((loaded_count++))
+            loaded_tools+=("${tool}")
+            ((loaded_count++)) || true
         fi
     done
 
-    # Show loaded tools section if any are loaded
-    if [[ $loaded_count -gt 0 ]]; then
+    if [[ "${loaded_count}" -gt 0 ]]; then
         echo -e "${__HEADER_COLOR__}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
         echo -e "${__HEADER_COLOR__} Loaded Tools (${loaded_count})${NC}"
         echo -e "${__HEADER_COLOR__}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
         echo ""
 
-        # Display each loaded tool with its help command
         for tool in "${loaded_tools[@]}"; do
-            case "$tool" in
+            case "${tool}" in
+                ai)
+                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}AI skills/agents${NC}" "${__COMMAND_COLOR__}setup_ai_tools${NC}"
+                    ;;
                 aws)
                     printf "  %-30s %s\n" "${__DETAILS_COLOR__}AWS Functions${NC}" "${__COMMAND_COLOR__}myhelp_aws${NC}"
                     ;;
@@ -46,6 +45,9 @@ function myhelp_sre_tools() {
                     ;;
                 docker)
                     printf "  %-30s %s\n" "${__DETAILS_COLOR__}Docker Functions${NC}" "${__COMMAND_COLOR__}myhelp_docker${NC}"
+                    ;;
+                flux)
+                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}Flux Functions${NC}" "${__COMMAND_COLOR__}myhelp_flux${NC}"
                     ;;
                 go)
                     printf "  %-30s %s\n" "${__DETAILS_COLOR__}Go Tools${NC}" "${__COMMAND_COLOR__}myhelp_go${NC}"
@@ -65,6 +67,9 @@ function myhelp_sre_tools() {
                 zellij)
                     printf "  %-30s %s\n" "${__DETAILS_COLOR__}Zellij Layouts${NC}" "${__COMMAND_COLOR__}myhelp_zellij${NC}"
                     ;;
+                *)
+                    printf "  %-30s %s\n" "${__DETAILS_COLOR__}${tool}${NC}" "${__COMMAND_COLOR__}(loaded)${NC}"
+                    ;;
             esac
         done
 
@@ -82,35 +87,41 @@ function myhelp_sre_tools() {
     echo ""
 }
 
-function myhelp_sre_tools() {
+function __myhelp_sre_tools_commands__() {
     echo -e "${BOLD}Main Commands:${NC}"
-    echo -e "  ${__COMMAND_COLOR__}sre_tools -a${NC}, ${__COMMAND_COLOR__}--all${NC}         Load all SRE tools"
-    echo -e "  ${__COMMAND_COLOR__}sre_tools -aws${NC}, ${__COMMAND_COLOR__}--aws${NC}       Load AWS functions"
-    echo -e "  ${__COMMAND_COLOR__}sre_tools -h${NC}, ${__COMMAND_COLOR__}--help${NC}        Show this help"
-    echo -e "  ${__COMMAND_COLOR__}sre_tools -l${NC}, ${__COMMAND_COLOR__}--list${NC}        List available tools"
-    echo -e "  ${__COMMAND_COLOR__}sre_tools -M${NC}, ${__COMMAND_COLOR__}--mattermost${NC}  Load Mattermost functions"
-    echo -e "  ${__COMMAND_COLOR__}sre_tools -m${NC}, ${__COMMAND_COLOR__}--minikube${NC}    Load Minikube functions"
-    echo -e "  ${__COMMAND_COLOR__}sre_tools -z${NC}, ${__COMMAND_COLOR__}--zellij${NC}      Load Zellij functions"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -a${NC}, ${__COMMAND_COLOR__}--all${NC}           Load all SRE tools (includes AI)"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -A${NC}, ${__COMMAND_COLOR__}--ai${NC}            Link AI skills/agents (Cursor, Claude, OpenCode)"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -aws${NC}, ${__COMMAND_COLOR__}--aws${NC}         Load AWS functions"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -f${NC}, ${__COMMAND_COLOR__}--flux${NC}          Load Flux functions"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -g${NC}, ${__COMMAND_COLOR__}--go${NC}            Load Go tools"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -h${NC}, ${__COMMAND_COLOR__}--help${NC}          Show this help"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -l${NC}, ${__COMMAND_COLOR__}--list${NC}          List available tools"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -M${NC}, ${__COMMAND_COLOR__}--mattermost${NC}    Load Mattermost functions"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -m${NC}, ${__COMMAND_COLOR__}--minikube${NC}      Load Minikube functions"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -p${NC}, ${__COMMAND_COLOR__}--python${NC}        Load Python tools"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -r${NC}, ${__COMMAND_COLOR__}--reload${NC}        Reload sre_tools from disk"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -u${NC}, ${__COMMAND_COLOR__}--update${NC}        git pull ~/.dotfiles"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -v${NC}, ${__COMMAND_COLOR__}--version${NC}       Show SRE tools version / path"
+    echo -e "  ${__COMMAND_COLOR__}sre_tools -z${NC}, ${__COMMAND_COLOR__}--zellij${NC}        Load Zellij layouts"
+    echo ""
+    echo -e "${BOLD}AI shortcut (no sre_tools):${NC}"
+    echo -e "  ${__COMMAND_COLOR__}source ~/.dotfiles/ai/setup.sh && setup_ai_tools${NC}"
 }
 
 function __myhelp_sre_tools_list__() {
     echo -e "${__HEADER_COLOR__}Available SRE Tools:${NC}"
     echo -e "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo -e "  ${__COMMAND_COLOR__}AWS${NC}          - AWS SRE functions and utilities"
-    echo -e "  ${__COMMAND_COLOR__}Azure${NC}        - Azure cloud functions"
-    echo -e "  ${__COMMAND_COLOR__}Docker${NC}       - Docker container management"
-    echo -e "  ${__COMMAND_COLOR__}Go${NC}           - Go development tools"
-    echo -e "  ${__COMMAND_COLOR__}Kubernetes${NC}   - Kubernetes cluster management"
-    echo -e "  ${__COMMAND_COLOR__}Mattermost${NC}   - Mattermost development and deployment"
-    echo -e "  ${__COMMAND_COLOR__}Minikube${NC}     - Local Kubernetes development"
-    echo -e "  ${__COMMAND_COLOR__}Python${NC}       - Python development tools"
-    echo -e "  ${__COMMAND_COLOR__}Zellij${NC}       - Terminal workspace layouts"
+    echo -e "  ${__COMMAND_COLOR__}AI${NC}           - Cursor/Claude/OpenCode skills & agents (${__DETAILS_COLOR__}sre_tools -A${NC})"
+    echo -e "  ${__COMMAND_COLOR__}AWS${NC}          - AWS SRE functions and utilities (${__DETAILS_COLOR__}sre_tools -aws${NC})"
+    echo -e "  ${__COMMAND_COLOR__}Flux${NC}         - Flux CD helpers (${__DETAILS_COLOR__}sre_tools -f${NC})"
+    echo -e "  ${__COMMAND_COLOR__}Go${NC}           - Go development tools (${__DETAILS_COLOR__}sre_tools -g${NC})"
+    echo -e "  ${__COMMAND_COLOR__}Mattermost${NC}   - Mattermost development and deployment (${__DETAILS_COLOR__}sre_tools -M${NC})"
+    echo -e "  ${__COMMAND_COLOR__}Minikube${NC}     - Local Kubernetes development (${__DETAILS_COLOR__}sre_tools -m${NC})"
+    echo -e "  ${__COMMAND_COLOR__}Python${NC}       - Python development tools (${__DETAILS_COLOR__}sre_tools -p${NC})"
+    echo -e "  ${__COMMAND_COLOR__}Zellij${NC}       - Terminal workspace layouts (${__DETAILS_COLOR__}sre_tools -z${NC})"
     echo ""
-    echo -e "To load a specific tool, use the corresponding option:"
-    echo ""
-    echo -e "  ${__DETAILS_COLOR__}sre_tools -aws${NC}      Load AWS functions"
-    echo -e "  ${__DETAILS_COLOR__}sre_tools -z${NC}        Load Zellij functions"
-    echo -e "  ${__DETAILS_COLOR__}sre_tools -M${NC}        Load Mattermost functions"
+    echo -e "Load everything: ${__DETAILS_COLOR__}sre_tools -a${NC}"
+    echo -e "After ${__DETAILS_COLOR__}git pull${NC} in ~/.dotfiles, run ${__DETAILS_COLOR__}sre_tools -r${NC} (or open a new shell) so new flags load."
 }
 
 # Legacy support - redirect old function
