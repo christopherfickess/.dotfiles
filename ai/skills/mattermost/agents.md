@@ -248,4 +248,5 @@ mattermostEnv:
 
 - Plugin packaging / hooks generally → [plugins.md](plugins.md)
 - `MM_PLUGINSETTINGS_*` → [env.md](env.md)
+- ABAC / RBAC / LDAP / SSO (system-wide) → [identity-access.md](identity-access.md)
 - Operator CR / HTTPRoute → [deploy.md](deploy.md), [examples/eks-rds-s3-mattermost.yaml](examples/eks-rds-s3-mattermost.yaml)
