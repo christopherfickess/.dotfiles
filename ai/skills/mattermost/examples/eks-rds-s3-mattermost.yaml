@@ -1,0 +1,230 @@
+# Mattermost Operator — EKS + RDS (Postgres) + S3 + Gateway API HTTPRoute
+#
+# Routing default: Gateway API HTTPRoute → shared Cilium Gateway.
+# Do NOT enable Operator Ingress / nginx / awsLoadBalancerController for this path.
+#
+# Pattern matches Mattermost platform IaC:
+#   - Mattermost CR: ingress.enabled: false
+#   - Companion HTTPRoute attaches to cilium-gateway (kube-system), sectionName: https
+#   - backendRefs → Operator-managed Service (same name as the Mattermost CR) :8065
+#
+# Prerequisites:
+#   1. Mattermost Operator installed
+#   2. Gateway API CRDs present BEFORE Cilium Gateway controller starts
+#   3. Shared Gateway (e.g. cilium-gateway in kube-system) with an https listener
+#   4. Namespace allowed by Gateway (e.g. label gateway-access: cilium-gateway)
+#   5. RDS Postgres 13+; SG allows EKS → 5432
+#   6. S3 bucket + IRSA (preferred) or static keys Secret
+#   7. Enterprise license Secret (required — this skill defaults to Enterprise Edition)
+#
+# Replace every CHANGE_ME value before apply.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mattermost
+  labels:
+    app.kubernetes.io/name: mattermost
+    # Required for cross-namespace attach to shared Cilium Gateway listeners
+    gateway-access: cilium-gateway
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mattermost-db
+  namespace: mattermost
+type: Opaque
+stringData:
+  DB_CONNECTION_STRING: "postgres://mmuser:CHANGE_ME_URLENCODED_PASSWORD@mattermost.CHANGE_ME.rds.amazonaws.com:5432/mattermost?sslmode=require&connect_timeout=10"
+  DB_CONNECTION_CHECK_URL: "postgres://mmuser:CHANGE_ME_URLENCODED_PASSWORD@mattermost.CHANGE_ME.rds.amazonaws.com:5432/mattermost?sslmode=require&connect_timeout=10"
+  MM_SQLSETTINGS_DATASOURCEREPLICAS: "postgres://mmuser:CHANGE_ME_URLENCODED_PASSWORD@mattermost-ro.CHANGE_ME.rds.amazonaws.com:5432/mattermost?sslmode=require&connect_timeout=10"
+---
+# Only needed when fileStore.external.useServiceAccount is false
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mattermost-s3
+  namespace: mattermost
+type: Opaque
+stringData:
+  accesskey: "CHANGE_ME_AWS_ACCESS_KEY_ID"
+  secretkey: "CHANGE_ME_AWS_SECRET_ACCESS_KEY"
+---
+# Enterprise license — required (skill defaults to Operator + Enterprise Edition).
+# kubectl -n mattermost create secret generic mattermost-license --from-file=license=./mattermost.mattermost-license
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mattermost-license
+  namespace: mattermost
+type: Opaque
+stringData:
+  license: |
+    CHANGE_ME_PASTE_LICENSE_OR_CREATE_VIA_KUBECTL
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mattermost-smtp
+  namespace: mattermost
+type: Opaque
+stringData:
+  username: "CHANGE_ME"
+  password: "CHANGE_ME"
+---
+apiVersion: installation.mattermost.com/v1beta1
+kind: Mattermost
+metadata:
+  name: mattermost
+  namespace: mattermost
+  labels:
+    app.kubernetes.io/name: mattermost
+    app.kubernetes.io/part-of: chat
+spec:
+  image: mattermost/mattermost-enterprise-edition
+  version: "10.5.0"
+  imagePullPolicy: IfNotPresent
+  replicas: 2
+  licenseSecret: mattermost-license
+
+  # Gateway API is the default edge path — keep Operator Ingress off.
+  # (Legacy: ingress.enabled true + nginx/ALB annotations, or awsLoadBalancerController)
+  ingress:
+    enabled: false
+    # Optional: some installs still set host for status/docs even when Ingress is disabled
+    host: chat.example.com
+
+  database:
+    external:
+      secret: mattermost-db
+    readinessCheck:
+      mode: builtin
+      timeout: 5m
+
+  fileStore:
+    external:
+      url: s3.amazonaws.com
+      bucket: mattermost-prod-files-CHANGE_ME
+      useServiceAccount: true
+      # secret: mattermost-s3   # only if useServiceAccount: false
+
+  scheduling:
+    resources:
+      requests:
+        cpu: "500m"
+        memory: 1Gi
+      limits:
+        cpu: "2"
+        memory: 4Gi
+
+  podTemplate:
+    extraAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8067"
+
+  mattermostEnv:
+    - name: MM_SERVICESETTINGS_SITEURL
+      value: "https://chat.example.com"
+    - name: MM_SERVICESETTINGS_FORWARD80TO443
+      value: "false"
+    - name: MM_SERVICESETTINGS_ENABLEINSECUREOUTGOINGCONNECTIONS
+      value: "false"
+    - name: MM_SERVICESETTINGS_TRUSTEDPROXYIPHEADER
+      value: '["X-Forwarded-For","X-Real-Ip"]'
+    - name: MM_SERVICESETTINGS_ENABLELOCALMODE
+      value: "true"
+
+    - name: MM_SQLSETTINGS_DRIVERNAME
+      value: "postgres"
+    - name: MM_SQLSETTINGS_MAXOPENCONNS
+      value: "100"
+    - name: MM_SQLSETTINGS_MAXIDLECONNS
+      value: "50"
+    - name: MM_SQLSETTINGS_CONNMAXLIFETIMEMILLISECONDS
+      value: "3600000"
+    - name: MM_SQLSETTINGS_TRACE
+      value: "false"
+
+    - name: MM_FILESETTINGS_DRIVERNAME
+      value: "amazons3"
+    - name: MM_FILESETTINGS_AMAZONS3BUCKET
+      value: "mattermost-prod-files-CHANGE_ME"
+    - name: MM_FILESETTINGS_AMAZONS3REGION
+      value: "us-east-1"
+    - name: MM_FILESETTINGS_AMAZONS3ENDPOINT
+      value: "s3.amazonaws.com"
+    - name: MM_FILESETTINGS_AMAZONS3SSL
+      value: "true"
+    - name: MM_FILESETTINGS_AMAZONS3SSE
+      value: "true"
+    - name: MM_FILESETTINGS_MAXFILESIZE
+      value: "104857600"
+
+    - name: MM_CLUSTERSETTINGS_ENABLE
+      value: "true"
+    - name: MM_CLUSTERSETTINGS_CLUSTERNAME
+      value: "prod"
+    - name: MM_CLUSTERSETTINGS_USEIPADDRESS
+      value: "true"
+    - name: MM_CLUSTERSETTINGS_READONLYCONFIG
+      value: "true"
+
+    - name: MM_METRICSSETTINGS_ENABLE
+      value: "true"
+    - name: MM_METRICSSETTINGS_LISTENADDRESS
+      value: ":8067"
+    - name: MM_LOGSETTINGS_ENABLECONSOLE
+      value: "true"
+    - name: MM_LOGSETTINGS_CONSOLEJSON
+      value: "true"
+    - name: MM_LOGSETTINGS_CONSOLELEVEL
+      value: "INFO"
+
+    - name: MM_PLUGINSETTINGS_ENABLE
+      value: "true"
+    - name: MM_PLUGINSETTINGS_ENABLEUPLOADS
+      value: "false"
+
+    - name: MM_EMAILSETTINGS_SMTPSERVER
+      value: "email-smtp.us-east-1.amazonaws.com"
+    - name: MM_EMAILSETTINGS_SMTPPORT
+      value: "587"
+    - name: MM_EMAILSETTINGS_CONNECTIONSECURITY
+      value: "STARTTLS"
+    - name: MM_EMAILSETTINGS_ENABLESMTPAUTH
+      value: "true"
+    - name: MM_EMAILSETTINGS_FEEDBACKEMAIL
+      value: "noreply@example.com"
+    - name: MM_EMAILSETTINGS_FEEDBACKNAME
+      value: "Mattermost"
+    - name: MM_EMAILSETTINGS_SMTPUSERNAME
+      valueFrom:
+        secretKeyRef:
+          name: mattermost-smtp
+          key: username
+    - name: MM_EMAILSETTINGS_SMTPPASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: mattermost-smtp
+          key: password
+---
+# Default edge routing: HTTPRoute → shared Cilium Gateway (not nginx Ingress).
+# Service name matches the Mattermost CR metadata.name (Operator creates it).
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: mattermost
+  namespace: mattermost
+  labels:
+    app.kubernetes.io/name: mattermost
+spec:
+  parentRefs:
+    - name: cilium-gateway
+      namespace: kube-system
+      sectionName: https
+  hostnames:
+    - chat.example.com
+  rules:
+    - backendRefs:
+        - name: mattermost
+          port: 8065
