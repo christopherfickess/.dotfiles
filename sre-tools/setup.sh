@@ -13,6 +13,7 @@ function sre_tools() {
     [[ -z "${__go_dir__}" ]] && __go_dir__="${__sre_tools_dir__}/go"
     [[ -z "${__python_dir__}" ]] && __python_dir__="${__sre_tools_dir__}/python"
     [[ -z "${__zellij_dir__}" ]] && __zellij_dir__="${__sre_tools_dir__}/zellij"
+    [[ -z "${__ai_dir__}" ]] && __ai_dir__="${__dotfiles_dir__:-${HOME}/.dotfiles}/ai"
 
     # Handle command-line arguments first
 
@@ -26,6 +27,7 @@ function sre_tools() {
     unset __go_dir__
     unset __python_dir__
     unset __zellij_dir__
+    unset __ai_dir__
 }
 
 
@@ -54,6 +56,9 @@ function __sre_tools_menu_logic__(){
     case $__choice__ in
         -a|--all)
             __source_all_functions__
+            ;;
+        -A|--ai)
+            __source_ai_functions__
             ;;
         -aws|--aws)
             __source_aws_functions__
@@ -102,6 +107,8 @@ function __list_sre_tools__(){
     
     if [[ "${1}" == "-a" || "${1}" == "--all" ]]; then
         __choice__="${1}"
+    elif [[ "${1}" == "-A" || "${1}" == "--ai" ]]; then
+        __choice__="${1}"
     elif [[ "${1}" == "-aws" || "${1}" == "--aws" ]]; then
         __choice__="${1}"
     elif [[ "${1}" == "-f" || "${1}" == "--flux" ]]; then
@@ -128,6 +135,7 @@ function __list_sre_tools__(){
         # Interactive mode if no arguments provided
         echo -e "${CYAN}Which Functionality do you want to setup?${NC}"
         echo -e "   ${__COMMAND_COLOR__}-a${NC}    | --all           ${CYAN}All${NC}"
+        echo -e "   ${__COMMAND_COLOR__}-A${NC}    | --ai            ${CYAN}AI skills/agents (Cursor, Claude, OpenCode)${NC}"
         echo -e "   ${__COMMAND_COLOR__}-aws${NC}  | --aws           ${CYAN}AWS Functions${NC}"
         echo -e "   ${__COMMAND_COLOR__}-f${NC}    | --flux          ${CYAN}Flux Functions${NC}"
         echo -e "   ${__COMMAND_COLOR__}-g${NC}    | --go            ${CYAN}Go Tools${NC}"
@@ -321,8 +329,27 @@ function __source_zellij_functions__() {
     unset __zellij_help_file__
 }
 
+function __source_ai_functions__() {
+    local __ai_setup__="${__dotfiles_dir__:-${HOME}/.dotfiles}/ai/setup.sh"
+
+    if [[ -f "${__ai_setup__}" ]]; then
+        # shellcheck source=/dev/null
+        source "${__ai_setup__}"
+        setup_ai_tools
+        echo -e "   ${GREEN}✓${NC} AI skills/agents"
+    else
+        echo -e "${RED}Missing ${__ai_setup__}${NC}"
+        return 1
+    fi
+
+    echo -e "${MAGENTA}AI tools configured (skills linked into Cursor).${NC}"
+    __SRE_TOOLS_LOADED__[ai]="true"
+    unset __ai_setup__
+}
+
 function __source_all_functions__() {
     __source_aws_functions__
+    __source_ai_functions__
     __source_flux_functions__
     __source_go_functions__
     __source_mattermost_functions__
