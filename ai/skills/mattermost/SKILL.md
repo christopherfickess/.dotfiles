@@ -1,6 +1,6 @@
 ---
 name: mattermost
-description: Comprehensive reference for working with Mattermost — defaults to Mattermost Operator + Enterprise Edition unless the user explicitly asks otherwise. Covers REST API, plugin development, Agents plugin (mattermost-ai) config/MCP/debug, Operator CRD / mattermostEnv, Gateway API HTTPRoute, MM_* env vars (including SAML/OIDC), mmctl, integrations, database schema, and monorepo contribution. Use when the user mentions Mattermost, mmctl, Mattermost Operator, Enterprise Edition, Mattermost plugins, Agents, Copilot, mattermost-ai, MCP tools, LLM Trace, webhooks, CRD, HTTPRoute, Cilium Gateway, EKS RDS S3, MM_ env vars, SAML, OpenID, Entra ID, or the Mattermost server/APIs/database/codebase.
+description: Comprehensive reference for working with Mattermost — defaults to Mattermost Operator + Enterprise Edition unless the user explicitly asks otherwise. Covers REST API, plugin development, Agents plugin (mattermost-ai) config/MCP/debug, identity/access (SSO, SAML, OIDC, LDAP, RBAC, ABAC), Operator CRD / mattermostEnv, Gateway API HTTPRoute, MM_* env vars, mmctl, integrations, database schema, and monorepo contribution. Use when the user mentions Mattermost, mmctl, Mattermost Operator, Enterprise Edition, Mattermost plugins, Agents, Copilot, mattermost-ai, MCP tools, LLM Trace, ABAC, RBAC, LDAP, SAML, SSO, OpenID, Entra ID, permissions schemes, webhooks, CRD, HTTPRoute, Cilium Gateway, EKS RDS S3, MM_ env vars, or the Mattermost server/APIs/database/codebase.
 ---
 
 # Mattermost
@@ -16,7 +16,7 @@ Trigger on any of:
 - Configuring or debugging the **Agents** plugin (`mattermost-ai`) — services, agents, MCP, LLM Trace, Inactive badges
 - Deploying or operating Mattermost (Helm, Terraform, Ansible, upgrades, scaling, HA)
 - Setting `MM_*` environment variables or Mattermost Operator CRD `spec.mattermostEnv`
-- Configuring SAML / OIDC / Entra / Google / GitLab SSO via env vars
+- Configuring SAML / OIDC / Entra / Google / GitLab SSO, LDAP/AD sync, RBAC schemes, or ABAC policies
 - Deploying Mattermost on EKS with RDS and S3 via the Operator CR
 - Admin tasks via `mmctl`
 - Building bots, slash commands, incoming/outgoing webhooks, or interactive dialogs
@@ -34,6 +34,7 @@ If the task is Mattermost-adjacent reporting against Salesforce data (ARR, pipel
 | Agents plugin (`mattermost-ai`): services, agent CRUD, MCP, license limits, debug playbook | [agents.md](agents.md) |
 | Helm charts, Terraform modules, Ansible, HA, upgrades, backups | [deploy.md](deploy.md) |
 | `MM_*` env vars, Operator CRD `mattermostEnv`, Secrets wiring | [env.md](env.md) |
+| Identity & access: SSO/SAML/OIDC overview, LDAP, RBAC schemes, ABAC policies + `MM_ACCESSCONTROL*` / `MM_LDAP*` | [identity-access.md](identity-access.md) |
 | Full SAML / OIDC / OAuth / Entra `MM_*` lists, SSO cert mounts | [auth-env.md](auth-env.md) |
 | EKS + RDS + S3 Mattermost CR sample (HTTPRoute + Cilium Gateway, IRSA) | [examples/eks-rds-s3-mattermost.yaml](examples/eks-rds-s3-mattermost.yaml) |
 | `mmctl` commands, admin automation | [mmctl.md](mmctl.md) |

@@ -445,6 +445,8 @@ Not every leaf is listed (hundreds exist). Use the naming rule for anything miss
 
 ### PasswordSettings / LdapSettings (auth — abbreviated)
 
+Full LDAP + ABAC + RBAC/SSO playbooks: [identity-access.md](identity-access.md). Full SAML/OIDC `MM_*`: [auth-env.md](auth-env.md).
+
 | Env | config.json |
 |-----|-------------|
 | `MM_PASSWORDSETTINGS_MINIMUMLENGTH` | `MinimumLength` |

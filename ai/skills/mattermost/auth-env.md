@@ -2,6 +2,8 @@
 
 Complete `MM_*` catalog for authentication providers, derived from current `model.Config` (`SamlSettings`, `SSOSettings` / `OpenIdSettings` / `GitLabSettings` / `GoogleSettings`, `Office365Settings`) and the [Authentication configuration settings](https://docs.mattermost.com/administration-guide/configure/authentication-configuration-settings.html) docs.
 
+For LDAP, RBAC schemes, ABAC policies, and how SSO fits with access control, read [identity-access.md](identity-access.md) first — this file is the provider env-var deep dive.
+
 **Version note:** Field names below match current Mattermost server `config.go`. From v11, new SAML installs default `SignatureAlgorithm` to `RSAwithSHA256` (was `RSAwithSHA1`). Always confirm against your target image tag if something looks off.
 
 Secrets (`Secret`, `Id`, bind passwords, cert file *paths*) should come from Kubernetes Secrets via `valueFrom` in CRD `mattermostEnv` — not plaintext in the CR.
