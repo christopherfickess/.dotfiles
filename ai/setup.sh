@@ -161,14 +161,9 @@ function __ai_link_dir__() {
 
     if [[ "${OSTYPE}" == msys* || "${OSTYPE}" == cygwin* || "${OSTYPE}" == mingw* ]] \
         || uname -s 2>/dev/null | grep -qiE 'mingw|msys|cygwin'; then
-        local wsrc wdest
-        wsrc="$(__ai_win_path__ "${src}")"
-        wdest="$(__ai_win_path__ "${dest}")"
-        if cmd.exe //c "mklink /J \"${wdest}\" \"${wsrc}\"" >/dev/null 2>&1; then
-            return 0
-        fi
-        # Fallback: symlink (may need Developer Mode)
-        if cmd.exe //c "mklink /D \"${wdest}\" \"${wsrc}\"" >/dev/null 2>&1; then
+        # Prefer PowerShell junctions — cmd mklink from Git Bash often fails with
+        # "filename, directory name, or volume label syntax is incorrect"
+        if __ai_win_junction__ "${src}" "${dest}"; then
             return 0
         fi
         echo -e "   ${RED:-}x${NC:-} failed to junction ${dest}; copying instead"
@@ -178,6 +173,24 @@ function __ai_link_dir__() {
     fi
 
     ln -sfn "${src}" "${dest}"
+}
+
+# Create a Windows directory junction via PowerShell (works under Git Bash).
+function __ai_win_junction__() {
+    local src="${1}"
+    local dest="${2}"
+    local wsrc wdest
+    wsrc="$(__ai_win_path__ "${src}")"
+    wdest="$(__ai_win_path__ "${dest}")"
+    [[ -n "${wsrc}" && -n "${wdest}" ]] || return 1
+
+    if command -v powershell.exe >/dev/null 2>&1; then
+        powershell.exe -NoProfile -Command \
+            "New-Item -ItemType Junction -Force -Path '${wdest}' -Target '${wsrc}' | Out-Null" \
+            >/dev/null 2>&1 && return 0
+    fi
+    # Last resort: cmd mklink (often broken when invoked from MSYS)
+    cmd.exe //c "mklink /J \"${wdest}\" \"${wsrc}\"" >/dev/null 2>&1
 }
 
 function __ai_link_file_or_dir__() {
