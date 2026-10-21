@@ -89,6 +89,12 @@ function __sre_tools_menu_logic__(){
             unset __choice__
             return 0
             ;;
+        -u|--update)
+            update_sre_tools
+            ;;
+        -v|--version)
+            show_sre_tools_version
+            ;;
         -z|--zellij)
             __source_zellij_functions__
             ;;
@@ -125,13 +131,15 @@ function __list_sre_tools__(){
         __choice__="${1}"
     elif [[ "${1}" == "-p" || "${1}" == "--python" ]]; then
         __choice__="${1}"
+    elif [[ "${1}" == "-r" || "${1}" == "--reload" ]]; then
+        __choice__="${1}"
     elif [[ "${1}" == "-u" || "${1}" == "--update" ]]; then
         __choice__="${1}"
     elif [[ "${1}" == "-v" || "${1}" == "--version" ]]; then
         __choice__="${1}"
     elif [[ "${1}" == "-z" || "${1}" == "--zellij" ]]; then
         __choice__="${1}"
-    elif [[ ! -z "${1}" ]]; then
+    elif [[ -z "${1}" ]]; then
         # Interactive mode if no arguments provided
         echo -e "${CYAN}Which Functionality do you want to setup?${NC}"
         echo -e "   ${__COMMAND_COLOR__}-a${NC}    | --all           ${CYAN}All${NC}"
@@ -144,16 +152,17 @@ function __list_sre_tools__(){
         echo -e "   ${__COMMAND_COLOR__}-M${NC}    | --mattermost    ${CYAN}Mattermost${NC}"
         echo -e "   ${__COMMAND_COLOR__}-m${NC}    | --minikube      ${CYAN}Minikube${NC}"
         echo -e "   ${__COMMAND_COLOR__}-p${NC}    | --python        ${CYAN}Python Tools${NC}"
-        echo -e "   ${__COMMAND_COLOR__}-u${NC}    | --update        ${CYAN}Update SRE Tools${NC}"
+        echo -e "   ${__COMMAND_COLOR__}-r${NC}    | --reload        ${CYAN}Reload sre_tools from disk${NC}"
+        echo -e "   ${__COMMAND_COLOR__}-u${NC}    | --update        ${CYAN}git pull ~/.dotfiles${NC}"
         echo -e "   ${__COMMAND_COLOR__}-v${NC}    | --version       ${CYAN}Show SRE Tools Version${NC}"
         echo -e "   ${__COMMAND_COLOR__}-z${NC}    | --zellij        ${CYAN}Zellij Templates${NC}"
         echo -e ""
 
-        read -p "   Enter your choice: " __choice__
+        read -r -p "   Enter your choice: " __choice__
     else
-        echo -e "${RED}Invalid choice.${NC}"
-        echo "here"
-        return
+        echo -e "${RED}Invalid choice: ${1}${NC}"
+        echo -e "Run ${__COMMAND_COLOR__}sre_tools -h${NC} for options."
+        return 1
     fi
     
 }
@@ -360,26 +369,31 @@ function __source_all_functions__() {
     echo -e "${GREEN}All SRE tools setup completed.${NC}"
 }
 
-# function update_sre_tools() {
-#     echo -e "${CYAN}Updating SRE tools from dotfiles repository...${NC}"
-#     echo -e ""
-#     if [ -d "${__tools_dir__}" ] && [ -d "$(dirname "${__tools_dir__}")/.git" ]; then
-#         pushd "$(dirname "${__tools_dir__}")" > /dev/null
-#         git pull
-#         popd > /dev/null
-#         echo -e "${GREEN}SRE tools updated successfully.${NC}"
-#         echo -e "${__COMMAND_COLOR__}Note: You may need to reload your shell or run ${GREEN}bashrc${NC} to apply changes.${NC}"
-#     else
-#         echo -e "${RED}Could not find git repository. Manual update required.${NC}"
-#     fi
-# }
+function update_sre_tools() {
+    local __dotfiles_root__="${__dotfiles_dir__:-${HOME}/.dotfiles}"
+
+    echo -e "${CYAN}Updating SRE tools from ${__dotfiles_root__}...${NC}"
+    echo -e ""
+    if [[ -d "${__dotfiles_root__}/.git" ]]; then
+        git -C "${__dotfiles_root__}" pull
+        echo -e "${GREEN}Dotfiles updated.${NC}"
+        echo -e "${__COMMAND_COLOR__}Note: Run ${GREEN}sre_tools -r${NC} (or open a new shell) so new flags/functions load.${NC}"
+    else
+        echo -e "${RED}Could not find git repository at ${__dotfiles_root__}. Manual update required.${NC}"
+        return 1
+    fi
+}
 
 function show_sre_tools_version() {
-    local __version_file__="${__tools_dir__}/VERSION"
-    if [ -f "${__version_file__}" ]; then
+    local __sre_root__="${__sre_tools_dir__:-${__tools_dir__:-${__dotfiles_dir__:-${HOME}/.dotfiles}/sre-tools}}"
+    local __dotfiles_root__="${__dotfiles_dir__:-${HOME}/.dotfiles}"
+    local __version_file__="${__sre_root__}/VERSION"
+
+    if [[ -f "${__version_file__}" ]]; then
         echo -e "${CYAN}SRE Tools Version:${NC} $(cat "${__version_file__}")"
     else
         echo -e "${CYAN}SRE Tools Version:${NC} Unknown (no VERSION file found)"
     fi
-    echo -e "${CYAN}Dotfiles Location:${NC} ${__tools_dir__}"
+    echo -e "${CYAN}SRE Tools Path:${NC} ${__sre_root__}"
+    echo -e "${CYAN}Dotfiles Location:${NC} ${__dotfiles_root__}"
 }
